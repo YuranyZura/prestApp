@@ -3,6 +3,7 @@
   "description": "Include Bootstrap's source Sass and individual JavaScript plugins with Vite.",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "stackblitz": {
     "startCommand": "npm start"
   },
@@ -11,7 +12,30 @@
   },
   "dependencies": {
     "apexcharts": "^3.37.0",
+    "bcrypt": "^6.0.0",
     "bootstrap": "^5.2.3",
-    "jquery": "^3.6.3"
-  }
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "jquery": "^3.6.3",
+    "mysql2": "^3.14.3",
+    "nodemailer": "^7.0.5"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YuranyZura/prestApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YuranyZura/prestApp/issues"
+  },
+  "homepage": "https://github.com/YuranyZura/prestApp#readme"
 }
