@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PrestApp</title>
+  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
+  <!-- <link rel="stylesheet" href="../assets/css/styles.min.css" /> -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/styles.min.css" />
+</head>
+
+<body>
+  <!--  Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    <div
+      class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
+      <div class="d-flex align-items-center justify-content-center w-100">
+        <div class="row justify-content-center w-100">
+          <div class="col-md-8 col-lg-6 col-xxl-3">
+            <div class="card mb-0">
+              <div class="card-body">
+                <a href="./login" class="text-nowrap logo-img text-center d-block py-3 w-100">
+                  <img src="../assets/images/logos/dark-logo.svg" width="180" alt="">
+                </a>
+                <p class="text-center">Tu prestamo seguro</p>
+                <form>
+                  <div class="mb-1">
+                    <label for="exampleInputtext1" class="form-label">Nombre</label>
+                    <input type="text" name="nombre" class="form-control" id="exampleInputtext1" aria-describedby="textHelp">
+                  </div>
+                  <div class="mb-2">
+                    <label for="exampleInputtext1" class="form-label">Apellido</label>
+                    <input type="text" name="apellido" class="form-control" id="exampleInputtext1" aria-describedby="textHelp">
+                  </div>
+                  <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Correo</label>
+                    <input type="email" name="correo" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                  </div>
+                  <div class="mb-4">
+                    <label for="exampleInputPassword1" class="form-label">Contraseña</label>
+                    <input type="password" name="contrasena"  class="form-control" id="exampleInputPassword1">
+                  </div>
+                  <button type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2">Sign Up</button>
+                  <div class="d-flex align-items-center justify-content-center">
+                    <p class="fs-4 mb-0 fw-bold">Ya tienes una cuenta?</p>
+                    <a class="text-primary fw-bold ms-2" href="./login">iniciar sesion</a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modal de verificación de correo -->
+<div class="modal fade" id="modalVerificacion" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Verifica tu correo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p>Hemos enviado un código a tu correo. Ingresa el código para activar tu cuenta:</p>
+        <form id="formVerificacion">
+          <div class="d-flex justify-content-center gap-2">
+            <input type="text" maxlength="1" class="form-control text-center codigo-input" style="width: 40px;" />
+            <input type="text" maxlength="1" class="form-control text-center codigo-input" style="width: 40px;" />
+            <input type="text" maxlength="1" class="form-control text-center codigo-input" style="width: 40px;" />
+            <input type="text" maxlength="1" class="form-control text-center codigo-input" style="width: 40px;" />
+            <input type="text" maxlength="1" class="form-control text-center codigo-input" style="width: 40px;" />
+            <input type="text" maxlength="1" class="form-control text-center codigo-input" style="width: 40px;" />
+          </div>
+          <button type="submit" class="btn btn-primary w-100 mt-4">Verificar</button>
+        </form>
+        <p class="mt-3">
+          ¿No recibiste el código?
+          <button id="btnReenviar" class="btn btn-link">Reenviar código</button>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ESTILO PARA FONDO OSCURO + BLUR -->
+<style>
+  .modal.show .modal-backdrop {
+    backdrop-filter: blur(12px);
+    background-color: rgba(197, 34, 34, 0.5);
+  }
+</style>
+
+
+
+
+<!-- Toast de notificación -->
+<!-- Toast de éxito -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div id="toastVerificacion" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+    <div class="toast-header bg-success text-white">
+      <strong class="me-auto">Correo verificado con éxito</strong>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+    </div>
+    <div class="toast-body">
+      Redirigiendo al inicio de sesión...
+    </div>
+  </div>
+</div>
+
+<!-- Toast de error -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div id="toastError" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header bg-danger text-white">
+      <strong class="me-auto"> Error</strong>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+    </div>
+    <div class="toast-body" id="toastErrorBody">
+      <!-- Mensaje dinámico -->
+    </div>
+  </div>
+</div>
+
+
+<!-- Toast de reenvío (NO redirige) -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div id="toastReenvio" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+    <div class="toast-header bg-info text-white">
+      <strong class="me-auto">Código reenviado</strong>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+    </div>
+    <div class="toast-body" id="toastReenvioBody">
+      Hemos enviado un nuevo código a tu correo.
+    </div>
+  </div>
+</div>
+
+  <!-- <script src="../assets/libs/jquery/dist/jquery.min.js"></script> -->
+  <script src="/assets/libs/jquery/dist/jquery.min.js"></script>
+
+  <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/register.js"></script>
+
+</body>
+
+</html>
