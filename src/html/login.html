@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Modernize Free</title>
+  <title>prestApp</title>
   <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
   <link rel="stylesheet" href="../assets/css/styles.min.css" />
 </head>
@@ -21,7 +21,7 @@
             <div class="card mb-0">
               <div class="card-body">
                 <a href="./register" class="text-nowrap logo-img text-center d-block py-3 w-100">
-                  <img src="../assets/images/logos/dark-logo.svg" width="180" alt="">
+                  <img src="../assets/images/logos/prestapp-remove.png" width="180" alt="">
                 </a>
                 <p class="text-center">Tu prestamo seguro</p>
                 <form>
@@ -57,28 +57,87 @@
   </div>
 
 
-<!-- Toast de éxito -->
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-  <div id="toastLoginExito" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
-    <div class="toast-header bg-success text-white">
-      <strong class="me-auto">✅ Bienvenido</strong>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
-    </div>
-    <div class="toast-body">
-      Inicio de sesión exitoso. Redirigiendo...
+<!-- Modal de confirmación personalizado -->
+<div class="modal fade" id="modalConfirmarReenvio" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body py-4">
+        <p class="mb-0">Tu cuenta no está verificada.<br>¿Quieres reenviar el código a <strong id="correoConfirmacion"></strong>?</p>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btnConfirmarReenvio">Reenviar código</button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Toast de éxito -->
+<!-- Modal de verificación -->
+<div class="modal fade" id="modalVerificacion" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Verifica tu correo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p>Hemos enviado un código a tu correo. Ingresa el código para activar tu cuenta:</p>
+        <form id="formVerificacion">
+          <div class="d-flex justify-content-center gap-2">
+            <input type="text" maxlength="1" class="form-control text-center codigo-input" style="width: 40px;" />
+            <input type="text" maxlength="1" class="form-control text-center codigo-input" style="width: 40px;" />
+            <input type="text" maxlength="1" class="form-control text-center codigo-input" style="width: 40px;" />
+            <input type="text" maxlength="1" class="form-control text-center codigo-input" style="width: 40px;" />
+            <input type="text" maxlength="1" class="form-control text-center codigo-input" style="width: 40px;" />
+            <input type="text" maxlength="1" class="form-control text-center codigo-input" style="width: 40px;" />
+          </div>
+          <button type="submit" class="btn btn-primary w-100 mt-4">Verificar</button>
+        </form>
+        <p class="mt-3">
+          ¿No recibiste el código?
+          <button id="btnReenviar" class="btn btn-link">Reenviar código</button>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Toast de éxito en login -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-  <div id="toastLoginExito" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
+  <div id="toastLoginExito" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
     <div class="toast-header bg-success text-white">
-      <strong class="me-auto"> Inicio de sesión exitoso. </strong>
+      <strong class="me-auto">Exitoso</strong>
       <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
     </div>
     <div class="toast-body">
-     Redirigiendo...
+      Tu cuenta ha sido iniciada con éxito
+    </div>
+  </div>
+</div>
+
+<!-- Toast de éxito en verificación -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div id="toastVerificacion" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+    <div class="toast-header bg-success text-white">
+      <strong class="me-auto">Cuenta verificada</strong>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+    </div>
+    <div class="toast-body">
+      ¡Tu cuenta ha sido verificada con éxito! Redirigiendo al login...
+    </div>
+  </div>
+</div>
+
+<!-- Toast de reenvío -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div id="toastReenvio" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+    <div class="toast-header bg-info text-white">
+      <strong class="me-auto">Código reenviado</strong>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+    </div>
+    <div class="toast-body" id="toastReenvioBody">
+      Hemos reenviado el código a tu correo.
     </div>
   </div>
 </div>
@@ -87,7 +146,7 @@
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
   <div id="toastLoginError" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="6000">
     <div class="toast-header bg-danger text-white">
-      <strong class="me-auto">Error</strong>
+      <strong class="me-auto"> Error</strong>
       <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
     </div>
     <div class="toast-body" id="toastLoginErrorBody">

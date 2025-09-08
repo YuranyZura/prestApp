@@ -94,11 +94,60 @@ router.post("/register", async (req, res) => {
 
 //endpoint de verficacion de un correo 
 // POST /auth/verify-email
+// router.post("/verify-email", async (req, res) => {
+//   try {
+//     const { correo, codigo } = req.body;
+
+//     // Buscar usuario con ese correo
+//     const [rows] = await pool.query(
+//       "SELECT id_usuarios, codigo_verificacion, codigo_expira, verificado FROM usuarios WHERE correo = ?",
+//       [correo]
+//     );
+
+//     if (rows.length === 0) {
+//       return res.status(404).json({ success: false, message: "Usuario no encontrado." });
+//     }
+
+//     const usuario = rows[0];
+
+//     // Si ya está verificado
+//     if (usuario.verificado) {
+//       return res.json({ success: true, message: "El usuario ya está verificado." });
+//     }
+
+//     // Validar código
+//     if (usuario.codigo_verificacion !== codigo) {
+//       return res.status(400).json({ success: false, message: "El codigo es incorrecto." });
+//     }
+//     // Validar expiración
+//     const ahora = new Date();
+//     if (ahora > new Date(usuario.codigo_expira)) {
+//       return res.status(400).json({ success: false, message: "El código ha expirado, solicita uno nuevo." });
+//     }
+
+//     // Si pasa todo, marcar como verificado
+//     await pool.query(
+//       "UPDATE usuarios SET verificado = 1, codigo_verificacion = NULL, codigo_expira = NULL WHERE id_usuarios = ?",
+//       [usuario.id_usuarios]
+//     );
+
+//     return res.json({ success: true, message: "Correo verificado con éxito." });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ success: false, message: "Error en el servidor." });
+//   }
+// });
+
+
+
+
+
+
+// backend/router/auth.js
 router.post("/verify-email", async (req, res) => {
   try {
     const { correo, codigo } = req.body;
 
-    // Buscar usuario con ese correo
     const [rows] = await pool.query(
       "SELECT id_usuarios, codigo_verificacion, codigo_expira, verificado FROM usuarios WHERE correo = ?",
       [correo]
@@ -110,35 +159,35 @@ router.post("/verify-email", async (req, res) => {
 
     const usuario = rows[0];
 
-    // Si ya está verificado
     if (usuario.verificado) {
       return res.json({ success: true, message: "El usuario ya está verificado." });
     }
 
-    // Validar código
     if (usuario.codigo_verificacion !== codigo) {
-      return res.status(400).json({ success: false, message: "El codigo es incorrecto." });
-    }
-    // Validar expiración
-    const ahora = new Date();
-    if (ahora > new Date(usuario.codigo_expira)) {
-      return res.status(400).json({ success: false, message: "El código ha expirado, solicita uno nuevo." });
+      return res.status(400).json({ success: false, message: "El código es incorrecto." });
     }
 
-    // Si pasa todo, marcar como verificado
+    const ahora = new Date();
+    if (ahora > new Date(usuario.codigo_expira)) {
+      return res.status(400).json({ success: false, message: "El código ha expirado." });
+    }
+
+    // ✅ Verificar
     await pool.query(
       "UPDATE usuarios SET verificado = 1, codigo_verificacion = NULL, codigo_expira = NULL WHERE id_usuarios = ?",
       [usuario.id_usuarios]
     );
 
-    return res.json({ success: true, message: "Correo verificado con éxito." });
+    return res.json({ 
+      success: true, 
+      message: "Correo verificado con éxito." 
+    });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: "Error en el servidor." });
+    res.status(500).json({ success: false, message: "Error del servidor." });
   }
 });
-
-
 
 
 // POST /auth/reenvio del codigo de verificacion 
