@@ -5,14 +5,20 @@ import { Router } from "express";
 import bcrypt from "bcrypt";
 import { pool } from "../server.js"; // importar pool del servidor
 import { enviarCodigoVerificacion } from "../config/mailer.js";
+import jwt from "jsonwebtoken";
 
 const router = Router();
+// Si se activa, las contraseñas se guardan en claro (inseguro). Usar solo en desarrollo local.
+const USE_PLAIN_PASSWORDS = process.env.PLAIN_PASSWORDS === "true";
+if (USE_PLAIN_PASSWORDS) {
+  console.warn("WARNING: PLAIN_PASSWORDS=true — las contraseñas se almacenarán en texto plano. Esto es INSEGURO.");
+}
 
 
-// Regex básico para correos válidos
+//  correos válidos
 const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Lista de dominios de prueba que queremos bloquear
+// Lista de dominios  que queremos bloquear
 const dominiosProhibidos = [ "tempmail.com", "example.com", "test.com"];
 
 
@@ -59,7 +65,7 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    const hash = await bcrypt.hash(contrasena, 10);
+    const hash = USE_PLAIN_PASSWORDS ? contrasena : await bcrypt.hash(contrasena, 10);
 
     //  Rol FIJO: solo dueño puede registrarse
     const rolFinal = "dueno";
@@ -91,54 +97,6 @@ router.post("/register", async (req, res) => {
     });
   }
 });
-
-//endpoint de verficacion de un correo 
-// POST /auth/verify-email
-// router.post("/verify-email", async (req, res) => {
-//   try {
-//     const { correo, codigo } = req.body;
-
-//     // Buscar usuario con ese correo
-//     const [rows] = await pool.query(
-//       "SELECT id_usuarios, codigo_verificacion, codigo_expira, verificado FROM usuarios WHERE correo = ?",
-//       [correo]
-//     );
-
-//     if (rows.length === 0) {
-//       return res.status(404).json({ success: false, message: "Usuario no encontrado." });
-//     }
-
-//     const usuario = rows[0];
-
-//     // Si ya está verificado
-//     if (usuario.verificado) {
-//       return res.json({ success: true, message: "El usuario ya está verificado." });
-//     }
-
-//     // Validar código
-//     if (usuario.codigo_verificacion !== codigo) {
-//       return res.status(400).json({ success: false, message: "El codigo es incorrecto." });
-//     }
-//     // Validar expiración
-//     const ahora = new Date();
-//     if (ahora > new Date(usuario.codigo_expira)) {
-//       return res.status(400).json({ success: false, message: "El código ha expirado, solicita uno nuevo." });
-//     }
-
-//     // Si pasa todo, marcar como verificado
-//     await pool.query(
-//       "UPDATE usuarios SET verificado = 1, codigo_verificacion = NULL, codigo_expira = NULL WHERE id_usuarios = ?",
-//       [usuario.id_usuarios]
-//     );
-
-//     return res.json({ success: true, message: "Correo verificado con éxito." });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ success: false, message: "Error en el servidor." });
-//   }
-// });
-
-
 
 
 
@@ -172,7 +130,7 @@ router.post("/verify-email", async (req, res) => {
       return res.status(400).json({ success: false, message: "El código ha expirado." });
     }
 
-    // ✅ Verificar
+    //  Verificar
     await pool.query(
       "UPDATE usuarios SET verificado = 1, codigo_verificacion = NULL, codigo_expira = NULL WHERE id_usuarios = ?",
       [usuario.id_usuarios]
@@ -245,6 +203,56 @@ router.post("/reenvio_codigo", async (req, res) => {
 });
 
 
+// Obtener usuario por id
+router.get("/user/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [rows] = await pool.query("SELECT id_usuarios, nombre, apellido, correo, rol, verificado FROM usuarios WHERE id_usuarios = ?", [id]);
+    if (rows.length === 0) return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+    return res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Error del servidor" });
+  }
+});
+
+
+// Devuelve la contraseña en texto plano SOLO si la app está configurada para almacenar contraseñas en claro.
+router.get("/user-password/:id", async (req, res) => {
+  try {
+    if (!USE_PLAIN_PASSWORDS) {
+      return res.status(403).json({ success: false, message: "Operación no permitida en este entorno" });
+    }
+
+    const { id } = req.params;
+    const [rows] = await pool.query("SELECT contrasena FROM usuarios WHERE id_usuarios = ? LIMIT 1", [id]);
+    if (rows.length === 0) return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+    return res.json({ contrasena: rows[0].contrasena });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Error del servidor" });
+  }
+});
+
+
+// Alternar acceso (activar/desactivar) — cambia el flag `verificado` para bloquear/permitir inicio de sesión.
+router.post("/toggle-acceso", async (req, res) => {
+  try {
+    const { id_usuarios, activo } = req.body;
+    if (!id_usuarios) return res.status(400).json({ success: false, message: "Falta id_usuarios" });
+
+    const nuevo = activo ? 1 : 0;
+    const [result] = await pool.query("UPDATE usuarios SET verificado = ? WHERE id_usuarios = ?", [nuevo, id_usuarios]);
+    if (result.affectedRows === 0) return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+
+    return res.json({ success: true, message: `Acceso ${activo ? 'activado' : 'desactivado'}` });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Error del servidor" });
+  }
+});
+
+
 
 
 // POST /auth/login
@@ -275,8 +283,8 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // Verificar contraseña
-    const ok = await bcrypt.compare(contrasena, user.contrasena);
+    // Verificar contraseña (condicional según flag)
+    const ok = USE_PLAIN_PASSWORDS ? (contrasena === user.contrasena) : await bcrypt.compare(contrasena, user.contrasena);
     if (!ok) {
       return res.status(400).json({ 
         success: false, 
@@ -285,16 +293,20 @@ router.post("/login", async (req, res) => {
     }
 
     // Login exitoso
-    return res.json({ 
-      success: true, 
-      message: `¡Bienvenido, ${user.nombre}!`,
-      user: {
-        id: user.id_usuarios,
-        nombre: user.nombre,
-        correo: user.correo,
-        rol: user.rol
-      }
-    });
+req.session.usuario = {
+  id: user.id_usuarios,
+  nombre: user.nombre,
+  correo: user.correo,
+  rol: user.rol
+};
+
+// Ahora sí responde
+return res.json({ 
+  success: true, 
+  message: `¡Bienvenido, ${user.nombre}!`,
+  user: req.session.usuario
+});
+
 
   } catch (err) {
     console.error(err);
@@ -304,4 +316,97 @@ router.post("/login", async (req, res) => {
     });
   }
 });
+
+
+
+// (cerrar sesión)
+router.post("/logout", (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) return res.status(500).json({ message: "Error al cerrar sesión" });
+      // borrar cookie
+      res.clearCookie("connect.sid", { path: "/" });
+      return res.json({ ok: true });
+    });
+  } else {
+    return res.json({ ok: true });
+  }
+});
+
+
+// CHECK — endpoint para que el frontend confirme si sigue logueado
+router.get("/check", (req, res) => {
+  if (req.session && req.session.usuario) {
+    return res.json({ loggedIn: true, user: req.session.usuario });
+  }
+  return res.status(401).json({ loggedIn: false });
+});
+
+
+
+
+
+
+// Crear o actualizar credenciales para un trabajador (rol = 'trabajador')
+router.post("/create-credenciales", async (req, res) => {
+  try {
+    const { id_trabajador, correo, contrasena } = req.body;
+
+    if (!id_trabajador || !correo || !contrasena) {
+      return res.status(400).json({ success: false, message: "Faltan datos requeridos" });
+    }
+
+    if (!correoRegex.test(correo)) {
+      return res.status(400).json({ success: false, message: "Correo no válido" });
+    }
+
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$%&*]{8,}$/;
+    if (!passwordRegex.test(contrasena)) {
+      return res.status(400).json({ success: false, message: "La contraseña debe tener al menos 8 caracteres, incluyendo letras y números" });
+    }
+
+    // Obtener datos del trabajador (para nombre/apellido y para saber si ya tiene usuario)
+    const [trabRows] = await pool.query("SELECT id_usuario, nombre, apellido FROM trabajadores WHERE id_trabajador = ?", [id_trabajador]);
+    if (trabRows.length === 0) return res.status(404).json({ success: false, message: "Trabajador no encontrado" });
+    const trabajador = trabRows[0];
+
+    // Verificar que el correo no esté en uso por otro usuario distinto
+    const [existingByEmail] = await pool.query("SELECT id_usuarios FROM usuarios WHERE correo = ?", [correo]);
+    if (existingByEmail.length > 0 && (!trabajador.id_usuario || existingByEmail[0].id_usuarios !== trabajador.id_usuario)) {
+      return res.status(400).json({ success: false, message: "El correo ya está en uso por otro usuario" });
+    }
+
+    const hash = USE_PLAIN_PASSWORDS ? contrasena : await bcrypt.hash(contrasena, 10);
+
+    const rolFinal = "trabajador";
+
+    let id_usuario = trabajador.id_usuario;
+    if (id_usuario) {
+      // Actualizar usuario existente
+      await pool.query(
+        "UPDATE usuarios SET correo = ?, contrasena = ?, rol = ?, verificado = 1 WHERE id_usuarios = ?",
+        [correo, hash, rolFinal, id_usuario]
+      );
+    } else {
+      // Insertar nuevo usuario y vincular al trabajador
+      const nombre = trabajador.nombre || null;
+      const apellido = trabajador.apellido || null;
+      const [result] = await pool.query(
+        `INSERT INTO usuarios (nombre, apellido, correo, contrasena, rol, verificado) VALUES (?, ?, ?, ?, ?, ?)`,
+        [nombre, apellido, correo, hash, rolFinal, 1]
+      );
+      id_usuario = result.insertId;
+      await pool.query("UPDATE trabajadores SET id_usuario = ? WHERE id_trabajador = ?", [id_usuario, id_trabajador]);
+    }
+
+    return res.json({ success: true, message: "Credenciales guardadas correctamente", id_usuario, correo });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Error del servidor" });
+  }
+});
+
+
+
+
 export default router;

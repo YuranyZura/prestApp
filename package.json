@@ -8,6 +8,7 @@
     "startCommand": "npm start"
   },
   "devDependencies": {
+    "nodemon": "^3.1.11",
     "sass": "^1.54.8"
   },
   "dependencies": {
@@ -17,15 +18,19 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
+    "express-session": "^1.18.2",
     "jquery": "^3.6.3",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.2",
     "mysql2": "^3.14.3",
+    "node-fetch": "^3.3.2",
     "nodemailer": "^7.0.5"
   },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node backend/server.js",
-    "dev": "node backend/server.js"
+    "dev": "nodemon backend/server.js"
   },
   "repository": {
     "type": "git",

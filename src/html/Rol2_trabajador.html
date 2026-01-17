@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>PrestApp - Panel Trabajador</title>
+    <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
+    <link rel="stylesheet" href="../assets/css/styles.min.css" />
+    <link rel="stylesheet" href="../assets/css/icons/tabler-icons/tabler-icons.css" />
+    <link rel="stylesheet" href="../assets/css/Rol2_trabajador.css">
+</head>
+<body>
+    <!-- Header con Avatar de Usuario -->
+    <div class="app-header">
+        <div class="app-header-left">
+            <!-- Avatar de usuario en lugar de logo -->
+            <div class="user-avatar" id="userAvatar">
+                JD
+            </div>
+            <div class="user-info">
+                <div class="user-info-name" id="userName">Juan Delgado</div>
+                <div class="user-info-role">Cobrador</div>
+            </div>
+        </div>
+        <div class="app-header-actions">
+            <button class="btn btn-outline-primary" onclick="cerrarSesion()">
+                <i class="ti ti-logout"></i>
+                <span>Salir</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="app-content">
+        
+        <!-- 1. RUTA DEL DÍA - Clientes de hoy con pago expandible -->
+        <section class="app-section active" id="section-ruta">
+            <div class="stats-grid">
+                <div class="stat-card success">
+                    <i class="ti ti-checks"></i>
+                    <div class="stat-card-value" id="statPagados">0</div>
+                    <div class="stat-card-label">Pagados</div>
+                </div>
+                <div class="stat-card warning">
+                    <i class="ti ti-clock"></i>
+                    <div class="stat-card-value" id="statPendientes">0</div>
+                    <div class="stat-card-label">Pendientes</div>
+                </div>
+                <div class="stat-card danger">
+                    <i class="ti ti-alert-triangle"></i>
+                    <div class="stat-card-value" id="statMora">0</div>
+                    <div class="stat-card-label">En Mora</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 fw-semibold"><i class="ti ti-route"></i> Clientes de Hoy</h5>
+                </div>
+                <div class="card-body">
+                    <div id="rutaClientesList">
+                        <!-- Lista dinámica con sección de pago expandible -->
+                        <div class="text-center py-4">
+                            <i class="ti ti-calendar-check" style="font-size: 2rem; color: #B3B3B3;"></i>
+                            <p class="text-muted mt-2">No hay cobros programados para hoy</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. PRÉSTAMOS - Crear nuevo préstamo -->
+        <section class="app-section" id="section-prestamos">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 fw-semibold"><i class="ti ti-coin"></i> Crear Préstamo</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-container">
+                        <form id="prestamoForm">
+                            <div class="mb-3">
+                                <label class="form-label required-field">Cliente</label>
+                                <select class="form-select" id="clienteSelect" name="clienteId" required>
+                                    <option value="">Seleccione un cliente...</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label required-field">Monto del Préstamo</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="montoPrestamo" name="monto" step="0.01" min="1" placeholder="0.00" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label required-field">Plazo (días)</label>
+                                <input type="number" class="form-control" id="diasPlazo" name="plazo" min="1" placeholder="Ej: 30" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label required-field">Fecha Inicio</label>
+                                <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label required-field">Frecuencia de Pago</label>
+                                <select class="form-select" id="frecuenciaPago" name="frecuencia" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="diario">Diario</option>
+                                    <option value="semanal">Semanal</option>
+                                    <option value="quincenal">Quincenal</option>
+                                    <option value="mensual">Mensual</option>
+                                </select>
+                            </div>
+
+                            <!-- Simulación automática del préstamo -->
+                            <div class="info-box" id="simulacionBox" style="display: none;">
+                                <h6 style="margin-bottom: 0.75rem; font-weight: 700;">
+                                    <i class="ti ti-calculator"></i> Resumen del Préstamo
+                                </h6>
+                                <div class="info-box-row">
+                                    <span class="info-box-label">Monto Prestado:</span>
+                                    <span class="info-box-value" id="simMontoPrestado">$0.00</span>
+                                </div>
+                                <div class="info-box-row">
+                                    <span class="info-box-label">Interés (<span id="simTasaInteres">0</span>%):</span>
+                                    <span class="info-box-value" id="simInteres">$0.00</span>
+                                </div>
+                                <div class="info-box-row">
+                                    <span class="info-box-label">Total a Pagar:</span>
+                                    <span class="info-box-value" id="simTotalPagar">$0.00</span>
+                                </div>
+                                <div class="info-box-row">
+                                    <span class="info-box-label">Cuota por Período:</span>
+                                    <span class="info-box-value" id="simCuota">$0.00</span>
+                                </div>
+                                <div class="info-box-row">
+                                    <span class="info-box-label">Número de Cuotas:</span>
+                                    <span class="info-box-value" id="simNumCuotas">0</span>
+                                </div>
+                                <div class="info-box-row">
+                                    <span class="info-box-label">Fecha Final:</span>
+                                    <span class="info-box-value" id="simFechaFinal">--/--/----</span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2 mt-3">
+                                <button type="button" class="btn btn-secondary flex-fill" onclick="limpiarFormularioPrestamo()">
+                                    <i class="ti ti-x"></i> Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-success flex-fill" id="btnGuardarPrestamo">
+                                    <i class="ti ti-check"></i> Registrar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de préstamos activos -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 fw-semibold"><i class="ti ti-list"></i> Préstamos Activos</h5>
+                </div>
+                <div class="card-body">
+                    <div id="prestamosActivosList">
+                        <div class="text-center py-4">
+                            <i class="ti ti-file-invoice" style="font-size: 2rem; color: #B3B3B3;"></i>
+                            <p class="text-muted mt-2">No hay préstamos activos</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. RESUMEN DEL DÍA - Estadísticas y totales -->
+        <section class="app-section" id="section-resumen">
+            <div class="alert alert-info mb-3">
+                <i class="ti ti-calendar"></i> <strong id="fechaHoy"></strong>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card success">
+                    <i class="ti ti-currency-dollar"></i>
+                    <div class="stat-card-value" id="totalCobrado">$0.00</div>
+                    <div class="stat-card-label">Total Cobrado</div>
+                </div>
+                <div class="stat-card warning">
+                    <i class="ti ti-hourglass"></i>
+                    <div class="stat-card-value" id="totalPendiente">$0.00</div>
+                    <div class="stat-card-label">Total Pendiente</div>
+                </div>
+                <div class="stat-card primary">
+                    <i class="ti ti-users"></i>
+                    <div class="stat-card-value" id="clientesVisitados">0</div>
+                    <div class="stat-card-label">Clientes Visitados</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 fw-semibold"><i class="ti ti-chart-line"></i> Desglose de Cobros</h5>
+                </div>
+                <div class="card-body">
+                    <div id="desgloseCobrosList">
+                        <div class="text-center py-4">
+                            <i class="ti ti-receipt" style="font-size: 2rem; color: #B3B3B3;"></i>
+                            <p class="text-muted mt-2">No hay cobros registrados hoy</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary" onclick="generarReporte()">
+                    <i class="ti ti-file-pdf"></i> Generar Reporte PDF
+                </button>
+            </div>
+        </section>
+
+        <!-- 4. CLIENTES - Registro y listado -->
+        <section class="app-section" id="section-clientes">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 fw-semibold"><i class="ti ti-user-plus"></i> Registrar Cliente</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-container">
+                        <form id="clienteForm">
+                            <div class="mb-3">
+                                <label class="form-label required-field">Nombre Completo</label>
+                                <input type="text" class="form-control" name="nombre" placeholder="Ej: Carlos Martínez" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label required-field">Cédula</label>
+                                <input type="text" class="form-control" name="cedula" placeholder="Ej: 1234567890" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label required-field">Teléfono</label>
+                                <input type="tel" class="form-control" name="telefono" placeholder="Ej: 3001234567" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label required-field">Dirección</label>
+                                <textarea class="form-control" name="direccion" rows="2" placeholder="Ej: Calle 10 #20-30" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Ciudad</label>
+                                <input type="text" class="form-control" name="ciudad" placeholder="Ej: Bogotá">
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="reset" class="btn btn-secondary flex-fill">
+                                    <i class="ti ti-refresh"></i> Limpiar
+                                </button>
+                                <button type="submit" class="btn btn-success flex-fill" id="btnGuardarCliente">
+                                    <i class="ti ti-device-floppy"></i> Guardar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-semibold"><i class="ti ti-users"></i> Todos los Clientes</h5>
+                    <span class="badge bg-primary" id="totalClientesBadge">0</span>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="buscarCliente" placeholder="Buscar por nombre, cédula o teléfono...">
+                    </div>
+
+                    <div class="btn-group w-100 mb-3" role="group">
+                        <button type="button" class="btn btn-outline-primary active" onclick="filtrarClientes('todos')">
+                            <i class="ti ti-list"></i> Todos
+                        </button>
+                        <button type="button" class="btn btn-outline-success" onclick="filtrarClientes('al-dia')">
+                            <i class="ti ti-check"></i> Al Día
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" onclick="filtrarClientes('mora')">
+                            <i class="ti ti-alert-circle"></i> Mora
+                        </button>
+                    </div>
+
+                    <div id="todosClientesList">
+                        <div class="text-center py-4">
+                            <i class="ti ti-users" style="font-size: 2rem; color: #B3B3B3;"></i>
+                            <p class="text-muted mt-2">No hay clientes registrados</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-bottom border-top">
+        <div class="container-fluid">
+            <div class="d-flex w-100 justify-content-around">
+                <button class="btn btn-link app-nav-item active" onclick="cambiarSeccion('ruta', this)" style="text-decoration: none;">
+                    <i class="ti ti-route"></i>
+                    <div style="font-size: 0.75rem;">Ruta</div>
+                </button>
+                <button class="btn btn-link app-nav-item" onclick="cambiarSeccion('prestamos', this)" style="text-decoration: none;">
+                    <i class="ti ti-coin"></i>
+                    <div style="font-size: 0.75rem;">Préstamos</div>
+                </button>
+                <button class="btn btn-link app-nav-item" onclick="cambiarSeccion('resumen', this)" style="text-decoration: none;">
+                    <i class="ti ti-chart-bar"></i>
+                    <div style="font-size: 0.75rem;">Resumen</div>
+                </button>
+                <button class="btn btn-link app-nav-item" onclick="cambiarSeccion('clientes', this)" style="text-decoration: none;">
+                    <i class="ti ti-users"></i>
+                    <div style="font-size: 0.75rem;">Clientes</div>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Modal de Confirmación -->
+    <div class="modal fade" id="modalConfirmarEliminar" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="ti ti-alert-triangle"></i> Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="ti ti-trash fs-1 text-danger mb-3"></i>
+                    <p class="mb-0 fs-5">¿Estás seguro de eliminar este cliente?</p>
+                    <p class="text-muted small">Esta acción no se puede deshacer</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="ti ti-x"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarEliminar">
+                        <i class="ti ti-trash"></i> Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Modal Fullscreen de Registro de Pago -->
+    <div class="modal fade" id="modalRegistroPago" tabindex="-1">
+        <div class="modal-dialog modal-lg pago-modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white sticky-top">
+                    <h5 class="modal-title"><i class="ti ti-coin"></i> Registrar Pago</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formRegistroPago">
+                        <!-- Información del cliente -->
+                        <div class="alert alert-info mb-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <strong>Cliente:</strong>
+                                <span id="pagoNombreCliente" class="fw-bold">-</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <strong>Cuota Diaria:</strong>
+                                <span id="pagoCuotaDiaria" class="fw-bold">$</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <strong>Pendiente:</strong>
+                                <span id="pagoPendiente" class="fw-bold text-danger">$</span>
+                            </div>
+                        </div>
+
+                        <!-- Tipo de Pago - Botones grandes táctiles -->
+                        <div class="mb-4">
+                            <label class="form-label required-field fw-semibold mb-3">Tipo de Pago</label>
+                            <div class="d-grid gap-2">
+                                <input type="radio" class="btn-check" name="tipoPago" id="tipoPagoTotal" value="total">
+                                <label class="btn btn-outline-primary text-start pago-btn" for="tipoPagoTotal">
+                                    <i class="ti ti-cash-banknote me-2"></i>
+                                    <div>
+                                        <div class="fw-semibold">Pago Total</div>
+                                        <small class="text-muted">Liquida todo el préstamo</small>
+                                    </div>
+                                </label>
+
+                                <input type="radio" class="btn-check" name="tipoPago" id="tipoPagoCompleto" value="completo" checked>
+                                <label class="btn btn-outline-success text-start pago-btn" for="tipoPagoCompleto">
+                                    <i class="ti ti-checks me-2"></i>
+                                    <div>
+                                        <div class="fw-semibold">Pago de Cuota</div>
+                                        <small class="text-muted">Paga la cuota correspondiente al dia</small>
+                                    </div>
+                                </label>
+
+                                <input type="radio" class="btn-check" name="tipoPago" id="tipoPagoParcial" value="parcial">
+                                <label class="btn btn-outline-warning text-start pago-btn" for="tipoPagoParcial">
+                                    <i class="ti ti-coin me-2"></i>
+                                    <div>
+                                        <div class="fw-semibold">Abono Parcial</div>
+                                        <small class="text-muted">Parte de la cuota correspondiente al dia</small>
+                                    </div>
+                                </label>
+
+                                <input type="radio" class="btn-check" name="tipoPago" id="tipoPagoNoPago" value="nopago">
+                                <label class="btn btn-outline-danger text-start pago-btn" for="tipoPagoNoPago">
+                                    <i class="ti ti-calendar-pause me-2"></i>
+                                    <div>
+                                        <div class="fw-semibold">No Pago / Aplazado</div>
+                                        <small class="text-muted">No pudo pagar hoy</small>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Campos de Pago (visibles para completo y parcial) -->
+                        <div id="camposPago">
+                            <div class="mb-3">
+                                <label class="form-label required-field">Monto del Pago</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="pagoMonto" step="0.01" min="0.01" placeholder="0.00" inputmode="decimal">
+                                </div>
+                                <small class="text-muted">Máximo: <span id="pagoMontoMaximo" class="fw-bold">$0.00</span></small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label required-field">Método de Pago</label>
+                                <select class="form-select" id="pagoMetodo">
+                                    <option value="">Seleccione método...</option>
+                                    <option value="efectivo">Efectivo</option>
+                                    <option value="transferencia">Transferencia</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Nota -->
+                        <div class="mb-4">
+                            <label class="form-label" id="labelNota">Nota (Opcional)</label>
+                            <textarea class="form-control" id="pagoNota" rows="3" placeholder="Ej: Pago parcial, cliente promete el resto mañana..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer sticky-bottom bg-white border-top">
+                    <button type="button" class="btn btn-secondary flex-grow-1 pago-footer-btn" data-bs-dismiss="modal">
+                        <i class="ti ti-x"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary flex-grow-1 pago-footer-btn" id="btnGuardarPago">
+                        <i class="ti ti-device-floppy"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999">
+        <div id="toastNotificacion" class="toast" role="alert">
+            <div class="toast-header" id="toastHeader">
+                <i class="ti ti-checks me-2" id="toastIcon"></i>
+                <strong class="me-auto" id="toastTitle">Notificación</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toastBody">
+                Mensaje
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-3gJwYp8pIvS8i+DdS9Zr6G5HxZ0G6M7D9v5ZGz0GqLk=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="../assets/js/sidebarmenu.js"></script>
+    <script src="../assets/js/app.min.js"></script>
+    <script src="../assets/js/Rol2_trabajador.js"></script>
+</body>
+</html>

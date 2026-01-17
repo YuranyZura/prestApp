@@ -22,7 +22,17 @@ document.addEventListener("DOMContentLoaded", () => {
       toastEl = document.getElementById("toastLoginExito");
       const toast = new bootstrap.Toast(toastEl);
       toastEl.addEventListener("hidden.bs.toast", () => {
-        window.location.href = "./dashboard";
+        try {
+          const role = sessionStorage.getItem("user_role");
+          // Redirigir trabajadores (rol string 'trabajador' o número '2') a la vista de trabajadores
+          if (role === "trabajador" ) {
+            window.location.href = "./Rol2_trabajador.html";
+          } else{
+            window.location.href = "./dashboard";
+          }
+        } catch (e) {
+          window.location.href = "./dashboard";
+        }
       });
       toast.show();
 
@@ -65,14 +75,24 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await fetch("http://localhost:3000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ correo, contrasena })
+        body: JSON.stringify({ correo, contrasena }),
+        credentials: "include" 
       });
 
       const result = await response.json();
       console.log("Respuesta del login:", result);
 
       if (result.success) {
-        mostrarToast("Inicio de sesión exitoso.", "exito");
+          // Guardar rol del usuario para decidir la redirección
+          try {
+            if (result.user && result.user.rol !== undefined) {
+              sessionStorage.setItem("user_role", String(result.user.rol));
+            }
+          } catch (e) {
+            console.warn("No se pudo guardar el rol en sessionStorage:", e);
+          }
+
+          mostrarToast("Inicio de sesión exitoso.", "exito");
       } else {
         if (result.message.includes("no está verificada")) {
           // Guardar correo para verificación

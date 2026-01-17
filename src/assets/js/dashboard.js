@@ -209,3 +209,57 @@ $(function () {
   };
   new ApexCharts(document.querySelector("#earning"), earning).render();
 })
+
+
+
+// ====== Función de cerrar sesión ======
+async function cerrarSesion() {
+  try {
+    const res = await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "include"  
+    });
+
+    const data = await res.json();
+    console.log("Logout:", data);
+
+    // Redirigir al login después de cerrar sesión
+    window.location.href = "/login";
+  } catch (err) {
+    console.error("Error cerrando sesión:", err);
+  }
+}
+
+// ====== Manejo de botón ======
+document.addEventListener("DOMContentLoaded", () => {
+  const btnCerrar = document.getElementById("btnCerrarSesion");
+  if (btnCerrar) {
+    btnCerrar.addEventListener("click", cerrarSesion);
+  }
+
+  // Verificar sesión al cargar
+  checkSession();
+});
+
+// ====== Evitar volver con el botón atrás ======
+window.addEventListener("pageshow", function (event) {
+  if (event.persisted) {
+    window.location.reload();
+  }
+});
+
+// ====== Verificar sesión ======
+async function checkSession() {
+  try {
+    const res = await fetch("/api/auth/check", {
+      credentials: "include"
+    });
+
+    if (!res.ok) {
+      window.location.href = "/login";
+    }
+  } catch (err) {
+    window.location.href = "/login";
+  }
+}
+
