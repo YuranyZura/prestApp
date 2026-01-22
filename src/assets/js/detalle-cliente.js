@@ -44,6 +44,8 @@ document.addEventListener("DOMContentLoaded", function() {
     cargarDetalleCliente();
     // También cargar el resumen de cuotas/agregados
     cargarResumenCuotas();
+    // Cargar historial de cuotas
+    cargarHistorialCuotas();
   } else {
     console.error("ID de cliente no especificado");
     mostrarError("No se especificó el cliente a consultar.");
@@ -559,3 +561,176 @@ function inicializarMapa(lat, lng, direccion) {
         mostrarNotificacion("Error al eliminar cliente: " + error.message, "danger");
       }
     }
+
+    
+// ============================================
+// HISTORIAL DE CUOTAS
+// ============================================
+
+// Cargar historial de cuotas del cliente
+async function cargarHistorialCuotas() {
+  try {
+    const response = await fetch(`http://localhost:3000/api/pagos/cliente/${clienteId}`, {
+      method: "GET",
+      credentials: "include"
+    });
+
+    if (!response.ok) {
+      throw new Error("No se pudo obtener el historial de cuotas");
+    }
+
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(data.message || "Error al cargar historial");
+    }
+
+    const cuotas = data.cuotas || [];
+    const tbody = document.getElementById("tablaCuotas");
+    
+    if (cuotas.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" class="text-center py-4">
+            <p class="text-muted mb-0">
+              <i class="ti ti-inbox"></i> No hay cuotas registradas
+            </p>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = cuotas.map((cuota, index) => {
+      const fecha = new Date(cuota.fecha_pago);
+      const fechaFormateada = fecha.toLocaleDateString('es-CO', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+
+      const estadoBadge = cuota.estado_prestamos === 'activo' 
+        ? '<span class="badge bg-success">Activo</span>'
+        : cuota.estado_prestamos === 'completado'
+        ? '<span class="badge bg-primary">Completado</span>'
+        : '<span class="badge bg-warning">Mora</span>';
+
+      const metodoPago = cuota.metodo_pago || 'Efectivo';
+      const metodoBadge = metodoPago === 'Efectivo' 
+        ? '<span class="badge bg-info">Efectivo</span>'
+        : metodoPago === 'Transferencia'
+        ? '<span class="badge bg-primary">Transferencia</span>'
+        : `<span class="badge bg-secondary">${metodoPago}</span>`;
+
+      return `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${fechaFormateada}</td>
+          <td class="fw-semibold">$${parseFloat(cuota.monto_pagos).toLocaleString('es-CO', {minimumFractionDigits: 2})}</td>
+          <td>${metodoBadge}</td>
+           <td>${estadoBadge}</td>
+        </tr>
+      `;
+    }).join('');
+
+  } catch (error) {
+    console.error("Error al cargar historial de cuotas:", error);
+    mostrarNotificacion("No se pudo cargar el historial de cuotas", "warning");
+  }
+}
+
+// Enviar historial por correo
+async function enviarHistorialCorreo() {
+  try {
+    mostrarNotificacion("Preparando correo con el historial...", "info");
+    
+    const response = await fetch(`http://localhost:3000/api/pagos/cliente/${clienteId}`, {
+      method: "GET",
+      credentials: "include"
+    });
+
+    if (!response.ok) {
+      throw new Error("No se pudo obtener el historial");
+    }
+
+    const data = await response.json();
+    const cuotas = data.cuotas || [];
+
+    if (cuotas.length === 0) {
+      mostrarNotificacion("No hay cuotas para enviar", "warning");
+      return;
+    }
+
+    // Aquí se implementaría el envío por correo
+    // Por ahora, solo mostramos un mensaje
+    mostrarNotificacion("Funcionalidad de correo en desarrollo", "info");
+
+  } catch (error) {
+    console.error("Error al enviar por correo:", error);
+    mostrarNotificacion("Error al preparar el correo", "danger");
+  }
+}
+
+// Enviar historial por WhatsApp
+async function enviarHistorialWhatsApp() {
+  try {
+    const response = await fetch(`http://localhost:3000/api/clientes/${clienteId}`, {
+      method: "GET",
+      credentials: "include"
+    });
+
+    if (!response.ok) {
+      throw new Error("No se pudo obtener la información del cliente");
+    }
+
+    const clienteData = await response.json();
+    const cliente = clienteData.cliente;
+    
+    if (!cliente.telefono) {
+      mostrarNotificacion("Este cliente no tiene número de teléfono registrado", "warning");
+      return;
+    }
+
+    // Obtener historial de cuotas
+    const responseCuotas = await fetch(`http://localhost:3000/api/pagos/cliente/${clienteId}`, {
+      method: "GET",
+      credentials: "include"
+    });
+
+    const dataCuotas = await responseCuotas.json();
+    const cuotas = dataCuotas.cuotas || [];
+
+    if (cuotas.length === 0) {
+      mostrarNotificacion("No hay cuotas para enviar", "warning");
+      return;
+    }
+
+    // Generar mensaje con el historial
+    let mensaje = `*Historial de Cuotas*\n\n`;
+    mensaje += `Cliente: ${cliente.nombreCompleto || cliente.nombre}\n`;
+    mensaje += `Cédula: ${cliente.cedula}\n\n`;
+    mensaje += `*Cuotas Pagadas:*\n`;
+    
+    let total = 0;
+    cuotas.forEach((cuota, index) => {
+      const fecha = new Date(cuota.fecha_pago).toLocaleDateString('es-CO');
+      const monto = parseFloat(cuota.monto_pagos);
+      total += monto;
+      mensaje += `${index + 1}. ${fecha} - $${monto.toLocaleString('es-CO')}\n`;
+    });
+
+    mensaje += `\n*Total Pagado:* $${total.toLocaleString('es-CO')}`;
+
+    // Limpiar el teléfono y construir URL de WhatsApp
+    const telefono = cliente.telefono.replace(/\D/g, '');
+    const url = `https://wa.me/57${telefono}?text=${encodeURIComponent(mensaje)}`;
+
+    // Abrir WhatsApp
+    window.open(url, '_blank');
+    mostrarNotificacion("Abriendo WhatsApp...", "success");
+
+  } catch (error) {
+    console.error("Error al enviar por WhatsApp:", error);
+    mostrarNotificacion("Error al preparar el mensaje de WhatsApp", "danger");
+  }
+}

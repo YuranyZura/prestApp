@@ -19,6 +19,8 @@ import trabajadoresRoutes from "./router/trabajadores.js";
 import authRouter from "./router/auth.js";
 import cobradorRoutes from "./router/rol2_cobrador.js";
 import clientesRoutes from "./router/clientes.js";
+import administradoresRoutes from "./router/administradores.js";
+import pagosRoutes from "./router/pagos.js";
 const app = express();
 
 
@@ -90,23 +92,15 @@ const pool = mysql.createPool({
   database: "prestapp"
 });
 
-// ⭐ RUTAS API PRIMERO (ANTES DE ARCHIVOS ESTÁTICOS)
+// RUTAS API PRIMERO (ANTES DE ARCHIVOS ESTÁTICOS)
 app.use("/api/trabajadores", trabajadoresRoutes);
 app.use("/api/auth", authRouter);
 app.use("/api/cobrador", cobradorRoutes);
 app.use("/api/clientes", verificarSesion, clientesRoutes);
+app.use("/api/administradores", verificarSesion, administradoresRoutes);
+app.use("/api/pagos", verificarSesion, pagosRoutes);
 
-// LUEGO servir archivos estáticos
-app.use(express.static(path.join(__dirname, "../src")));
-
-// Iniciar servidor
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
-});
-
-
-// Rutas de frontend
+// Rutas de frontend (páginas HTML específicas)
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../src/html/register.html"));
 });
@@ -119,23 +113,19 @@ app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "../src/html/login.html"));
 });
 
-
 app.get("/index.html", (req, res) => {
   res.sendFile(path.join(__dirname, "../src/html/index.html"));
 });
-
 
 app.get("/dashboard", (req, res) => {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
   res.sendFile(path.join(__dirname, "../src/html/index.html"));
 });
 
-// Ruta para trabajadores
 app.get("/trabajadores.html", (req, res) => {
   res.sendFile(path.join(__dirname, "../src/html/trabajadores.html"));
 });
 
-// Ruta para detalle de trabajador
 app.get("/detalle-trabajador.html", (req, res) => {
   res.sendFile(path.join(__dirname, "../src/html/detalle-trabajador.html"));
 });
@@ -144,22 +134,21 @@ app.get("/Rol2_trabajador.html", (req, res) => {
   res.sendFile(path.join(__dirname, "../src/html/Rol2_trabajador.html"));
 });
 
-// Ruta para detalle de cliente
 app.get("/detalle-cliente.html", (req, res) => {
   res.sendFile(path.join(__dirname, "../src/html/detalle-cliente.html"));
 });
 
-// Rutas API
-app.use("/api/trabajadores", trabajadoresRoutes);
-app.use("/api/auth", authRouter);
-app.use("/api/cobrador", cobradorRoutes);
-app.use("/api/clientes", verificarSesion, clientesRoutes);
-
-
-app.use((req, res, next) => {
-  res.setHeader("Cache-Control", "no-store");
-  next();
+app.get("/administradores.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "../src/html/administradores.html"));
 });
 
+// LUEGO servir archivos estáticos (CSS, JS, imágenes)
+app.use(express.static(path.join(__dirname, "../src")));
+
+// Iniciar servidor
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor escuchando en http://localhost:${PORT}`);
+});
 
 export { pool, uploadsDir };

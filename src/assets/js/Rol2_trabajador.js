@@ -708,7 +708,8 @@
         }
 
         function generarReporte() {
-            alert('Función de generación de reporte en desarrollo. Debería abrir un modal o descargar un archivo.');
+            // Ya está implementada en resumenTrabajador.js como imprimirResumen()
+            imprimirResumen();
         }
 
         // Inicialización al cargar la página

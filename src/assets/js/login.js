@@ -24,10 +24,12 @@ document.addEventListener("DOMContentLoaded", () => {
       toastEl.addEventListener("hidden.bs.toast", () => {
         try {
           const role = sessionStorage.getItem("user_role");
-          // Redirigir trabajadores (rol string 'trabajador' o número '2') a la vista de trabajadores
-          if (role === "trabajador" ) {
+          // Redirigir según el rol del usuario
+          if (role === "trabajador") {
             window.location.href = "./Rol2_trabajador.html";
-          } else{
+          } else if (role === "administrador") {
+            window.location.href = "./administradores.html";
+          } else {
             window.location.href = "./dashboard";
           }
         } catch (e) {

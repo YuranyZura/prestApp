@@ -174,10 +174,18 @@
             </div>
         </section>
 
+
         <!-- 3. RESUMEN DEL DÍA - Estadísticas y totales -->
         <section class="app-section" id="section-resumen">
-            <div class="alert alert-info mb-3">
-                <i class="ti ti-calendar"></i> <strong id="fechaHoy"></strong>
+            <div class="row align-items-center g-2 mb-3">
+                <div class="col-9">
+                    <input type="date" class="form-control form-control-sm" id="filtroFecha">
+                </div>
+                <div class="col-3">
+                    <button class="btn btn-sm btn-primary w-100" onclick="cargarResumenPorFecha()">
+                        <i class="ti ti-search"></i> Ver
+                    </button>
+                </div>
             </div>
 
             <div class="stats-grid">
@@ -213,8 +221,8 @@
             </div>
 
             <div class="d-grid gap-2">
-                <button class="btn btn-primary" onclick="generarReporte()">
-                    <i class="ti ti-file-pdf"></i> Generar Reporte PDF
+                <button class="btn btn-outline-primary" onclick="imprimirResumen()">
+                    <i class="ti ti-printer"></i> Imprimir
                 </button>
             </div>
         </section>
@@ -473,6 +481,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="../assets/js/sidebarmenu.js"></script>
     <script src="../assets/js/app.min.js"></script>
+    <script src="../assets/js/resumenTrabajador.js"></script>
     <script src="../assets/js/Rol2_trabajador.js"></script>
 </body>
 </html>

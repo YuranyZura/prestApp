@@ -96,7 +96,6 @@ router.post("/", async (req, res) => {
       });
     }
 
-    // Intentar geocodificar dirección con Nominatim
     let latitud = null;
     let longitud = null;
     try {
@@ -118,6 +117,7 @@ router.post("/", async (req, res) => {
     } catch (geoErr) {
       console.warn("Geocoding Nominatim falló, continuo sin coordenadas:", geoErr);
     }
+
 
     // Insertar cliente (incluye latitud/longitud si disponibles)
     const [resultado] = await pool.query(
@@ -178,6 +178,7 @@ router.get("/", async (req, res) => {
     res.status(500).json({ success: false, message: "Error del servidor" });
   }
 });
+
 
 
 
@@ -428,6 +429,7 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ success: false, message: "Error del servidor" });
   }
 });
+
 
 
 // resumen de cuotas de un cliente

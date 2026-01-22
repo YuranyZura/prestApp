@@ -6,13 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PrestApp - Administradores</title>
   <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
-  
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="../assets/css/styles.min.css" />
-  
   <!-- Sistema de Diseño Global -->
   <link rel="stylesheet" href="../assets/css/variables.css" />
-  
   <!-- Tabler Icons -->
   <link rel="stylesheet" href="../assets/css/icons/tabler-icons/tabler-icons.css" />
 </head>
@@ -33,43 +30,46 @@
           </div>
         </div>
         
-        <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
-          <ul id="sidebarnav">
-            <li class="nav-small-cap">
-              <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-              <span class="hide-menu">Incio</span>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./index.html" aria-expanded="false">
-                <span><i class="ti ti-layout-dashboard"></i></span>
-                <span class="hide-menu">Dashboard</span>
-              </a>
-            </li>
+        <nav class="sidebar-nav scroll-sidebar">
+          <ul id="sidebarnav" class="nav flex-column nav-tabs">
             <li class="nav-small-cap">
               <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
               <span class="hide-menu">ADMINISTRACIÓN</span>
             </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link active" href="./administradores.html" aria-expanded="false">
-                <span><i class="ti ti-crown"></i></span>
-                <span class="hide-menu">Panel Admin</span>
+
+            <li class="sidebar-item ">
+              <a class="sidebar-link active"  data-bs-toggle="tab" data-bs-target="#pagos" role="tab" aria-controls="pagos">
+                <span><i class="ti ti-credit-card"></i></span>
+                <span class="hide-menu">Historial de Pagos</span>
               </a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link" href="./trabajadores.html" aria-expanded="false">
-                <span><i class="ti ti-users"></i></span>
-                <span class="hide-menu">Trabajadores</span>
+              <a class="sidebar-link"  data-bs-toggle="tab" data-bs-target="#suscripciones" role="tab" aria-controls="suscripciones">
+                <span><i class="ti ti-receipt"></i></span>
+                <span class="hide-menu">Suscripciones y Planes</span>
               </a>
             </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" data-bs-toggle="tab" data-bs-target="#empresas" role="tab" aria-controls="empresas">
+                <span><i class="ti ti-building"></i></span>
+                <span class="hide-menu">Registro de Empresas</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" data-bs-toggle="tab" data-bs-target="#usuarios" role="tab" aria-controls="usuarios">
+                <span><i class="ti ti-key"></i></span>
+                <span class="hide-menu">Usuarios y Credenciales</span>
+              </a>
+            </li>
+            
           </ul>
         </nav>
       </div>
     </aside>
-    <!-- Sidebar End -->
 
     <!-- Main wrapper -->
     <div class="body-wrapper">
-      <!-- Header Start -->
+     <!-- ====== HEDER===== -->
       <header class="app-header">
         <nav class="navbar navbar-expand-lg navbar-light">
           <ul class="navbar-nav">
@@ -119,37 +119,7 @@
           </div>
         </div>
 
-        <!-- Navigation Tabs -->
-        <div class="card mb-4">
-          <div class="card-body">
-            <ul class="nav nav-tabs" id="adminTabs" role="tablist">
-              <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="pagos-tab" data-bs-toggle="tab" data-bs-target="#pagos" 
-                  type="button" role="tab" aria-controls="pagos" aria-selected="true">
-                  <i class="ti ti-credit-card me-2"></i> Historial de Pagos
-                </button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button class="nav-link" id="suscripciones-tab" data-bs-toggle="tab" data-bs-target="#suscripciones" 
-                  type="button" role="tab" aria-controls="suscripciones" aria-selected="false">
-                  <i class="ti ti-receipt me-2"></i> Suscripciones y Planes
-                </button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button class="nav-link" id="empresas-tab" data-bs-toggle="tab" data-bs-target="#empresas" 
-                  type="button" role="tab" aria-controls="empresas" aria-selected="false">
-                  <i class="ti ti-building me-2"></i> Registro de Empresas
-                </button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button class="nav-link" id="usuarios-tab" data-bs-toggle="tab" data-bs-target="#usuarios" 
-                  type="button" role="tab" aria-controls="usuarios" aria-selected="false">
-                  <i class="ti ti-key me-2"></i> Usuarios y Credenciales
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div>
+
 
         <!-- Tab Content -->
         <div class="tab-content" id="adminTabContent">
@@ -166,7 +136,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                           <div>
                             <h6 class="text-muted mb-1">Total Recaudado</h6>
-                            <h4 class="fw-bold mb-0" style="color: var(--primary-color);">$45,320.00</h4>
+                            <h4 class="fw-bold mb-0" style="color: var(--primary-color);">0</h4>
                           </div>
                           <div class="text-primary fs-1">
                             <i class="ti ti-cash"></i>
@@ -181,7 +151,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                           <div>
                             <h6 class="text-muted mb-1">Pagos Este Mes</h6>
-                            <h4 class="fw-bold mb-0" style="color: var(--success-color);">$8,950.00</h4>
+                            <h4 class="fw-bold mb-0" style="color: var(--success-color);">0</h4>
                           </div>
                           <div class="text-success fs-1">
                             <i class="ti ti-trending-up"></i>
@@ -196,7 +166,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                           <div>
                             <h6 class="text-muted mb-1">Pendientes</h6>
-                            <h4 class="fw-bold mb-0" style="color: var(--warning-color);">$2,450.00</h4>
+                            <h4 class="fw-bold mb-0" style="color: var(--warning-color);">0</h4>
                           </div>
                           <div class="text-warning fs-1">
                             <i class="ti ti-clock"></i>
@@ -211,7 +181,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                           <div>
                             <h6 class="text-muted mb-1">Total Clientes</h6>
-                            <h4 class="fw-bold mb-0" style="color: var(--info-color);">128</h4>
+                            <h4 class="fw-bold mb-0" style="color: var(--info-color);">0</h4>
                           </div>
                           <div class="text-info fs-1">
                             <i class="ti ti-users"></i>
@@ -282,6 +252,8 @@
             </div>
           </div>
 
+
+          
           <!-- ===== TAB 2: SUSCRIPCIONES Y PLANES ===== -->
           <div class="tab-pane fade" id="suscripciones" role="tabpanel" aria-labelledby="suscripciones-tab">
             <div class="row">
@@ -575,18 +547,11 @@
   </div>
 
   <!-- Bootstrap JavaScript Bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-  
-  <!-- Optional: Initialize tooltips if using Bootstrap tooltips -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Initialize tooltips
-      const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-      tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-      });
-    });
-  </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Script para manejar las tabs desde el sidebar -->
+  <script src="../assets/js/administradores.js"></script>
+ 
 </body>
 
 </html>

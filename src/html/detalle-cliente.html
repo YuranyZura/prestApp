@@ -232,6 +232,48 @@
                 </div>
               </div>
             </div>
+
+            <!-- Card: Historial de Cuotas -->
+            <div class="card mt-3">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                  <h5 class="card-title fw-semibold mb-0">
+                    <i class="ti ti-receipt"></i> Historial de Cuotas
+                  </h5>
+                  <div>
+                    <button class="btn btn-sm btn-outline-primary me-2" onclick="enviarHistorialCorreo()">
+                      <i class="ti ti-mail"></i> Enviar por Correo
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" onclick="enviarHistorialWhatsApp()">
+                      <i class="ti ti-brand-whatsapp"></i> Enviar por WhatsApp
+                    </button>
+                  </div>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="table table-hover mb-0">
+                    <thead style="background-color: #F5F7FA;">
+                      <tr>
+                        <th class="fw-semibold">#</th>
+                        <th class="fw-semibold">Fecha</th>
+                        <th class="fw-semibold">Monto</th>
+                        <th class="fw-semibold">Método</th>
+                        <th class="fw-semibold">Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tablaCuotas">
+                      <tr>
+                        <td colspan="5" class="text-center py-4">
+                          <p class="text-muted mb-0">
+                            <i class="ti ti-inbox"></i> No hay cuotas registradas
+                          </p>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Sidebar Derecho -->
