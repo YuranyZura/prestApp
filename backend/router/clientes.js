@@ -539,4 +539,27 @@ router.get("/:id/cuotas", async (req, res) => {
 });
 
 
+// ===ruta para mostrar los clientes que tien un trbjador en la vista del administrador
+router.get('/trabajador/:trabajadorId', async (req, res) => {
+  const { trabajadorId } = req.params;
+  try {
+    const [rows] = await pool.query(
+      `SELECT 
+        CONCAT(c.nombre, ' ', c.apellido) AS nombre_completo,
+        p.fecha_inicio AS fecha_prestamo,
+        p.total_pagar AS monto_prestado
+      FROM clientes c
+      INNER JOIN prestamos p
+        ON c.id_clientes = p.id_clientes
+      WHERE c.id_trabajador = ?`,
+      [trabajadorId]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al obtener clientes' });
+  }
+});
+
+
 export default router;

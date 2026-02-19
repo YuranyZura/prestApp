@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("ID Trabajador:", idTrabajador); // prueba que esté llegando
 });
 
-
 async function cargarDetalle() {
   const params = new URLSearchParams(window.location.search);
   const idTrabajador = params.get("id");
@@ -133,6 +132,8 @@ async function cargarDetalle() {
       if (usuarioInput) usuarioInput.value = trabajador.correo || '';
     }
 
+    await cargarClientesTrabajador(idTrabajador);
+
   } catch (error) {
     console.error("Error:", error);
     alert(error.message);
@@ -238,5 +239,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+// ======muestra los clientes asociados al trabajador========
+async function cargarClientesTrabajador(idTrabajador) {
+  const tbody = document.getElementById('clientesTrabajador');
+  try {
+    const res = await fetch(`http://localhost:3000/api/clientes/trabajador/${idTrabajador}`);
+    if (!res.ok) throw new Error('No hay clientes');
+    const clientes = await res.json();
+    tbody.innerHTML = '';
+    if (clientes.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="3">No hay clientes</td></tr>';
+      return;
+    }
+    clientes.forEach(c => {
+      const tr = document.createElement('tr');
+      // Formatear la fecha a solo yyyy-mm-dd
+      const fecha = c.fecha_prestamo ? new Date(c.fecha_prestamo).toLocaleDateString('es-ES') : '';
+      tr.innerHTML = `
+        <td>${c.nombre_completo}</td>
+        <td>${fecha}</td>
+        <td>$${Number(c.monto_prestado).toLocaleString()}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    tbody.innerHTML = '<tr><td colspan="3">Error al cargar clientes</td></tr>';
+  }
+}
 
 

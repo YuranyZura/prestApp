@@ -199,6 +199,8 @@
             toast.show();
         }
 
+
+
         // Variable para almacenar el cliente actual del pago y cuota diaria
         let clientePagoActual = null;
         let cuotaDiariaActual = 0;
@@ -290,7 +292,7 @@
             });
         }
 
-        // Handler para el botón de guardar pago
+        //  botón de guardar pago
         document.getElementById('btnGuardarPago')?.addEventListener('click', async function() {
             const tipoPago = document.querySelector('input[name="tipoPago"]:checked')?.value;
             const nota = document.getElementById('pagoNota').value.trim();
@@ -309,7 +311,6 @@
             let monto = 0;
             let metodo = '';
 
-            // Validaciones según el tipo de pago
             if (tipoPago === 'completo') {
                 monto = pendiente;
                 metodo = document.getElementById('pagoMetodo').value;
@@ -348,7 +349,7 @@
                 }
             }
 
-            // Deshabilitar botón mientras se procesa
+            // Deshabilitar boton mientras se procesa
             const btnGuardar = document.getElementById('btnGuardarPago');
             btnGuardar.disabled = true;
             btnGuardar.innerHTML = '<i class="ti ti-loader"></i> Guardando...';
@@ -424,7 +425,6 @@
 
                 if (response.ok && data.success && data.clientes) {
                     const clienteSelect = document.getElementById('clienteSelect');
-                    // Limpiar opciones previas si las hubiera, excepto la de "Seleccione..."
                     const options = clienteSelect.options;
                     for (let i = options.length - 1; i > 0; i--) {
                         options[i].remove();
@@ -459,7 +459,7 @@
             const fechaInicio = document.getElementById('fechaInicio').value;
 
             if (monto > 0 && dias > 0 && frecuencia && fechaInicio) {
-                const tasaInteres = 10; // Tasa de interés fija para simulación
+                const tasaInteres = 10; 
                 const interes = monto * (tasaInteres / 100);
                 const totalPagar = monto + interes;
                 
@@ -526,7 +526,7 @@
                         plazo,
                         fechaInicio,
                         frecuencia,
-                        interes: 10 // Tasa fija del 10%
+                        interes: 10 
                     })
                 });
 
@@ -610,7 +610,6 @@
 
         function verCliente(idCliente) {
             if (!idCliente) return;
-            // Navegar a la página de detalle del cliente
             window.location.href = `/detalle-cliente.html?id=${idCliente}`;
         }
 
@@ -650,6 +649,8 @@
             }
         });
 
+
+        // FUNCION AGREGAR CLIENTES
         document.getElementById('clienteForm')?.addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -692,39 +693,36 @@
             }
         });
 
+
+        
         function filtrarClientes(filtro, btnEl) {
             document.querySelectorAll('#section-clientes .btn-group button').forEach(btn => {
                 btn.classList.remove('active');
             });
             if (btnEl) btnEl.classList.add('active');
-            // Aquí implementarías la lógica para filtrar la lista de clientes en el DOM
             console.log("Filtro aplicado:", filtro);
         }
 
         function cerrarSesion() {
             if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
-                window.location.href = 'login.html'; // Redireccionar a la página de login
+                window.location.href = 'login.html'; 
             }
         }
 
         function generarReporte() {
-            // Ya está implementada en resumenTrabajador.js como imprimirResumen()
             imprimirResumen();
         }
 
         // Inicialización al cargar la página
         document.addEventListener('DOMContentLoaded', function() {
-            // Cargar la sección inicial (Ruta del Día)
             cambiarSeccion('ruta');
             
-            // Establecer la fecha de inicio por defecto para nuevos préstamos
             const hoy = new Date().toISOString().split('T')[0];
             if (document.getElementById('fechaInicio')) {
                 document.getElementById('fechaInicio').value = hoy;
-                calcularSimulacion(); // Calcular simulación inicial si el campo está presente
+                calcularSimulacion(); 
             }
 
-            // Generar iniciales del usuario en el avatar
             const nombreUsuario = document.getElementById('userName').textContent;
             const iniciales = nombreUsuario.split(' ').map(n => n.charAt(0)).join('').substring(0, 2).toUpperCase();
             document.getElementById('userAvatar').textContent = iniciales;

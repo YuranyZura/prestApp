@@ -1,0 +1,39 @@
+/* Responsive styles for Clientes del Trabajador table */
+@media (max-width: 768px) {
+  .clientes-table th, .clientes-table td {
+    font-size: 0.95rem;
+    padding: 0.5rem;
+  }
+  .clientes-table {
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .clientes-table th, .clientes-table td {
+    font-size: 0.85rem;
+    padding: 0.3rem;
+  }
+  .clientes-table {
+    min-width: 100%;
+  }
+}
+
+/* Card spacing for mobile */
+@media (max-width: 576px) {
+  .card {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Table border and highlight */
+.clientes-table th, .clientes-table td {
+  border: 1px solid var(--border-color);
+}
+.clientes-table th {
+  background: var(--gray-100);
+  color: var(--primary-color);
+}
+.clientes-table td {
+  background: var(--white);
+}

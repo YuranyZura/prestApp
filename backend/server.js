@@ -21,6 +21,7 @@ import cobradorRoutes from "./router/rol2_cobrador.js";
 import clientesRoutes from "./router/clientes.js";
 import administradoresRoutes from "./router/administradores.js";
 import pagosRoutes from "./router/pagos.js";
+import dashboardRouter from "./router/dashboard.js";
 const app = express();
 
 
@@ -99,6 +100,7 @@ app.use("/api/cobrador", cobradorRoutes);
 app.use("/api/clientes", verificarSesion, clientesRoutes);
 app.use("/api/administradores", verificarSesion, administradoresRoutes);
 app.use("/api/pagos", verificarSesion, pagosRoutes);
+app.use("/api/dashboard", verificarSesion, dashboardRouter);
 
 // Rutas de frontend (páginas HTML específicas)
 app.get("/", (req, res) => {

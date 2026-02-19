@@ -8,7 +8,6 @@ const router = Router();
 // perfil - Obtener datos del trabajador logueado
 router.get("/perfil", async (req, res) => {
   try {
-    // Verificar que hay sesión activa
     if (!req.session || !req.session.usuario) {
       return res.status(401).json({ 
         success: false, 
@@ -418,8 +417,6 @@ router.get("/estadisticas", async (req, res) => {
     if (!req.session || !req.session.usuario) {
       return res.status(401).json({ success: false, message: "No hay sesión activa" });
     }
-
-    // Placeholder - implementar con datos reales cuando tengas tabla de clientes/pagos
     res.json({
       success: true,
       estadisticas: {

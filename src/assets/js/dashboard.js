@@ -1,3 +1,27 @@
+
+// =============================
+// Estadísticas Dashboard
+async function cargarEstadisticasDashboard() {
+  try {
+    const res = await fetch("/api/dashboard/estadisticas", { credentials: "include" });
+    if (!res.ok) throw new Error("No se pudo obtener estadísticas");
+    const data = await res.json();
+    // Actualizar contadores
+    if (data.trabajadoresActivos !== undefined)
+      document.getElementById("trabajadoresActivos").textContent = data.trabajadoresActivos;
+    if (data.prestamosActivos !== undefined)
+      document.getElementById("prestamosActivos").textContent = data.prestamosActivos;
+    if (data.montoPrestado !== undefined)
+      document.getElementById("montoPrestado").textContent = "$" + Number(data.montoPrestado).toLocaleString();
+    if (data.recuperadoHoy !== undefined)
+      document.getElementById("recuperadoHoy").textContent = "$" + Number(data.recuperadoHoy).toLocaleString();
+  } catch (err) {
+    console.error("Error cargando estadísticas:", err);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", cargarEstadisticasDashboard);
+
 $(function () {
 
 
