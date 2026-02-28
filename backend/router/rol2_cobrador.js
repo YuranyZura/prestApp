@@ -32,6 +32,7 @@ router.get("/perfil", async (req, res) => {
     if (trabajadores.length > 0) {
       const t = trabajadores[0];
       perfil = {
+        id_trabajador: t.id_trabajador,
         cedula: t.cedula,
         nombre: t.nombre,
         apellido: t.apellido,
@@ -58,6 +59,7 @@ router.get("/perfil", async (req, res) => {
 
       const u = usuarios[0];
       perfil = {
+        id_trabajador: null,
         cedula: null,
         nombre: u.nombre,
         apellido: u.apellido,

@@ -25,6 +25,9 @@ async function cargarDetalle() {
     document.getElementById("correoDetalle").textContent = trabajador.correo;
     document.getElementById("direccionDetalle").textContent = trabajador.direccion;
 
+    // Llamar a la función para cargar los clientes asociados al trabajador
+    cargarClientesTrabajador(idTrabajador);
+
     // Si el trabajador ya está vinculado a un usuario, obtener info de usuario
     if (trabajador.id_usuario) {
       try {
@@ -91,37 +94,37 @@ async function cargarDetalle() {
 
           // Toggle acceso
           if (btnToggle) {
-                    btnToggle.addEventListener('click', async () => {
-                      const activar = user.verificado ? false : true;
-                      try {
-                        const res = await fetch('http://localhost:3000/api/auth/toggle-acceso', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ id_usuarios: trabajador.id_usuario, activo: activar })
-                        });
+            btnToggle.addEventListener('click', async () => {
+              const activar = user.verificado ? false : true;
+              try {
+                const res = await fetch('http://localhost:3000/api/auth/toggle-acceso', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ id_usuarios: trabajador.id_usuario, activo: activar })
+                });
 
-                        if (!res.ok) {
-                          let errMsg = 'Error cambiando estado';
-                          try {
-                            const errJson = await res.json();
-                            errMsg = errJson.message || errMsg;
-                          } catch (_) {
-                            errMsg = await res.text();
-                          }
-                          throw new Error(errMsg);
-                        }
+                if (!res.ok) {
+                  let errMsg = 'Error cambiando estado';
+                  try {
+                    const errJson = await res.json();
+                    errMsg = errJson.message || errMsg;
+                  } catch (_) {
+                    errMsg = await res.text();
+                  }
+                  throw new Error(errMsg);
+                }
 
-                        const data = await res.json();
-                        // Usar modal de notificación en lugar de alert
-                        showNotificationModal('Estado de acceso', data.message || 'Estado cambiado', () => {
-                          window.location.reload();
-                        });
-                      } catch (err) {
-                        console.error(err);
-                        // Mostrar error en modal también
-                        showNotificationModal('Error', err.message || 'Error al cambiar acceso');
-                      }
-                    });
+                const data = await res.json();
+                // Usar modal de notificación en lugar de alert
+                showNotificationModal('Estado de acceso', data.message || 'Estado cambiado', () => {
+                  window.location.reload();
+                });
+              } catch (err) {
+                console.error(err);
+                // Mostrar error en modal también
+                showNotificationModal('Error', err.message || 'Error al cambiar acceso');
+              }
+            });
           }
         }
       } catch (err) {
@@ -237,6 +240,34 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+
+
+// ======muestra los clientes asociados al trabajador========
+async function cargarClientesTrabajador(idTrabajador) {
+  const tbody = document.getElementById('clientesTrabajador');
+  try {
+    const res = await fetch(`http://localhost:3000/api/clientes/trabajador/${idTrabajador}`);
+    if (!res.ok) throw new Error('No hay clientes');
+    const clientes = await res.json();
+    tbody.innerHTML = '';
+    if (clientes.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="3">No hay clientes</td></tr>';
+      return;
+    }
+    clientes.forEach(c => {
+      const tr = document.createElement('tr');
+      const fecha = c.fecha_prestamo ? new Date(c.fecha_prestamo).toLocaleDateString('es-ES') : '';
+      tr.innerHTML = `
+        <td>${c.nombre_completo}</td>
+        <td>${fecha}</td>
+        <td>$${Number(c.monto_prestado).toLocaleString()}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    tbody.innerHTML = '<tr><td colspan="3">Error al cargar clientes</td></tr>';
+  }
+}
 
 
 

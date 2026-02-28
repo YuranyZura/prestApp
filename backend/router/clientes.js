@@ -22,14 +22,14 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ 
+const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
-    
+
     if (mimetype && extname) {
       return cb(null, true);
     } else {
@@ -44,9 +44,9 @@ router.post("/", async (req, res) => {
   try {
     // Verificar sesión activa
     if (!req.session || !req.session.usuario) {
-      return res.status(401).json({ 
-        success: false, 
-        message: "No hay sesión activa" 
+      return res.status(401).json({
+        success: false,
+        message: "No hay sesión activa"
       });
     }
 
@@ -54,9 +54,9 @@ router.post("/", async (req, res) => {
 
     // Validar campos requeridos
     if (!nombreCompleto || !cedula || !telefono || !direccion) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Faltan campos requeridos" 
+      return res.status(400).json({
+        success: false,
+        message: "Faltan campos requeridos"
       });
     }
 
@@ -67,7 +67,7 @@ router.post("/", async (req, res) => {
 
     // Obtener id del trabajador desde la sesión
     const usuarioId = req.session.usuario.id;
-    
+
     // Buscar id_trabajador del usuario logueado
     const [trabajadores] = await pool.query(
       `SELECT id_trabajador FROM trabajadores WHERE id_usuario = ? LIMIT 1`,
@@ -90,9 +90,9 @@ router.post("/", async (req, res) => {
     );
 
     if (existe.length > 0) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Ya existe un cliente con esa cédula" 
+      return res.status(400).json({
+        success: false,
+        message: "Ya existe un cliente con esa cédula"
       });
     }
 
@@ -144,9 +144,9 @@ router.post("/", async (req, res) => {
 
   } catch (error) {
     console.error("Error al registrar cliente:", error);
-    res.status(500).json({ 
-      success: false, 
-      message: "Error del servidor al registrar cliente" 
+    res.status(500).json({
+      success: false,
+      message: "Error del servidor al registrar cliente"
     });
   }
 });
@@ -382,16 +382,16 @@ router.delete("/:id", async (req, res) => {
       return res.status(404).json({ success: false, message: "No se pudo eliminar el cliente" });
     }
 
-    res.json({ 
-      success: true, 
-      message: "Cliente y sus registros asociados eliminados exitosamente" 
+    res.json({
+      success: true,
+      message: "Cliente y sus registros asociados eliminados exitosamente"
     });
 
   } catch (error) {
     console.error("Error al eliminar cliente:", error);
-    res.status(500).json({ 
-      success: false, 
-      message: "Error del servidor al eliminar cliente" 
+    res.status(500).json({
+      success: false,
+      message: "Error del servidor al eliminar cliente"
     });
   }
 });
@@ -537,6 +537,36 @@ router.get("/:id/cuotas", async (req, res) => {
     res.status(500).json({ success: false, message: "Error del servidor" });
   }
 });
+
+
+
+// ===ruta para mostrar los clientes que tien un trbjador en la vista del administrador
+router.get('/trabajador/:trabajadorId', async (req, res) => {
+  const { trabajadorId } = req.params;
+  try {
+    const [rows] = await pool.query(
+      `SELECT 
+        c.id_clientes,
+        CONCAT(c.nombre, ' ', c.apellido) AS nombre_completo,
+        c.cedula,
+        c.telefono,
+        c.direccion,
+        c.foto,
+        p.fecha_inicio AS fecha_prestamo,
+        p.total_pagar AS monto_prestado
+      FROM clientes c
+      LEFT JOIN prestamos p
+        ON c.id_clientes = p.id_clientes
+      WHERE c.id_trabajador = ?`,
+      [trabajadorId]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al obtener clientes' });
+  }
+});
+
 
 
 export default router;

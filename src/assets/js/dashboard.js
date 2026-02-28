@@ -1,9 +1,30 @@
+// Estadísticas Dashboard
+async function cargarEstadisticasDashboard() {
+  try {
+    const res = await fetch("/api/dashboard/estadisticas", { credentials: "include" });
+    if (!res.ok) throw new Error("No se pudo obtener estadísticas");
+    const data = await res.json();
+    // Actualizar contadores
+    if (data.trabajadoresActivos !== undefined)
+      document.getElementById("trabajadoresActivos").textContent = data.trabajadoresActivos;
+    if (data.prestamosActivos !== undefined)
+      document.getElementById("prestamosActivos").textContent = data.prestamosActivos;
+    if (data.montoPrestado !== undefined)
+      document.getElementById("montoPrestado").textContent = "$" + Number(data.montoPrestado).toLocaleString();
+    if (data.recuperadoHoy !== undefined)
+      document.getElementById("recuperadoHoy").textContent = "$" + Number(data.recuperadoHoy).toLocaleString();
+  } catch (err) {
+    console.error("Error cargando estadísticas:", err);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", cargarEstadisticasDashboard);
+
+
+
 $(function () {
 
 
-  // =====================================
-  // Profit
-  // =====================================
   var chart = {
     series: [
       { name: "Earnings this month:", data: [355, 390, 300, 350, 390, 180, 355, 390] },
@@ -107,7 +128,6 @@ $(function () {
 
   // =====================================
   // Breakup
-  // =====================================
   var breakup = {
     color: "#adb5bd",
     series: [38, 40, 25],
@@ -163,7 +183,6 @@ $(function () {
 
   // =====================================
   // Earning
-  // =====================================
   var earning = {
     chart: {
       id: "sparkline3",
@@ -217,7 +236,7 @@ async function cerrarSesion() {
   try {
     const res = await fetch("/api/auth/logout", {
       method: "POST",
-      credentials: "include"  
+      credentials: "include"
     });
 
     const data = await res.json();
@@ -229,6 +248,7 @@ async function cerrarSesion() {
     console.error("Error cerrando sesión:", err);
   }
 }
+
 
 // ====== Manejo de botón ======
 document.addEventListener("DOMContentLoaded", () => {
@@ -263,3 +283,97 @@ async function checkSession() {
   }
 }
 
+
+// ===== CONFIGURACIÓN MODAL TASA DE INTERÉS =====
+document.addEventListener("DOMContentLoaded", function () {
+
+    const botonGuardar = document.getElementById("btnGuardarConfiguracionInteres");
+    const inputTasa = document.getElementById("tasaInteres");
+    const tasaDisplay = document.getElementById("tasaInteresDisplay");
+    const ejemploTasa = document.getElementById("ejemploTasa");
+    const ejemploInteres = document.getElementById("ejemploInteres");
+    const errorDiv = document.getElementById("tasaInteresError");
+
+    if (!botonGuardar) return;
+
+    // ACTUALIZAR Een tiempo real
+    inputTasa.addEventListener("input", function () {
+
+        const tasa = parseFloat(inputTasa.value) || 0;
+        const montoEjemplo = 1000;
+
+        const interesCalculado = (montoEjemplo * tasa) / 100;
+
+        ejemploTasa.textContent = tasa + "%";
+        ejemploInteres.textContent = "$" + interesCalculado.toFixed(2);
+    });
+
+    // guarda configuracion de tasa de interes
+    botonGuardar.addEventListener("click", function () {
+
+        const tasa = inputTasa.value;
+
+        if (!tasa || tasa < 0) {
+            errorDiv.textContent = "Debes ingresar una tasa válida";
+            return;
+        }
+
+        errorDiv.textContent = "";
+
+        botonGuardar.disabled = true;
+        botonGuardar.innerHTML = `
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Guardando...
+        `;
+
+        fetch("/api/dashboard/configuracion/interes", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ tasa_interes: tasa })
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            // Actualizar tasa visible
+            tasaDisplay.textContent = tasa + "%";
+
+            //  mstrar toast 
+            const toastElement = document.getElementById("toastExito");
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+
+            const modalElement = document.getElementById("modalConfiguracionInteres");
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            modalInstance.hide();
+
+            //  Limpiar input
+            inputTasa.value = "";
+            ejemploTasa.textContent = "0%";
+            ejemploInteres.textContent = "$0.00";
+
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        })
+        .finally(() => {
+            botonGuardar.disabled = false;
+            botonGuardar.innerHTML = `
+                <i class="ti ti-device-floppy me-2"></i>Guardar Cambios
+            `;
+        });
+
+    });
+
+    //  cargar la tada de interes al abrir el modal
+    fetch("/api/dashboard/configuracion/interes")
+        .then(response => response.json())
+        .then(data => {
+            tasaDisplay.textContent = (data.tasa_interes || 0) + "%";
+        })
+        .catch(error => {
+            console.error("Error cargando tasa:", error);
+        });
+
+});

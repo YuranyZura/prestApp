@@ -8,7 +8,13 @@
         document.addEventListener("DOMContentLoaded", async () => {
             console.log("Rol2_trabajador.js iniciado");
             await cargarPerfil();
-            cargarRutaDia(); 
+            
+            // Detectar hash para mostrar sección clientes
+            if (window.location.hash === '#section-clientes') {
+                cambiarSeccion('clientes');
+            } else {
+                cargarRutaDia();
+            }
         });
 
         // Cargar perfil del trabajador logueado
@@ -23,30 +29,53 @@
 
                 if (data.success && data.trabajador) {
                     const trabajador = data.trabajador;
+                    console.log("[DEBUG] Objeto trabajador recibido:", trabajador);
+                    console.log("[DEBUG] id_trabajador recibido:", trabajador.id_trabajador);
+                    // ...resto del código...
+                } else {
+                    console.error("No se pudo cargar el perfil:", data.message);
+                    if (response.status === 401) {
+                        window.location.href = "/login";
+                    }
+                }
+            } catch (error) {
+                console.error("Error al cargar perfil:", error);
+            }
+            try {
+                const response = await fetch("http://localhost:3000/api/cobrador/perfil", {
+                    method: "GET",
+                    credentials: "include"
+                });
 
+                const data = await response.json();
+
+                if (data.success && data.trabajador) {
+                    const trabajador = data.trabajador;
+                    console.log("[DEBUG] Objeto trabajador recibido:", trabajador);
+                    if (!trabajador) {
+                        console.error("[DEBUG] No se recibió objeto trabajador");
+                        return;
+                    }
                     // Actualizar avatar con iniciales
                     const avatarEl = document.getElementById("userAvatar");
-                    if (avatarEl) {
+                    if (avatarEl && trabajador.iniciales) {
                         avatarEl.textContent = trabajador.iniciales;
                     }
-
                     // Actualizar nombre completo
                     const nameEl = document.getElementById("userName");
-                    if (nameEl) {
+                    if (nameEl && trabajador.nombreCompleto) {
                         nameEl.textContent = trabajador.nombreCompleto;
                     }
-
                     // Si tiene foto, reemplazar el avatar con la imagen
-                    if (trabajador.foto) {
-                        if (avatarEl) {
-                            avatarEl.style.backgroundImage = `url('${trabajador.foto}')`;
-                            avatarEl.style.backgroundSize = "cover";
-                            avatarEl.style.backgroundPosition = "center";
-                            avatarEl.textContent = ""; // Quitar iniciales
-                        }
+                    if (trabajador.foto && avatarEl) {
+                        avatarEl.style.backgroundImage = `url('${trabajador.foto}')`;
+                        avatarEl.style.backgroundSize = "cover";
+                        avatarEl.style.backgroundPosition = "center";
+                        avatarEl.textContent = ""; // Quitar iniciales
                     }
-
-                    console.log("Perfil cargado:", trabajador);
+                    // Guardar el id del trabajador para usarlo en la carga de clientes
+                    window.idTrabajadorLogueado = trabajador.id_trabajador;
+                    console.log("[DEBUG] id_trabajador recibido:", trabajador.id_trabajador);
                 } else {
                     console.error("No se pudo cargar el perfil:", data.message);
                     if (response.status === 401) {
@@ -124,6 +153,8 @@
 
                 const container = document.getElementById('rutaClientesList');
 
+                // Debug: mostrar los datos de los clientes recibidos
+                console.log("Clientes recibidos:", clientes);
                 if (clientes.length === 0) {
                     container.innerHTML = `
                         <div class="text-center py-4">
@@ -414,15 +445,20 @@
         // ====crear un prestamo====
         async function cargarPrestamosActivos() {
             try {
-                // Obtener clientes del backend
-                const response = await fetch('http://localhost:3000/api/clientes', {
+                // Obtener solo los clientes del trabajador logueado
+                const idTrabajador = window.idTrabajadorLogueado;
+                if (!idTrabajador) {
+                    console.error("No se encontró el id del trabajador logueado");
+                    return;
+                }
+                const response = await fetch(`http://localhost:3000/api/clientes/trabajador/${idTrabajador}`, {
                     method: 'GET',
                     credentials: 'include'
                 });
 
                 const data = await response.json();
 
-                if (response.ok && data.success && data.clientes) {
+                if (response.ok && Array.isArray(data)) {
                     const clienteSelect = document.getElementById('clienteSelect');
                     // Limpiar opciones previas si las hubiera, excepto la de "Seleccione..."
                     const options = clienteSelect.options;
@@ -431,10 +467,10 @@
                     }
 
                     // Agregar opciones de clientes
-                    data.clientes.forEach(cliente => {
+                    data.forEach(cliente => {
                         const option = document.createElement('option');
                         option.value = cliente.id_clientes;
-                        option.textContent = cliente.nombreCompleto || `${cliente.nombre} ${cliente.apellido}`;
+                        option.textContent = cliente.nombre_completo;
                         clienteSelect.appendChild(option);
                     });
                 } else {
@@ -459,7 +495,7 @@
             const fechaInicio = document.getElementById('fechaInicio').value;
 
             if (monto > 0 && dias > 0 && frecuencia && fechaInicio) {
-                const tasaInteres = 10; // Tasa de interés fija para simulación
+                const tasaInteres = 10; // Tasa de interés fija pr cambiar
                 const interes = monto * (tasaInteres / 100);
                 const totalPagar = monto + interes;
                 
@@ -472,7 +508,6 @@
                     default: numCuotas = dias;
                 }
                 
-                // Evitar división por cero si numCuotas es 0 o inválido
                 const cuota = numCuotas > 0 ? totalPagar / numCuotas : 0;
                 
                 const fecha = new Date(fechaInicio);
@@ -526,7 +561,7 @@
                         plazo,
                         fechaInicio,
                         frecuencia,
-                        interes: 10 // Tasa fija del 10%
+                        interes: 10 // Tasa fija del 10% por cambiar 
                     })
                 });
 
@@ -558,46 +593,45 @@
                 day: 'numeric' 
             });
 
-            // Simular datos del resumen del día
             document.getElementById('totalCobrado').textContent = '$150.50';
             document.getElementById('totalPendiente').textContent = '$85.00';
             document.getElementById('clientesVisitados').textContent = '8';
         }
 
+
+
+        // funciona parar mostra clientes
         async function cargarTodosClientes() {
             try {
-                const response = await fetch("http://localhost:3000/api/clientes", {
+                const idTrabajador = window.idTrabajadorLogueado;
+                console.log("[DEBUG] cargarTodosClientes - idTrabajadorLogueado:", idTrabajador);
+                const response = await fetch(`http://localhost:3000/api/clientes/trabajador/${idTrabajador}`, {
                     method: "GET",
                     credentials: "include"
                 });
 
                 const data = await response.json();
+                console.log("[DEBUG] Respuesta clientes/trabajador:", data);
 
-                if (data.success && data.clientes) {
-                    const todosClientes = data.clientes;
-                    
+                if (Array.isArray(data)) {
+                    const todosClientes = data;
                     document.getElementById('totalClientesBadge').textContent = todosClientes.length;
                     const container = document.getElementById('todosClientesList');
-                    
                     if (todosClientes.length === 0) {
                         container.innerHTML = '<div class="empty-state"><i class="ti ti-users"></i><p>No hay clientes registrados</p></div>';
                         return;
                     }
-
                     container.innerHTML = todosClientes.map(cliente => `
                         <div class="cliente-card">
                             <button class="btn btn-sm btn-primary me-2" onclick="verCliente(${cliente.id_clientes})" title="Ver detalle">
                                 <i class="ti ti-eye"></i>
                             </button>
-                            <div class="cliente-card-info">
-                                <div class="cliente-card-name">${cliente.nombreCompleto}</div>
-                                <div class="cliente-card-details">Cédula: ${cliente.cedula} | Tel: ${cliente.telefono}</div>
-                            </div>
+                            <span class="fw-bold">${cliente.nombre_completo}</span><br>
+                            <span class="text-muted">Cédula: ${cliente.cedula} | Tel: ${cliente.telefono}</span>
                         </div>
                     `).join('');
                 } else {
-                    console.error("Error al cargar clientes:", data.message);
-                    mostrarNotificacion("Error al cargar clientes", "danger");
+                    document.getElementById('todosClientesList').innerHTML = '<div class="alert alert-danger">Error al cargar clientes</div>';
                 }
 
             } catch (error) {
@@ -610,7 +644,6 @@
 
         function verCliente(idCliente) {
             if (!idCliente) return;
-            // Navegar a la página de detalle del cliente
             window.location.href = `/detalle-cliente.html?id=${idCliente}`;
         }
 
@@ -650,6 +683,7 @@
             }
         });
 
+
         document.getElementById('clienteForm')?.addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -682,7 +716,6 @@
                 } else {
                     mostrarNotificacion(data.message || "Error al registrar cliente", "danger");
                 }
-
             } catch (error) {
                 console.error("Error al registrar cliente:", error);
                 mostrarNotificacion("Error de conexión con el servidor", "danger");
@@ -690,42 +723,4 @@
                 btnGuardar.disabled = false;
                 btnGuardar.innerHTML = '<i class="ti ti-device-floppy"></i> Guardar';
             }
-        });
-
-        function filtrarClientes(filtro, btnEl) {
-            document.querySelectorAll('#section-clientes .btn-group button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            if (btnEl) btnEl.classList.add('active');
-            // Aquí implementarías la lógica para filtrar la lista de clientes en el DOM
-            console.log("Filtro aplicado:", filtro);
-        }
-
-        function cerrarSesion() {
-            if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
-                window.location.href = 'login.html'; // Redireccionar a la página de login
-            }
-        }
-
-        function generarReporte() {
-            // Ya está implementada en resumenTrabajador.js como imprimirResumen()
-            imprimirResumen();
-        }
-
-        // Inicialización al cargar la página
-        document.addEventListener('DOMContentLoaded', function() {
-            // Cargar la sección inicial (Ruta del Día)
-            cambiarSeccion('ruta');
-            
-            // Establecer la fecha de inicio por defecto para nuevos préstamos
-            const hoy = new Date().toISOString().split('T')[0];
-            if (document.getElementById('fechaInicio')) {
-                document.getElementById('fechaInicio').value = hoy;
-                calcularSimulacion(); // Calcular simulación inicial si el campo está presente
-            }
-
-            // Generar iniciales del usuario en el avatar
-            const nombreUsuario = document.getElementById('userName').textContent;
-            const iniciales = nombreUsuario.split(' ').map(n => n.charAt(0)).join('').substring(0, 2).toUpperCase();
-            document.getElementById('userAvatar').textContent = iniciales;
         });

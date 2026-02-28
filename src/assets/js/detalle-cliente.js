@@ -563,9 +563,7 @@ function inicializarMapa(lat, lng, direccion) {
     }
 
     
-// ============================================
 // HISTORIAL DE CUOTAS
-// ============================================
 
 // Cargar historial de cuotas del cliente
 async function cargarHistorialCuotas() {
@@ -662,7 +660,6 @@ async function enviarHistorialCorreo() {
     }
 
     // Aquí se implementaría el envío por correo
-    // Por ahora, solo mostramos un mensaje
     mostrarNotificacion("Funcionalidad de correo en desarrollo", "info");
 
   } catch (error) {
@@ -691,7 +688,6 @@ async function enviarHistorialWhatsApp() {
       return;
     }
 
-    // Obtener historial de cuotas
     const responseCuotas = await fetch(`http://localhost:3000/api/pagos/cliente/${clienteId}`, {
       method: "GET",
       credentials: "include"
@@ -721,7 +717,6 @@ async function enviarHistorialWhatsApp() {
 
     mensaje += `\n*Total Pagado:* $${total.toLocaleString('es-CO')}`;
 
-    // Limpiar el teléfono y construir URL de WhatsApp
     const telefono = cliente.telefono.replace(/\D/g, '');
     const url = `https://wa.me/57${telefono}?text=${encodeURIComponent(mensaje)}`;
 
