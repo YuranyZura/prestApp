@@ -61,7 +61,7 @@
                     <div id="rutaClientesList">
                         <!-- Lista dinámica con sección de pago expandible -->
                         <div class="text-center py-4">
-                            <i class="ti ti-calendar-check" style="font-size: 2rem; color: #B3B3B3;"></i>
+                            <i class="ti ti-calendar-check icono-grande-gris"></i>
                             <p class="text-muted mt-2">No hay cobros programados para hoy</p>
                         </div>
                     </div>
@@ -79,7 +79,7 @@
                     <div class="form-container">
                         <form id="prestamoForm">
                             <div class="mb-3">
-                                <label class="form-label required-field">Cliente</label>
+                                <label for="clienteSelect" class="form-label">Cliente</label>
                                 <select class="form-select" id="clienteSelect" name="clienteId" required>
                                     <option value="">Seleccione un cliente...</option>
                                 </select>
@@ -99,12 +99,12 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label required-field">Fecha Inicio</label>
+                                <label for="fechaInicio" class="form-label required-field">Fecha Inicio</label>
                                 <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" required>
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label required-field">Frecuencia de Pago</label>
+                                <label for="frecuenciaPago" class="form-label required-field">Frecuencia de Pago</label>
                                 <select class="form-select" id="frecuenciaPago" name="frecuencia" required>
                                     <option value="">Seleccione...</option>
                                     <option value="diario">Diario</option>
@@ -115,8 +115,8 @@
                             </div>
 
                             <!-- Simulación automática del préstamo -->
-                            <div class="info-box" id="simulacionBox" style="display: none;">
-                                <h6 style="margin-bottom: 0.75rem; font-weight: 700;">
+                            <div class="info-box oculto" id="simul id= "simulacionPrestamo"> 
+                               < h6 class "info-box"></h6>
                                     <i class="ti ti-calculator"></i> Resumen del Préstamo
                                 </h6>
                                 <div class="info-box-row">
@@ -178,7 +178,9 @@
         <!-- 3. RESUMEN DEL DÍA - Estadísticas y totales -->
         <section class="app-section" id="section-resumen">
             <div class="row align-items-center g-2 mb-3">
-                <div class="col-9">
+                <div class="mb-3">
+                    <label for="filtroFecha" class="form-label">Filtrar por Fecha</label>
+
                     <input type="date" class="form-control form-control-sm" id="filtroFecha">
                 </div>
                 <div class="col-3">

@@ -1,13 +1,13 @@
 // Endpoints para la gestión de administradores
 import { Router } from "express";
-import { pool } from "../server.js";
+import  conexion from "../config/db.js";
 
 const router = Router();
 
 // GET /api/administradores - Obtener todos los administradores
 router.get("/", async (req, res) => {
   try {
-    const [rows] = await pool.query(
+    const [rows] = await conexion.query(
       `SELECT id_usuarios, nombre, apellido, correo, rol, verificado, fecha_creacion 
        FROM usuarios 
        WHERE rol = 'administrador' 
@@ -32,7 +32,7 @@ router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     
-    const [rows] = await pool.query(
+    const [rows] = await conexion.query(
       `SELECT id_usuarios, nombre, apellido, correo, rol, verificado, fecha_creacion 
        FROM usuarios 
        WHERE id_usuarios = ? AND rol = 'administrador'`,
@@ -72,7 +72,7 @@ router.post("/", async (req, res) => {
     }
 
     // Verificar si el correo ya existe
-    const [existing] = await pool.query(
+    const [existing] = await conexion.query(
       "SELECT id_usuarios FROM usuarios WHERE correo = ?",
       [correo]
     );
@@ -85,7 +85,7 @@ router.post("/", async (req, res) => {
     }
 
     // Nota: En producción deberías hashear la contraseña con bcrypt
-    const [result] = await pool.query(
+    const [result] = await conexion.query(
       `INSERT INTO usuarios (nombre, apellido, correo, contrasena, rol, verificado) 
        VALUES (?, ?, ?, ?, 'administrador', 1)`,
       [nombre, apellido, correo, contrasena]
@@ -118,7 +118,7 @@ router.put("/:id", async (req, res) => {
       });
     }
 
-    const [result] = await pool.query(
+    const [result] = await conexion.query(
       `UPDATE usuarios 
        SET nombre = ?, apellido = ?, correo = ? 
        WHERE id_usuarios = ? AND rol = 'administrador'`,
@@ -150,7 +150,7 @@ router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     
-    const [result] = await pool.query(
+    const [result] = await conexion.query(
       "DELETE FROM usuarios WHERE id_usuarios = ? AND rol = 'administrador'",
       [id]
     );

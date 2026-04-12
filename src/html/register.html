@@ -22,7 +22,7 @@
           <div class="col-md-10 col-lg-7 col-xl-6 col-xxl-5">
             <div class="card mb-0">
               <div class="card-body">
-                <a href="/login" class="text-nowrap logo-img text-center d-block py-3 w-100">
+                <a href="/login" class="text-nowrap logo-img text-center d-block py-3 w-100" title="PrestApp Home">
                   <img src="../assets/images/logos/prestapp-remove.png" width="180" alt="">
                 </a>
                 <p class="text-center">Tu prestamo seguro</p>
@@ -41,7 +41,7 @@
                   </div>
                   <div class="mb-4">
                     <label for="exampleInputPassword1" class="form-label">Contraseña</label>
-                    <input type="password" name="contrasena"  class="form-control" id="exampleInputPassword1">
+                    <input type="password" name="contrasena"  class="form-control" id="exampleInputPassword1" placeholder="Contraseña de mino 8 caracteres alfanumerica">
                   </div>
                   <button type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2">Registrarse</button>
                   <div class="d-flex align-items-center justify-content-center">
@@ -64,18 +64,18 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Verifica tu correo</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" title="Close"></button>
       </div>
       <div class="modal-body text-center">
         <p>Hemos enviado un código a tu correo. Ingresa el código para activar tu cuenta:</p>
         <form id="formVerificacion">
           <div class="d-flex justify-content-center gap-2">
-            <input type="text" maxlength="1" class="form-control text-center codigo-input" style="width: 40px;" />
-            <input type="text" maxlength="1" class="form-control text-center codigo-input" style="width: 40px;" />
-            <input type="text" maxlength="1" class="form-control text-center codigo-input" style="width: 40px;" />
-            <input type="text" maxlength="1" class="form-control text-center codigo-input" style="width: 40px;" />
-            <input type="text" maxlength="1" class="form-control text-center codigo-input" style="width: 40px;" />
-            <input type="text" maxlength="1" class="form-control text-center codigo-input" style="width: 40px;" />
+            <input type="text" maxlength="1" class="form-control text-center codigo-input" />
+            <input type="text" maxlength="1" class="form-control text-center codigo-input" />
+            <input type="text" maxlength="1" class="form-control text-center codigo-input" />
+            <input type="text" maxlength="1" class="form-control text-center codigo-input" />
+            <input type="text" maxlength="1" class="form-control text-center codigo-input" />
+            <input type="text" maxlength="1" class="form-control text-center codigo-input" />
           </div>
           <button type="submit" class="btn btn-primary w-100 mt-4">Verificar</button>
         </form>
@@ -88,24 +88,17 @@
   </div>
 </div>
 
-<!-- ESTILO PARA FONDO OSCURO + BLUR -->
-<style>
-  .modal.show .modal-backdrop {
-    backdrop-filter: blur(12px);
-    background-color: rgba(197, 34, 34, 0.5);
-  }
-</style>
 
 
 
 
 <!-- Toast de notificación -->
 <!-- Toast de éxito -->
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+<div class="toast-container position-fixed bottom-0 end-0 p-3 toast-zindex">
   <div id="toastVerificacion" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
     <div class="toast-header bg-success text-white">
       <strong class="me-auto">Correo verificado con éxito</strong>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" title="Close"></button>
     </div>
     <div class="toast-body">
       Redirigiendo al inicio de sesión...
@@ -114,11 +107,11 @@
 </div>
 
 <!-- Toast de error -->
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+<div class="toast-container position-fixed bottom-0 end-0 p-3 toast-zindex">
   <div id="toastError" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="toast-header bg-danger text-white">
       <strong class="me-auto"> Error</strong>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" title="Close"></button>
     </div>
     <div class="toast-body" id="toastErrorBody">
       <!-- Mensaje dinámico -->
@@ -128,11 +121,11 @@
 
 
 <!-- Toast de reenvío (NO redirige) -->
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+<div class="toast-container position-fixed bottom-0 end-0 p-3 toast-zindex">
   <div id="toastReenvio" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
     <div class="toast-header bg-info text-white">
       <strong class="me-auto">Código reenviado</strong>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" title="Close"></button>
     </div>
     <div class="toast-body" id="toastReenvioBody">
       Hemos enviado un nuevo código a tu correo.

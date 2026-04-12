@@ -199,7 +199,6 @@ body {
 	.pago-modal-dialog .modal-body {
 		flex: 1;
 		overflow-y: auto;
-		-webkit-overflow-scrolling: touch;
 		padding: 1.5rem 1rem;
 	}
 
