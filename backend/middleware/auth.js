@@ -1,18 +1,30 @@
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export function verificarToken(req, res, next) {
   const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1]; 
 
-  if (!token) {
-    return res.status(401).json({ message: "Token requerido" });
+  // ✅ Validar header
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "Token requerido (Bearer)" });
   }
 
-  jwt.verify(token, "mi_secreto_ultra_seguro", (err, user) => {
-    if (err) {
-      return res.status(403).json({ message: "Token inválido o expirado" });
-    }
-    req.user = user;
+  const token = authHeader.split(" ")[1];
+
+  try {
+    // ✅ Usar variable de entorno
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.user = decoded;
     next();
-  });
+
+  } catch (error) {
+    console.error("Error verificando token:", error.message);
+
+    return res.status(403).json({
+      message: "Token inválido o expirado"
+    });
+  }
 }

@@ -3,7 +3,7 @@
 
 import { Router } from "express";
 import bcrypt from "bcrypt";
-import { pool } from "../server.js"; // importar pool del servidor
+import { pool } from "../config/db.js"; // importar pool del servidor
 import { enviarCodigoVerificacion } from "../config/mailer.js";
 import jwt from "jsonwebtoken";
 
@@ -90,7 +90,7 @@ router.post("/register", async (req, res) => {
       message: "Usuario registrado. Revisa tu correo para verificar la cuenta.",
     });
   } catch (err) {
-    console.error(err);
+    console.error("Error en auth:", err.message);
     return res.status(500).json({ 
       success: false, 
       message: "Error del servidor" 
@@ -131,22 +131,11 @@ router.post("/verify-email", async (req, res) => {
     }
 
     //  Verificar
-    await pool.query(
-      "UPDATE usuarios SET verificado = 1, codigo_verificacion = NULL, codigo_expira = NULL WHERE id_usuarios = ?",
-      [usuario.id_usuarios]
-    );
+    if (!correo || !codigo) {
+  return res.status(400).json({ success: false, message: "Datos incompletos" });
+}
 
-    return res.json({ 
-      success: true, 
-      message: "Correo verificado con éxito." 
-    });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Error del servidor." });
-  }
-});
-
+if (usuario.codigo_verificacion !== String(codigo)) {
 
 // POST /auth/reenvio del codigo de verificacion 
 router.post("/reenvio_codigo", async (req, res) => {
@@ -211,7 +200,7 @@ router.get("/user/:id", async (req, res) => {
     if (rows.length === 0) return res.status(404).json({ success: false, message: "Usuario no encontrado" });
     return res.json(rows[0]);
   } catch (err) {
-    console.error(err);
+    console.error("Error en auth:", err.message);
     return res.status(500).json({ success: false, message: "Error del servidor" });
   }
 });
@@ -229,7 +218,7 @@ router.get("/user-password/:id", async (req, res) => {
     if (rows.length === 0) return res.status(404).json({ success: false, message: "Usuario no encontrado" });
     return res.json({ contrasena: rows[0].contrasena });
   } catch (err) {
-    console.error(err);
+    console.error("Error en auth:", err.message);
     return res.status(500).json({ success: false, message: "Error del servidor" });
   }
 });
@@ -247,7 +236,7 @@ router.post("/toggle-acceso", async (req, res) => {
 
     return res.json({ success: true, message: `Acceso ${activo ? 'activado' : 'desactivado'}` });
   } catch (err) {
-    console.error(err);
+    console.error("Error en auth:", err.message);
     return res.status(500).json({ success: false, message: "Error del servidor" });
   }
 });
@@ -309,7 +298,7 @@ return res.json({
 
 
   } catch (err) {
-    console.error(err);
+    console.error("Error en auth:", err.message);
     return res.status(500).json({ 
       success: false, 
       message: "Error del servidor" 
@@ -401,7 +390,7 @@ router.post("/create-credenciales", async (req, res) => {
 
     return res.json({ success: true, message: "Credenciales guardadas correctamente", id_usuario, correo });
   } catch (err) {
-    console.error(err);
+    console.error("Error en auth:", err.message);
     return res.status(500).json({ success: false, message: "Error del servidor" });
   }
 });

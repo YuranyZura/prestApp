@@ -1,0 +1,4 @@
+export const getAll = async () => {
+  const [rows] = await pool.query("SELECT * FROM clientes");
+  return rows;
+};

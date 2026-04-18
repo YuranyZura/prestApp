@@ -2,6 +2,9 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM cargado: login.js iniciado");
 
+   const API_URL = "http://localhost:3000/api";
+// 🔥 Cuando uses Android cambias esto:
+// const API_URL = "http://192.168.X.X:3000/api";
   const form = document.querySelector("form");
   if (!form) {
     console.warn("Formulario de login no encontrado");
@@ -16,8 +19,30 @@ document.addEventListener("DOMContentLoaded", () => {
   function mostrarToast(mensaje, tipo) {
     let toastEl;
 
+     if (result.success) {
 
-     if (tipo === "exito") {
+  // ✅ Guardar rol
+  try {
+    if (result.user && result.user.rol !== undefined) {
+      sessionStorage.setItem("user_role", String(result.user.rol));
+    }
+  } catch (e) {
+    console.warn("No se pudo guardar el rol:", e);
+  }
+
+  // 🔥 NUEVO: guardar token JWT
+  try {
+    if (result.token) {
+      localStorage.setItem("token", result.token);
+      console.log("Token guardado:", result.token);
+    }
+  } catch (e) {
+    console.warn("No se pudo guardar el token:", e);
+  }
+
+  mostrarToast("Inicio de sesión exitoso.", "exito");
+}
+     
       // Login exitoso
       toastEl = document.getElementById("toastLoginExito");
       const toast = new bootstrap.Toast(toastEl);
@@ -74,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/auth/login", {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo, contrasena }),
@@ -127,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/api/auth/reenvio_codigo", {
+      const res = await fetch(`${API_URL}/auth/reenvio_codigo`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo })
