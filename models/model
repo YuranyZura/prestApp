@@ -1,4 +1,12 @@
+import pool from "../config/db.js";
+
 export const getAll = async () => {
-  const [rows] = await pool.query("SELECT * FROM clientes");
-  return rows;
+  try {
+    const [rows] = await pool.query("SELECT * FROM clientes");
+    return rows;
+
+  } catch (error) {
+    console.error("Error en getAll clientes:", error);
+    throw error; // importante para que el controller lo maneje
+  }
 };

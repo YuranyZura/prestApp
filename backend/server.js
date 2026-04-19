@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+import rutasRoutes from "./router/rutas.js";
 import express from "express";
 import cors from "cors";
 import path from "path";
@@ -69,6 +70,7 @@ function verificarSesion(req, res, next) {
 }
 
 // 🚀 RUTAS API
+
 app.use("/api/auth", authRouter);
 app.use("/api/trabajadores", trabajadoresRoutes);
 app.use("/api/cobrador", cobradorRoutes);

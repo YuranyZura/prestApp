@@ -43,4 +43,3 @@ router.post("/ubicacion", async (req, res) => {
   }
 });
 
-export default router;

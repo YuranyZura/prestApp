@@ -1,39 +1,41 @@
-import mysql from "mysql2/promise";
-import dotenv from "dotenv";
+import { Router } from "express";
+import pool from "../config/db.js"; // tu conexión
 
-dotenv.config();
+const router = Router();
 
-// ✅ Validar variables de entorno
-const requiredEnv = ["DB_HOST", "DB_USER", "DB_PASSWORD", "DB_NAME"];
-
-requiredEnv.forEach((env) => {
-  if (!process.env[env]) {
-    console.error(`❌ Falta la variable de entorno: ${env}`);
-    process.exit(1);
-  }
-});
-
-// 🔥 Crear pool de conexiones
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
-
-// ✅ Probar conexión al iniciar
-(async () => {
+// 📍 GET clientes del día
+router.get("/hoy", async (req, res) => {
   try {
-    const connection = await pool.getConnection();
-    console.log("✅ Conectado correctamente a MySQL");
-    connection.release();
-  } catch (error) {
-    console.error("❌ Error al conectar a MySQL:", error.message);
-    process.exit(1);
-  }
-})();
+    const [rows] = await pool.query(`
+      SELECT id, nombre, lat, lng
+      FROM clientes
+      WHERE fecha_cobro = CURDATE()
+    `);
 
-export default pool;
+    res.json(rows);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error obteniendo rutas" });
+  }
+});
+
+// 📍 POST guardar ubicación
+router.post("/ubicacion", async (req, res) => {
+  const { lat, lng } = req.body;
+
+  try {
+    await pool.query(`
+      INSERT INTO ubicaciones (lat, lng, fecha)
+      VALUES (?, ?, NOW())
+    `, [lat, lng]);
+
+    res.json({ success: true });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error guardando ubicación" });
+  }
+});
+
+export default router;
