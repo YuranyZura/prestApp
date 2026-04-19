@@ -1,265 +1,154 @@
-$(function () {
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("Dashboard iniciado");
 
+  // ===============================
+  // 🌐 CONFIG API (CAMBIAR IP)
+  // ===============================
+  const API_URL = "http://192.168.1.10:3000/api"; // ⚠️ CAMBIA ESTO
 
-  // =====================================
-  // Profit
-  // =====================================
-  var chart = {
+  // ===============================
+  // 🔐 VALIDAR SESIÓN Y ROL
+  // ===============================
+  const rol = sessionStorage.getItem("user_role");
+
+  if (!rol) {
+    window.location.href = "./login.html";
+    return;
+  }
+
+  // (opcional) si quieres solo admin:
+  // if (rol !== "administrador") {
+  //   window.location.href = "./login.html";
+  // }
+
+  checkSession();
+
+  // ===============================
+  // 📊 GRÁFICO PRINCIPAL
+  // ===============================
+  const chartOptions = {
     series: [
-      { name: "Earnings this month:", data: [355, 390, 300, 350, 390, 180, 355, 390] },
-      { name: "Expense this month:", data: [280, 250, 325, 215, 250, 310, 280, 250] },
+      { name: "Ingresos", data: [355, 390, 300, 350, 390, 180, 355, 390] },
+      { name: "Gastos", data: [280, 250, 325, 215, 250, 310, 280, 250] },
     ],
-
     chart: {
       type: "bar",
       height: 345,
-      offsetX: -15,
-      toolbar: { show: true },
-      foreColor: "#adb0bb",
-      fontFamily: 'inherit',
-      sparkline: { enabled: false },
+      fontFamily: "inherit",
     },
-
-
     colors: ["#5D87FF", "#49BEFF"],
-
-
     plotOptions: {
       bar: {
-        horizontal: false,
         columnWidth: "35%",
-        borderRadius: [6],
-        borderRadiusApplication: 'end',
-        borderRadiusWhenStacked: 'all'
+        borderRadius: 6,
       },
     },
-    markers: { size: 0 },
-
-    dataLabels: {
-      enabled: false,
-    },
-
-
-    legend: {
-      show: false,
-    },
-
-
-    grid: {
-      borderColor: "rgba(0,0,0,0.1)",
-      strokeDashArray: 3,
-      xaxis: {
-        lines: {
-          show: false,
-        },
-      },
-    },
-
     xaxis: {
-      type: "category",
       categories: ["16/08", "17/08", "18/08", "19/08", "20/08", "21/08", "22/08", "23/08"],
-      labels: {
-        style: { cssClass: "grey--text lighten-2--text fill-color" },
-      },
     },
-
-
     yaxis: {
-      show: true,
       min: 0,
       max: 400,
-      tickAmount: 4,
-      labels: {
-        style: {
-          cssClass: "grey--text lighten-2--text fill-color",
-        },
-      },
     },
-    stroke: {
-      show: true,
-      width: 3,
-      lineCap: "butt",
-      colors: ["transparent"],
-    },
-
-
-    tooltip: { theme: "light" },
-
-    responsive: [
-      {
-        breakpoint: 600,
-        options: {
-          plotOptions: {
-            bar: {
-              borderRadius: 3,
-            }
-          },
-        }
-      }
-    ]
-
-
+    dataLabels: { enabled: false },
   };
 
-  var chart = new ApexCharts(document.querySelector("#chart"), chart);
-  chart.render();
+  const chartEl = document.querySelector("#chart");
+  if (chartEl) {
+    new ApexCharts(chartEl, chartOptions).render();
+  }
 
-
-  // =====================================
-  // Breakup
-  // =====================================
-  var breakup = {
-    color: "#adb5bd",
+  // ===============================
+  // 🍩 GRÁFICO DONUT
+  // ===============================
+  const breakupOptions = {
     series: [38, 40, 25],
     labels: ["2022", "2021", "2020"],
     chart: {
-      width: 180,
       type: "donut",
-      fontFamily: "Plus Jakarta Sans', sans-serif",
-      foreColor: "#adb0bb",
-    },
-    plotOptions: {
-      pie: {
-        startAngle: 0,
-        endAngle: 360,
-        donut: {
-          size: '75%',
-        },
-      },
-    },
-    stroke: {
-      show: false,
-    },
-
-    dataLabels: {
-      enabled: false,
-    },
-
-    legend: {
-      show: false,
+      width: 180,
     },
     colors: ["#5D87FF", "#ecf2ff", "#F9F9FD"],
-
-    responsive: [
-      {
-        breakpoint: 991,
-        options: {
-          chart: {
-            width: 150,
-          },
-        },
-      },
-    ],
-    tooltip: {
-      theme: "dark",
-      fillSeriesColor: false,
-    },
+    legend: { show: false },
   };
 
-  var chart = new ApexCharts(document.querySelector("#breakup"), breakup);
-  chart.render();
+  const breakupEl = document.querySelector("#breakup");
+  if (breakupEl) {
+    new ApexCharts(breakupEl, breakupOptions).render();
+  }
 
-
-
-  // =====================================
-  // Earning
-  // =====================================
-  var earning = {
+  // ===============================
+  // 📈 MINI GRÁFICO
+  // ===============================
+  const earningOptions = {
     chart: {
-      id: "sparkline3",
       type: "area",
       height: 60,
-      sparkline: {
-        enabled: true,
-      },
-      group: "sparklines",
-      fontFamily: "Plus Jakarta Sans', sans-serif",
-      foreColor: "#adb0bb",
+      sparkline: { enabled: true },
     },
     series: [
       {
-        name: "Earnings",
-        color: "#49BEFF",
+        name: "Ingresos",
         data: [25, 66, 20, 40, 12, 58, 20],
       },
     ],
-    stroke: {
-      curve: "smooth",
-      width: 2,
-    },
-    fill: {
-      colors: ["#f3feff"],
-      type: "solid",
-      opacity: 0.05,
-    },
-
-    markers: {
-      size: 0,
-    },
-    tooltip: {
-      theme: "dark",
-      fixed: {
-        enabled: true,
-        position: "right",
-      },
-      x: {
-        show: false,
-      },
-    },
+    stroke: { curve: "smooth", width: 2 },
   };
-  new ApexCharts(document.querySelector("#earning"), earning).render();
-})
 
-
-
-// ====== Función de cerrar sesión ======
-async function cerrarSesion() {
-  try {
-    const res = await fetch("/api/auth/logout", {
-      method: "POST",
-      credentials: "include"  
-    });
-
-    const data = await res.json();
-    console.log("Logout:", data);
-
-    // Redirigir al login después de cerrar sesión
-    window.location.href = "/login";
-  } catch (err) {
-    console.error("Error cerrando sesión:", err);
+  const earningEl = document.querySelector("#earning");
+  if (earningEl) {
+    new ApexCharts(earningEl, earningOptions).render();
   }
-}
 
-// ====== Manejo de botón ======
-document.addEventListener("DOMContentLoaded", () => {
+  // ===============================
+  // 🚪 CERRAR SESIÓN
+  // ===============================
   const btnCerrar = document.getElementById("btnCerrarSesion");
+
   if (btnCerrar) {
     btnCerrar.addEventListener("click", cerrarSesion);
   }
 
-  // Verificar sesión al cargar
-  checkSession();
+  async function cerrarSesion() {
+    try {
+      await fetch(`${API_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (err) {
+      console.warn("Error cerrando sesión");
+    }
+
+    sessionStorage.clear();
+    window.location.href = "./login.html";
+  }
+
 });
 
-// ====== Evitar volver con el botón atrás ======
-window.addEventListener("pageshow", function (event) {
+// ===============================
+// 🔐 VERIFICAR SESIÓN REAL
+// ===============================
+async function checkSession() {
+  const API_URL = "http://192.168.1.10:3000/api";
+
+  try {
+    const res = await fetch(`${API_URL}/auth/check`, {
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      window.location.href = "./login.html";
+    }
+  } catch (err) {
+    window.location.href = "./login.html";
+  }
+}
+
+// ===============================
+// 🔙 EVITAR BOTÓN ATRÁS
+// ===============================
+window.addEventListener("pageshow", (event) => {
   if (event.persisted) {
     window.location.reload();
   }
 });
-
-// ====== Verificar sesión ======
-async function checkSession() {
-  try {
-    const res = await fetch("/api/auth/check", {
-      credentials: "include"
-    });
-
-    if (!res.ok) {
-      window.location.href = "/login";
-    }
-  } catch (err) {
-    window.location.href = "/login";
-  }
-}
-

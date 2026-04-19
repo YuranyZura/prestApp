@@ -1,362 +1,256 @@
+// ===============================
+// CONFIG GLOBAL (IMPORTANTE ANDROID)
+// ===============================
+const API_URL = "http://TU_IP_LOCAL:3000/api"; 
+// ⚠️ CAMBIA ESTO:
+// Ejemplo: http://192.168.1.10:3000/api
+// ❌ NO usar localhost en Android
 
+let trabajadoresCache = [];
+let trabajadorAEliminar = null;
 
+// ===============================
+// ALERTAS (COMPATIBLE ANDROID)
+// ===============================
 function showAlert(message, type = "success", duration = 3000) {
   const container = document.getElementById("alert-container");
+  if (!container) return;
 
   const alert = document.createElement("div");
-  alert.className = `alert alert-${type} alert-dismissible fade show`;
-  alert.role = "alert";
+  alert.className = `alert alert-${type} fade show`;
   alert.innerHTML = `
     ${message}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <button type="button" class="btn-close"></button>
   `;
 
   container.appendChild(alert);
 
+  // cerrar manual
+  alert.querySelector(".btn-close").onclick = () => alert.remove();
 
+  // auto cerrar
   setTimeout(() => {
-    alert.classList.remove("show");
-    alert.classList.add("hide");
-    alert.addEventListener("transitionend", () => alert.remove());
+    alert.remove();
   }, duration);
 }
 
-
-
-
-
-// Abre el modal
-const modal = new bootstrap.Modal(document.getElementById('modalAgregarTrabajador'));
-
-// Cerrar modal
-modal.hide();
-
-// Cache local de trabajadores para búsqueda/filtrado en cliente
-let trabajadoresCache = [];
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  const btnGuardar = document.getElementById("btnGuardarTrabajador");
-  const formulario = document.getElementById("formularioTrabajador");
-
-  // Función para validar inputs
-  function validarFormulario() {
-    let valido = true;
-
-    const cedula = document.getElementById("cedula");
-    const nombre = document.getElementById("nombre");
-    const celular = document.getElementById("celular");
-    const correo = document.getElementById("correo");
-    const fechaNacimiento = document.getElementById("fechaNacimiento");
-    const foto = document.getElementById("foto");
-
-
-
-    // Limpiar errores anteriores
-    [cedula, nombre].forEach(input => {
-      input.classList.remove("is-invalid");
-      input.nextElementSibling.textContent = "";
+// ===============================
+// FETCH SEGURO (ANDROID)
+// ===============================
+async function apiFetch(endpoint, options = {}) {
+  try {
+    const res = await fetch(`${API_URL}${endpoint}`, {
+      ...options,
+      headers: {
+        ...(options.headers || {}),
+      }
     });
 
-    // Validación cédula
-    if (!/^\d{10,}$/.test(cedula.value.trim())) {
-      cedula.classList.add("is-invalid");
-      document.getElementById("cedulaFeedback").textContent = "La cédula debe tener mínimo 10 dígitos.";
-      valido = false;
-    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
 
-    // Validación nombre
-    if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{2,}$/.test(nombre.value.trim())) {
-      nombre.classList.add("is-invalid");
-      document.getElementById("nombreFeedback").textContent = "El nombre debe tener al menos 2 letras.";
-      valido = false;
-    }
-
-
-    // Validación celular
-    if (!/^\d{10,}$/.test(celular.value.trim())) {
-    celular.classList.add("is-invalid");
-    document.getElementById("celularFeedback").textContent = "El celular debe tener mínimo 10 dígitos.";
-    valido = false;
+  } catch (error) {
+    console.error("API ERROR:", error);
+    showAlert("Error de conexión con el servidor", "danger");
+    throw error;
   }
+}
 
-    // Validación correo
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo.value.trim())) {
-      correo.classList.add("is-invalid");
-      document.getElementById("correoFeedback").textContent = "Ingrese un correo electrónico válido.";
-      valido = false;
-    }
+// ===============================
+// CARGAR TRABAJADORES
+// ===============================
+async function cargarTrabajadores() {
+  try {
+    const data = await apiFetch("/trabajadores/trabajadores");
 
+    trabajadoresCache = data;
+    renderTrabajadores(trabajadoresCache);
 
-    
-  // Fecha de nacimiento: mayor de 18 años
-  if (fechaNacimiento.value) {
-    const fecha = new Date(fechaNacimiento.value);
-    const hoy = new Date();
-    const edad = hoy.getFullYear() - fecha.getFullYear();
-    const mes = hoy.getMonth() - fecha.getMonth();
-    const dia = hoy.getDate() - fecha.getDate();
-
-    if (edad < 18 || (edad === 18 && (mes < 0 || (mes === 0 && dia < 0)))) {
-      fechaNacimiento.classList.add("is-invalid");
-      document.getElementById("fechaNacimientoFeedback").textContent = "Debe ser mayor de 18 años.";
-      valido = false;
-    }
-  } else {
-    fechaNacimiento.classList.add("is-invalid");
-    document.getElementById("fechaNacimientoFeedback").textContent = "Debe ingresar una fecha de nacimiento.";
-    valido = false;
+  } catch (error) {
+    console.error(error);
   }
+}
 
-
-
-    // Foto: opcional, pero si hay archivo debe ser imagen
-  if (foto.files.length > 0) {
-    const archivo = foto.files[0];
-    if (!archivo.type.startsWith("image/")) {
-      foto.classList.add("is-invalid");
-      document.getElementById("fotoFeedback").textContent = "El archivo debe ser una imagen (jpg, png, etc.).";
-      valido = false;
-    }
-  }
-    return valido;
-  }
-
-  btnGuardar.addEventListener("click", async (event) => {
-    event.preventDefault();
-
-    if (!validarFormulario()) return;
-
-    // Crear objeto FormData
-    const id = document.getElementById("trabajadorId").value;
-    // Usamos el form para facilitar edición (pero mapeamos campos para la ruta PUT)
-    const formData = new FormData();
-    formData.append("cedula", document.getElementById("cedula").value);
-    formData.append("nombre", document.getElementById("nombre").value);
-    formData.append("apellido", document.getElementById("apellido").value);
-    formData.append("direccion", document.getElementById("direccion").value);
-    formData.append("correo", document.getElementById("correo").value);
-    // campo de creación usa 'celular' y 'fechaNacimiento' en tu POST backend; para PUT el servidor espera 'telefono' y 'fecha_nacimiento'
-    const celular = document.getElementById("celular").value;
-    const fechaNacimiento = document.getElementById("fechaNacimiento").value;
-    const foto = document.getElementById("foto").files[0];
-    try {
-      let response;
-
-      if (id) {
-        // EDITAR: usar ruta PUT correcta: /api/trabajadores/trabajadores/:id (coincide con router.put)
-        const putData = new FormData();
-        putData.append("cedula", document.getElementById("cedula").value);
-        putData.append("nombre", document.getElementById("nombre").value);
-        putData.append("apellido", document.getElementById("apellido").value);
-        putData.append("telefono", celular);
-        putData.append("correo", document.getElementById("correo").value);
-        putData.append("direccion", document.getElementById("direccion").value);
-        putData.append("fecha_nacimiento", fechaNacimiento);
-        if (foto) putData.append("foto", foto);
-
-        response = await fetch(`http://localhost:3000/api/trabajadores/trabajadores/${id}`, {
-          method: "PUT",
-          body: putData,
-        });
-      } else {
-        // CREAR: usar la ruta POST existente
-        const postData = new FormData();
-        postData.append("cedula", document.getElementById("cedula").value);
-        postData.append("fechaNacimiento", fechaNacimiento);
-        postData.append("nombre", document.getElementById("nombre").value);
-        postData.append("apellido", document.getElementById("apellido").value);
-        postData.append("direccion", document.getElementById("direccion").value);
-        postData.append("celular", celular);
-        postData.append("correo", document.getElementById("correo").value);
-        if (foto) postData.append("foto", foto);
-
-        response = await fetch("http://localhost:3000/api/trabajadores/trabajadores", {
-          method: "POST",
-          body: postData,
-        });
-      }
-
-      if (!response.ok) throw new Error("Error al guardar el trabajador");
-
-      const data = await response.json();
-      console.log(id ? "Trabajador actualizado:" : "Trabajador guardado:", data);
-
-      const modal = bootstrap.Modal.getInstance(document.getElementById("modalAgregarTrabajador"));
-      modal.hide();
-
-      mostrarAlerta("¡Éxito!", id ? "El trabajador fue actualizado correctamente." : "El trabajador fue guardado correctamente.", "success");
-      cargarTrabajadores();
-      formulario.reset();
-      document.getElementById("vistaPrevia").innerHTML = "";
-      document.getElementById("trabajadorId").value = "";
-
-    } catch (error) {
-      console.error("Error:", error);
-      mostrarAlerta("Error", "No se pudo guardar el trabajador.", "danger");
-    }
-  });
-
-  function mostrarAlerta(titulo, mensaje, tipo = "success") {
-    const alertContainer = document.getElementById("alertContainer");
-    alertContainer.innerHTML = `
-      <div class="alert alert-${tipo} alert-dismissible fade show small mb-0" role="alert" style="min-width: 200px; max-width: 300px;">
-        <strong>${titulo}</strong> ${mensaje}
-        <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    `;
-  }
-});
-
-
-
-// Render function: crea las filas a partir de una lista de trabajadores
-function renderTrabajadores(list) {
+// ===============================
+// RENDER TABLA
+// ===============================
+function renderTrabajadores(lista) {
   const tabla = document.getElementById("tablaTrabajadores");
-  const mensajeSinResultados = document.getElementById("mensajeSinResultados");
+  const vacio = document.getElementById("mensajeSinResultados");
+
+  if (!tabla) return;
+
   tabla.innerHTML = "";
 
-  if (!list || list.length === 0) {
-    mensajeSinResultados.classList.remove("d-none");
+  if (!lista || lista.length === 0) {
+    vacio?.classList.remove("d-none");
     return;
   }
 
-  mensajeSinResultados.classList.add("d-none");
+  vacio?.classList.add("d-none");
 
-  list.forEach(trabajador => {
-    const fila = document.createElement("tr");
+  lista.forEach(t => {
+    const tr = document.createElement("tr");
 
-    fila.innerHTML = `
-      <td><img src="${trabajador.foto ? '/uploads/' + trabajador.foto : 'img/default.png'}" class="rounded-circle" style="width:50px; height:50px; object-fit:cover;"></td>
-      <td>${trabajador.cedula}</td>
-      <td>${trabajador.nombre} ${trabajador.apellido}</td>
-      <td>${trabajador.telefono || ''}</td>
-      <td>${trabajador.correo || ''}</td>
+    tr.innerHTML = `
       <td>
-        <button class="btn btn-sm btn-primary" data-id="${trabajador.id_trabajador}">Editar</button>
-        <button class="btn btn-sm btn-danger" data-id="${trabajador.id_trabajador}">Eliminar</button>
+        <img src="${t.foto ? API_URL.replace('/api','') + '/uploads/' + t.foto : 'img/default.png'}"
+             style="width:50px;height:50px;border-radius:50%;object-fit:cover;">
+      </td>
+      <td>${t.cedula}</td>
+      <td>${t.nombre} ${t.apellido}</td>
+      <td>${t.telefono || ''}</td>
+      <td>${t.correo || ''}</td>
+      <td>
+        <button class="btn btn-sm btn-primary btn-editar">Editar</button>
+        <button class="btn btn-sm btn-danger btn-eliminar">Eliminar</button>
       </td>
     `;
 
-    fila.style.cursor = "pointer";
-    fila.addEventListener("click", () => {
-      window.location.href = `detalle-trabajador.html?id=${trabajador.id_trabajador}`;
+    // 👉 Ir a detalle
+    tr.addEventListener("click", () => {
+      window.location.href = `detalle-trabajador.html?id=${t.id_trabajador}`;
     });
 
-    tabla.appendChild(fila);
+    // 👉 Botones (evitar propagación)
+    tr.querySelector(".btn-editar").onclick = (e) => {
+      e.stopPropagation();
+      abrirModalEditar(t.id_trabajador);
+    };
 
-    const btnEditar = fila.querySelector(".btn-primary");
-    const btnEliminar = fila.querySelector(".btn-danger");
+    tr.querySelector(".btn-eliminar").onclick = (e) => {
+      e.stopPropagation();
+      trabajadorAEliminar = t;
 
-    btnEditar.addEventListener("click", (event) => {
-      event.stopPropagation();
-      abrirModalEditar(trabajador.id_trabajador);
-    });
+      new bootstrap.Modal(document.getElementById("confirmModal")).show();
+    };
 
-    btnEliminar.addEventListener("click", (event) => {
-      event.stopPropagation();
-      event.preventDefault();
-      trabajadorAEliminar = trabajador;
-      const confirmModal = new bootstrap.Modal(document.getElementById("confirmModal"));
-      confirmModal.show();
-    });
+    tabla.appendChild(tr);
   });
 }
 
-// Variable para el trabajador a eliminar (se usa desde el modal de confirmación)
-let trabajadorAEliminar = null;
-
-// Confirmación global para eliminar (usa trabajadorAEliminar)
-document.getElementById("confirmDeleteBtn").addEventListener("click", async () => {
-  const confirmModalEl = document.getElementById("confirmModal");
-  const confirmModal = bootstrap.Modal.getInstance(confirmModalEl);
-  confirmModal.hide();
+// ===============================
+// ELIMINAR
+// ===============================
+async function eliminarTrabajador() {
+  if (!trabajadorAEliminar) return;
 
   try {
-    if (!trabajadorAEliminar) throw new Error('No hay trabajador seleccionado para eliminar');
-    const response = await fetch(`http://localhost:3000/api/trabajadores/${trabajadorAEliminar.id_trabajador}`, {
-      method: "DELETE",
+    await apiFetch(`/trabajadores/${trabajadorAEliminar.id_trabajador}`, {
+      method: "DELETE"
     });
 
-    if (!response.ok) throw new Error("No se pudo eliminar al trabajador");
-
+    showAlert("Trabajador eliminado correctamente", "success");
     cargarTrabajadores();
-    showAlert("¡Éxito! Se eliminó trabajador.", "success");
+
   } catch (error) {
-    console.error("Error:", error);
-    showAlert("Error al eliminar el trabajador.", "danger");
-  }
-});
-
-
-// Función para cargar los trabajadores desde la API y almacenar en cache
-async function cargarTrabajadores() {
-  try {
-    const response = await fetch("http://localhost:3000/api/trabajadores/trabajadores");
-    if (!response.ok) throw new Error("Error al cargar trabajadores");
-
-    const trabajadores = await response.json();
-    // Guardar en cache para búsquedas locales
-    trabajadoresCache = trabajadores;
-    renderTrabajadores(trabajadoresCache);
-  } catch (error) {
-    console.error("Error:", error);
+    showAlert("Error al eliminar", "danger");
   }
 }
 
-// Iniciar carga y conectar input de búsqueda
-document.addEventListener("DOMContentLoaded", () => {
-  cargarTrabajadores();
-
-  const buscador = document.getElementById("buscadorTrabajadores");
-  if (buscador) {
-    buscador.addEventListener("input", (e) => {
-      const q = e.target.value.trim().toLowerCase();
-      if (!q) return renderTrabajadores(trabajadoresCache);
-
-      const filtrados = trabajadoresCache.filter(t => {
-        const nombreCompleto = `${t.nombre || ''} ${t.apellido || ''}`.toLowerCase();
-        const ced = String(t.cedula || '');
-        const correo = (t.correo || '').toLowerCase();
-        return nombreCompleto.includes(q) || ced.includes(q) || correo.includes(q);
-      });
-
-      renderTrabajadores(filtrados);
-    });
-  }
-});
-
-
-async function abrirModalEditar(id_trabajador) {
+// ===============================
+// ABRIR MODAL EDITAR
+// ===============================
+async function abrirModalEditar(id) {
   try {
-    const response = await fetch(`http://localhost:3000/api/trabajadores/${id_trabajador}`);
-    if (!response.ok) throw new Error("No se pudo cargar el trabajador");
+    const t = await apiFetch(`/trabajadores/${id}`);
 
-    const trabajador = await response.json();
+    document.getElementById("trabajadorId").value = t.id_trabajador;
+    document.getElementById("cedula").value = t.cedula;
+    document.getElementById("nombre").value = t.nombre;
+    document.getElementById("apellido").value = t.apellido;
+    document.getElementById("celular").value = t.telefono;
+    document.getElementById("correo").value = t.correo;
+    document.getElementById("direccion").value = t.direccion;
+    document.getElementById("fechaNacimiento").value = t.fecha_nacimiento.split("T")[0];
 
-  // Llenar los campos del formulario
-  // usar id_trabajador que devuelve la API
-  document.getElementById("trabajadorId").value = trabajador.id_trabajador || trabajador.id;
-    document.getElementById("cedula").value = trabajador.cedula;
-    document.getElementById("nombre").value = trabajador.nombre;
-    document.getElementById("apellido").value = trabajador.apellido;
-    document.getElementById("celular").value = trabajador.telefono;
-    document.getElementById("correo").value = trabajador.correo;
-    document.getElementById("direccion").value = trabajador.direccion;
-    document.getElementById("fechaNacimiento").value = trabajador.fecha_nacimiento.split("T")[0]; 
-
-    // Vista previa foto
-    const vistaPrevia = document.getElementById("vistaPrevia");
-    vistaPrevia.innerHTML = trabajador.foto
-      ? `<img src="/uploads/${trabajador.foto}" class="rounded-circle" style="width:100px; height:100px; object-fit:cover;">`
+    const preview = document.getElementById("vistaPrevia");
+    preview.innerHTML = t.foto
+      ? `<img src="${API_URL.replace('/api','')}/uploads/${t.foto}" style="width:100px;border-radius:50%">`
       : "";
 
-    // 👇 Abrir modal de formulario
-    const modal = new bootstrap.Modal(document.getElementById("modalAgregarTrabajador"));
-    modal.show();
+    new bootstrap.Modal(document.getElementById("modalAgregarTrabajador")).show();
 
   } catch (error) {
-    console.error("Error al cargar trabajador:", error);
-    alert("Error al cargar el trabajador");
+    showAlert("Error al cargar trabajador", "danger");
   }
 }
+
+// ===============================
+// GUARDAR / EDITAR
+// ===============================
+async function guardarTrabajador(e) {
+  e.preventDefault();
+
+  const id = document.getElementById("trabajadorId").value;
+
+  const formData = new FormData();
+  formData.append("cedula", cedula.value);
+  formData.append("nombre", nombre.value);
+  formData.append("apellido", apellido.value);
+  formData.append("correo", correo.value);
+  formData.append("direccion", direccion.value);
+
+  if (celular.value) formData.append("telefono", celular.value);
+  if (fechaNacimiento.value) formData.append("fecha_nacimiento", fechaNacimiento.value);
+  if (foto.files[0]) formData.append("foto", foto.files[0]);
+
+  try {
+    if (id) {
+      await apiFetch(`/trabajadores/trabajadores/${id}`, {
+        method: "PUT",
+        body: formData
+      });
+    } else {
+      await apiFetch(`/trabajadores/trabajadores`, {
+        method: "POST",
+        body: formData
+      });
+    }
+
+    showAlert("Guardado correctamente", "success");
+
+    bootstrap.Modal.getInstance(document.getElementById("modalAgregarTrabajador")).hide();
+
+    document.getElementById("formularioTrabajador").reset();
+    cargarTrabajadores();
+
+  } catch (error) {
+    showAlert("Error al guardar", "danger");
+  }
+}
+
+// ===============================
+// BUSCADOR (LOCAL - RÁPIDO)
+// ===============================
+function filtrarTrabajadores(texto) {
+  texto = texto.toLowerCase();
+
+  const filtrados = trabajadoresCache.filter(t =>
+    `${t.nombre} ${t.apellido}`.toLowerCase().includes(texto) ||
+    String(t.cedula).includes(texto) ||
+    (t.correo || "").toLowerCase().includes(texto)
+  );
+
+  renderTrabajadores(filtrados);
+}
+
+// ===============================
+// INIT (MUY IMPORTANTE)
+// ===============================
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("Trabajadores.js Android OK");
+
+  cargarTrabajadores();
+
+  // Buscar
+  document.getElementById("buscadorTrabajadores")?.addEventListener("input", e => {
+    filtrarTrabajadores(e.target.value);
+  });
+
+  // Guardar
+  document.getElementById("formularioTrabajador")?.addEventListener("submit", guardarTrabajador);
+
+  // Confirmar eliminar
+  document.getElementById("confirmDeleteBtn")?.addEventListener("click", eliminarTrabajador);
+});

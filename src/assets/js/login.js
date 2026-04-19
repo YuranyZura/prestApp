@@ -1,16 +1,49 @@
 // ========== INICIO: LOGIN Y VERIFICACIÓN ==========
+// ==========================================
+// IMPORTS
+// ==========================================
+import { API_URL } from "./config.js";
+
+// ==========================================
+// INICIO
+// ==========================================
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM cargado: login.js iniciado");
-
-  const API_URL = "http://192.168.1.38:3000/api";
   const form = document.querySelector("form");
-
   if (!form) return;
 
   const modalConfirm = new bootstrap.Modal(document.getElementById("modalConfirmarReenvio"));
   const modalVerifEl = document.getElementById("modalVerificacion");
 
-  // ================= TOAST =================
+  // ==========================================
+  // FETCH GLOBAL
+  // ==========================================
+  async function apiFetch(endpoint, options = {}) {
+    try {
+      const res = await fetch(`${API_URL}${endpoint}`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...(options.headers || {})
+        },
+        ...options
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Error en la API");
+      }
+
+      return data;
+
+    } catch (error) {
+      console.error("API ERROR:", error);
+      mostrarToast("Error de conexión", "error");
+    }
+  }
+
+  // ==========================================
+  // TOAST
+  // ==========================================
   function mostrarToast(mensaje, tipo) {
     let toastEl;
 
@@ -44,75 +77,63 @@ document.addEventListener("DOMContentLoaded", () => {
 
     } else if (tipo === "reenvio") {
       document.getElementById("toastReenvioBody").textContent = mensaje;
-      toastEl = document.getElementById("toastReenvio");
-      new bootstrap.Toast(toastEl).show();
+      new bootstrap.Toast(document.getElementById("toastReenvio")).show();
 
     } else {
       document.getElementById("toastLoginErrorBody").textContent = mensaje;
-      toastEl = document.getElementById("toastLoginError");
-      new bootstrap.Toast(toastEl).show();
+      new bootstrap.Toast(document.getElementById("toastLoginError")).show();
     }
   }
 
-  // ================= LOGIN =================
+  // ==========================================
+  // LOGIN
+  // ==========================================
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const correo = document.querySelector('input[name="correo"]').value;
     const contrasena = document.querySelector('input[name="contrasena"]').value;
-  
-    
 
     if (!correo || !contrasena) {
       mostrarToast("Completa todos los campos", "error");
       return;
     }
 
-    try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ correo, contrasena }),
-        credentials: "include"
-      });
+    const result = await apiFetch("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ correo, contrasena })
+    });
 
-      const result = await response.json();
-      console.log("Respuesta del login:", result);
+    if (!result) return;
 
-      if (result.success) {
+    if (result.success) {
 
-        // ✅ Guardar rol
-        if (result.user && result.user.rol !== undefined) {
-          sessionStorage.setItem("user_role", String(result.user.rol));
-        }
-
-        // ✅ Guardar token
-        if (result.token) {
-          localStorage.setItem("token", result.token);
-        }
-
-        mostrarToast("Inicio de sesión exitoso", "exito");
-
-      } else {
-        if (result.message.includes("no está verificada")) {
-
-          sessionStorage.setItem("correo_usuario", correo);
-          document.getElementById("correoConfirmacion").textContent = correo;
-
-          modalConfirm.show();
-
-        } else {
-          mostrarToast(result.message, "error");
-        }
+      // ✅ Guardar rol
+      if (result.user?.rol !== undefined) {
+        sessionStorage.setItem("user_role", String(result.user.rol));
       }
 
-    } catch (error) {
-      console.error("Error en login:", error);
-      mostrarToast("Error de conexión con el servidor", "error");
+      // ✅ Guardar token (IMPORTANTE PARA ANDROID)
+      if (result.token) {
+        localStorage.setItem("token", result.token);
+      }
+
+      mostrarToast("Inicio de sesión exitoso", "exito");
+
+    } else {
+      if (result.message.includes("no está verificada")) {
+        sessionStorage.setItem("correo_usuario", correo);
+        document.getElementById("correoConfirmacion").textContent = correo;
+        modalConfirm.show();
+      } else {
+        mostrarToast(result.message, "error");
+      }
     }
   });
 
-  // ================= REENVIAR =================
+  // ==========================================
+  // REENVIAR CÓDIGO
+  // ==========================================
   document.getElementById("btnConfirmarReenvio").addEventListener("click", async () => {
     modalConfirm.hide();
 
@@ -123,30 +144,21 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    try {
-      const res = await fetch(`${API_URL}/auth/reenvio_codigo`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ correo })
-      });
+    const data = await apiFetch("/auth/reenvio_codigo", {
+      method: "POST",
+      body: JSON.stringify({ correo })
+    });
 
-      const data = await res.json();
-
-      if (data.success) {
-        mostrarToast("Código reenviado", "reenvio");
-      } else {
-        mostrarToast(data.message, "error");
-      }
-
-      const modalVerif = new bootstrap.Modal(modalVerifEl);
-      modalVerif.show();
-
-    } catch (err) {
-      mostrarToast("Error al reenviar", "error");
+    if (data?.success) {
+      mostrarToast("Código reenviado", "reenvio");
     }
+
+    new bootstrap.Modal(modalVerifEl).show();
   });
 
-  // ================= VERIFICACIÓN =================
+  // ==========================================
+  // VERIFICACIÓN
+  // ==========================================
   const formVerificacion = document.getElementById("formVerificacion");
 
   if (formVerificacion) {
@@ -163,28 +175,18 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      try {
-        const res = await fetch(`${API_URL}/auth/verify-email`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ correo, codigo })
-        });
+      const data = await apiFetch("/auth/verify-email", {
+        method: "POST",
+        body: JSON.stringify({ correo, codigo })
+      });
 
-        const data = await res.json();
-
-        if (data.success) {
-          mostrarToast("Cuenta verificada", "verificado");
-          bootstrap.Modal.getInstance(modalVerifEl)?.hide();
-        } else {
-          mostrarToast(data.message, "error");
-        }
-
-      } catch {
-        mostrarToast("Error de conexión", "error");
+      if (data?.success) {
+        mostrarToast("Cuenta verificada", "verificado");
+        bootstrap.Modal.getInstance(modalVerifEl)?.hide();
       }
     });
 
-    // UX inputs código
+    // UX inputs
     inputs.forEach((input, i) => {
       input.addEventListener("input", () => {
         if (input.value && i < inputs.length - 1) {

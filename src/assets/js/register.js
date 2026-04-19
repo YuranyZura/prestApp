@@ -1,162 +1,188 @@
-let correoUsuario = ""; // Puedes usar sessionStorage para mayor seguridad
+// =============================
+// VARIABLES GLOBALES
+// =============================
+let correoUsuario = sessionStorage.getItem("correo_usuario") || "";
 
-// Evento de registro
-document.querySelector("form").addEventListener("submit", async (e) => {
-  e.preventDefault();
+// =============================
+// INICIO
+// =============================
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("Register.js cargado");
 
-  const data = {
-    nombre: document.querySelector('input[name="nombre"]').value,
-    apellido: document.querySelector('input[name="apellido"]').value,
-    correo: document.querySelector('input[name="correo"]').value,
-    contrasena: document.querySelector('input[name="contrasena"]').value,
-  };
-
-  try {
-    const response = await fetch("http://localhost:3000/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      // Guardamos el correo
-      correoUsuario = data.correo;
-      sessionStorage.setItem("correo_usuario", data.correo); // Persistencia
-
-      // Mostrar modal de verificación
-      const modal = new bootstrap.Modal(document.getElementById("modalVerificacion"));
-      modal.show();
-
-    } else {
-      mostrarToast(result.message, "error");
-    }
-  } catch (error) {
-    console.error("Error en /register:", error);
-    mostrarToast("Error en el servidor", "error");
-  }
+  inicializarFormularioRegistro();
+  inicializarVerificacion();
+  inicializarReenvio();
 });
 
-// Configuración del modal de verificación
-document.addEventListener("DOMContentLoaded", () => {
+// =============================
+// REGISTRO
+// =============================
+function inicializarFormularioRegistro() {
+  const form = document.querySelector("form");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const data = {
+      nombre: document.querySelector('input[name="nombre"]').value.trim(),
+      apellido: document.querySelector('input[name="apellido"]').value.trim(),
+      correo: document.querySelector('input[name="correo"]').value.trim(),
+      contrasena: document.querySelector('input[name="contrasena"]').value
+    };
+
+    if (!data.nombre || !data.apellido || !data.correo || !data.contrasena) {
+      mostrarToast("Completa todos los campos", "error");
+      return;
+    }
+
+    try {
+      const result = await apiFetch("/auth/register", {
+        method: "POST",
+        body: JSON.stringify(data)
+      });
+
+      if (result.success) {
+        correoUsuario = data.correo;
+        sessionStorage.setItem("correo_usuario", data.correo);
+
+        mostrarModalVerificacion();
+
+      } else {
+        mostrarToast(result.message, "error");
+      }
+
+    } catch (error) {
+      console.error("Error en registro:", error);
+      mostrarToast("Error en el servidor", "error");
+    }
+  });
+}
+
+// =============================
+// MODAL VERIFICACIÓN
+// =============================
+function mostrarModalVerificacion() {
+  const modal = new bootstrap.Modal(document.getElementById("modalVerificacion"));
+  modal.show();
+}
+
+// =============================
+// VERIFICACIÓN
+// =============================
+function inicializarVerificacion() {
+  const formVerificacion = document.getElementById("formVerificacion");
+  if (!formVerificacion) return;
+
   const inputs = document.querySelectorAll(".codigo-input");
 
-  // Pasar automáticamente al siguiente input
+  // UX inputs
   inputs.forEach((input, i) => {
     input.addEventListener("input", () => {
-      if (input.value.length === 1 && i < inputs.length - 1) {
+      if (input.value && i < inputs.length - 1) {
         inputs[i + 1].focus();
       }
     });
 
-    // Permitir borrar y regresar
     input.addEventListener("keydown", (e) => {
-      if (e.key === "Backspace" && input.value === "" && i > 0) {
+      if (e.key === "Backspace" && !input.value && i > 0) {
         inputs[i - 1].focus();
       }
     });
   });
 
-  // Manejar envío del formulario de verificación
-  document.getElementById("formVerificacion").addEventListener("submit", async (e) => {
+  formVerificacion.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const codigo = Array.from(inputs).map(inp => inp.value).join("");
 
-    if (codigo.length !== 6) {
-      mostrarToast("El código debe tener 6 dígitos", "error");
+    const codigo = Array.from(inputs).map(i => i.value).join("");
+
+    if (!correoUsuario || codigo.length !== 6) {
+      mostrarToast("Código inválido", "error");
       return;
     }
 
     try {
-      const res = await fetch("http://localhost:3000/api/auth/verify-email", {
+      const result = await apiFetch("/auth/verify-email", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo: correoUsuario, codigo })
       });
 
-      const data = await res.json();
+      if (result.success) {
+        mostrarToast("Cuenta verificada", "exito");
 
-      if (data.success) {
-        // Éxito: mostrar toast y redirigir
-        const toastEl = document.getElementById("toastVerificacion");
-        const toast = new bootstrap.Toast(toastEl);
-        toast.show();
-
-        // Redirigir después de que termine el toast
-        toastEl.addEventListener("hidden.bs.toast", () => {
-          window.location.href = "./login"; // o "./login"
-        });
-
-        // Cerrar modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById("modalVerificacion"));
+        const modal = bootstrap.Modal.getInstance(
+          document.getElementById("modalVerificacion")
+        );
         modal.hide();
 
       } else {
-        //  Error
-        mostrarToast(data.message, "error");
+        mostrarToast(result.message, "error");
       }
-    } catch (err) {
+
+    } catch (error) {
       mostrarToast("Error de conexión", "error");
     }
   });
+}
 
-  // Reenviar código
-  // Reenviar código
-document.getElementById("btnReenviar").addEventListener("click", async () => {
-  if (!correoUsuario) {
-    mostrarToast("Primero debes registrarte", "error");
-    return;
-  }
+// =============================
+// REENVIAR CÓDIGO
+// =============================
+function inicializarReenvio() {
+  const btn = document.getElementById("btnReenviar");
+  if (!btn) return;
 
-  try {
-    const res = await fetch("http://localhost:3000/api/auth/reenvio_codigo", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ correo: correoUsuario })
-    });
+  btn.addEventListener("click", async () => {
 
-    const data = await res.json();
-
-    if (data.success) {
-      //  Mostrar toast de reenvío (sin redirección)
-      mostrarToast(data.message, "reenvio");
-    } else {
-      //  Mostrar error
-      mostrarToast(data.message, "error");
+    if (!correoUsuario) {
+      mostrarToast("Primero debes registrarte", "error");
+      return;
     }
-  } catch (err) {
-    console.error("Error al reenviar:", err);
-    mostrarToast("No se pudo reenviar el código. Intenta más tarde.", "error");
-  }
-});
-});
 
-// Función para mostrar toasts
+    try {
+      const result = await apiFetch("/auth/reenvio_codigo", {
+        method: "POST",
+        body: JSON.stringify({ correo: correoUsuario })
+      });
+
+      if (result.success) {
+        mostrarToast("Código reenviado", "reenvio");
+      } else {
+        mostrarToast(result.message, "error");
+      }
+
+    } catch (error) {
+      console.error("Error reenviando:", error);
+      mostrarToast("No se pudo reenviar el código", "error");
+    }
+  });
+}
+
+// =============================
+// TOASTS
+// =============================
 function mostrarToast(mensaje, tipo) {
   let toastEl;
 
   if (tipo === "exito") {
-    // Verificación exitosa → redirige
     toastEl = document.getElementById("toastVerificacion");
+
     const toast = new bootstrap.Toast(toastEl);
-    
-    // Escuchar solo una vez
+
     const onHidden = () => {
       window.location.href = "./login";
       toastEl.removeEventListener("hidden.bs.toast", onHidden);
     };
+
     toastEl.addEventListener("hidden.bs.toast", onHidden);
     toast.show();
 
   } else if (tipo === "reenvio") {
-    // Reenvío → no redirige
     toastEl = document.getElementById("toastReenvio");
     document.getElementById("toastReenvioBody").textContent = mensaje;
     new bootstrap.Toast(toastEl).show();
 
   } else {
-    // Error
     document.getElementById("toastErrorBody").textContent = mensaje;
     new bootstrap.Toast(document.getElementById("toastError")).show();
   }

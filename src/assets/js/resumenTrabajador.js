@@ -1,276 +1,201 @@
-/**
- * Módulo para mostrar el resumen de cuotas pagadas hoy
- * Solicita datos al backend y los muestra en tablas y estadísticas
- */
+// =============================
+// INICIO
+// =============================
+let intervaloResumen = null;
 
-document.addEventListener('DOMContentLoaded', function () {
-  // Establecer la fecha de hoy en el input del filtro
-  const filtroFecha = document.getElementById('filtroFecha');
-  if (filtroFecha) {
-    filtroFecha.value = new Date().toISOString().split('T')[0];
-  }
+document.addEventListener('DOMContentLoaded', () => {
+  console.log("ResumenCobros.js cargado");
 
-  cargarResumenCuotasHoy();
-  actualizarResumenPeriodicamente();
+  setFechaActual();
+  cargarResumenHoy();
+  iniciarAutoRefresh();
+  controlarVisibilidadApp(); // 🔥 IMPORTANTE PARA ANDROID
 });
 
-/**
- * Obtiene el resumen de cuotas pagadas hoy desde el backend
- */
-async function cargarResumenCuotasHoy() {
-  try {
-    const response = await fetch('http://localhost:3000/api/pagos/resumen-hoy', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-
-    if (!response.ok) {
-      console.error('Error al cargar resumen:', response.status);
-      mostrarErrorResumen();
-      return;
-    }
-
-    const data = await response.json();
-    actualizarVistaResumen(data);
-  } catch (error) {
-    console.error('Error:', error);
-    mostrarErrorResumen();
+// =============================
+// FECHA ACTUAL
+// =============================
+function setFechaActual() {
+  const input = document.getElementById('filtroFecha');
+  if (input) {
+    input.value = new Date().toISOString().split('T')[0];
   }
 }
 
-/**
- * Carga el resumen para una fecha específica
- */
+// =============================
+// API
+// =============================
+async function cargarResumenHoy() {
+  try {
+    const data = await apiFetch("/pagos/resumen-hoy", {
+      method: "GET"
+    });
+
+    actualizarVista(data);
+
+  } catch (error) {
+    console.error("Error resumen hoy:", error);
+    mostrarError();
+  }
+}
+
 async function cargarResumenPorFecha() {
-  const filtroFecha = document.getElementById('filtroFecha');
-  if (!filtroFecha || !filtroFecha.value) {
-    alert('Por favor selecciona una fecha');
+  const input = document.getElementById('filtroFecha');
+
+  if (!input || !input.value) {
+    mostrarToast("Selecciona una fecha", "warning");
     return;
   }
 
-  const fecha = filtroFecha.value;
-  
   try {
-    const response = await fetch(`http://localhost:3000/api/pagos/resumen-dia?fecha=${fecha}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
+    const data = await apiFetch(`/pagos/resumen-dia?fecha=${input.value}`, {
+      method: "GET"
     });
 
-    if (!response.ok) {
-      console.error('Error al cargar resumen:', response.status);
-      mostrarErrorResumen();
-      return;
-    }
+    actualizarVista(data);
 
-    const data = await response.json();
-    actualizarVistaResumen(data);
   } catch (error) {
-    console.error('Error:', error);
-    mostrarErrorResumen();
+    console.error("Error resumen fecha:", error);
+    mostrarError();
   }
 }
 
-/**
- * Actualiza la vista con los datos del resumen
- */
-function actualizarVistaResumen(data) {
-  // Actualizar estadísticas
+// =============================
+// UI
+// =============================
+function actualizarVista(data) {
   actualizarEstadisticas(data);
-  
-  // Actualizar tabla de cuotas
-  actualizarTablaCuotas(data.cuotas || []);
-  
-  // Actualizar tabla de clientes
-  actualizarTablaClientes(data.clientes || []);
+  renderListaCobros(data.cuotas || []);
 }
 
-/**
- * Actualiza las tarjetas de estadísticas
- */
+// =============================
+// ESTADÍSTICAS
+// =============================
 function actualizarEstadisticas(data) {
-  const estadisticas = {
-    totalRecaudado: data.totalRecaudado || 0,
-    totalCuotas: data.totalCuotas || 0,
-    clientesAtendidos: data.clientesAtendidos || 0,
-    promedioXCliente: data.promedioXCliente || 0
-  };
-
-  // Total Cobrado (usando IDs de Rol2_trabajador.html)
-  const elemTotalCobrado = document.getElementById('totalCobrado');
-  if (elemTotalCobrado) {
-    elemTotalCobrado.textContent = `$${formatearNumero(estadisticas.totalRecaudado)}`;
-  }
-
-  // Total Pendiente (mostrar lo que falta por cobrar)
-  const elemTotalPendiente = document.getElementById('totalPendiente');
-  if (elemTotalPendiente) {
-    elemTotalPendiente.textContent = `$${formatearNumero(0)}`; // Se calcularía del negocio real
-  }
-
-  // Clientes Visitados
-  const elemClientes = document.getElementById('clientesVisitados');
-  if (elemClientes) {
-    elemClientes.textContent = estadisticas.clientesAtendidos;
-  }
+  setText("totalCobrado", `$${formatear(data.totalRecaudado)}`);
+  setText("clientesVisitados", data.clientesAtendidos || 0);
+  setText("totalPendiente", `$${formatear(data.totalPendiente || 0)}`);
 }
 
-/**
- * Actualiza la tabla de cuotas pagadas hoy
- */
-function actualizarTablaCuotas(cuotas) {
+// =============================
+// LISTA
+// =============================
+function renderListaCobros(cuotas) {
   const contenedor = document.getElementById('desgloseCobrosList');
   if (!contenedor) return;
 
-  if (!cuotas || cuotas.length === 0) {
+  if (!cuotas.length) {
     contenedor.innerHTML = `
       <div class="text-center py-4">
-        <i class="ti ti-receipt" style="font-size: 2rem; color: #B3B3B3;"></i>
-        <p class="text-muted mt-2">No hay cobros registrados hoy</p>
+        <i class="ti ti-receipt fs-1 text-muted"></i>
+        <p class="text-muted">No hay cobros hoy</p>
       </div>
     `;
     return;
   }
 
-  let html = '<div class="list-group">';
-  
-  cuotas.forEach((cuota, index) => {
-    html += `
-      <div class="list-group-item">
-        <div class="d-flex justify-content-between align-items-start">
-          <div>
-            <h6 class="mb-1 fw-semibold">
-              <span class="badge bg-primary me-2">#${index + 1}</span>
-              ${cuota.nombreCliente}
-            </h6>
-            <p class="mb-1 text-muted small">
-              <i class="ti ti-id"></i> ${cuota.cedula}
-            </p>
-            <p class="mb-0 text-muted small">
-              <i class="ti ti-clock"></i> ${cuota.hora} | 
-              <i class="ti ti-coin"></i> ${cuota.metodo}
-            </p>
-          </div>
-          <div class="text-end">
-            <span class="badge bg-success fs-6">$${formatearNumero(cuota.monto)}</span>
-          </div>
+  contenedor.innerHTML = cuotas.map((c, i) => `
+    <div class="list-group-item">
+      <div class="d-flex justify-content-between">
+        <div>
+          <h6 class="fw-semibold">
+            <span class="badge bg-primary me-2">#${i + 1}</span>
+            ${c.nombreCliente}
+          </h6>
+          <small class="text-muted">
+            ${c.cedula} • ${c.hora} • ${c.metodo}
+          </small>
         </div>
+        <span class="badge bg-success">$${formatear(c.monto)}</span>
       </div>
-    `;
-  });
-
-  html += '</div>';
-  contenedor.innerHTML = html;
+    </div>
+  `).join('');
 }
 
-/**
- * Actualiza la tabla de clientes atendidos hoy
- */
-function actualizarTablaClientes(clientes) {
-  // Nota: En Rol2_trabajador.html no hay una tabla separada de clientes
-  // pero esta función queda disponible para futura expansión
-  console.log('Clientes atendidos:', clientes);
+// =============================
+// UTILIDADES
+// =============================
+function setText(id, valor) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = valor;
 }
 
-/**
- * Formatea números con separador de miles
- */
-function formatearNumero(numero) {
-  if (!numero) return '0.00';
-  return parseFloat(numero).toLocaleString('es-CO', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+function formatear(num) {
+  return Number(num || 0).toLocaleString('es-CO', {
+    minimumFractionDigits: 2
   });
 }
 
-/**
- * Muestra mensaje de error en la vista
- */
-function mostrarErrorResumen() {
-  const tbody = document.getElementById('tablaCuotasHoy');
-  if (tbody) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="7" class="text-center py-4 text-danger">
-          <i class="ti ti-alert-circle" style="font-size: 2rem; display: block; margin-bottom: 10px;"></i>
-          Error al cargar el resumen. Intenta de nuevo más tarde.
-        </td>
-      </tr>
+// =============================
+// ERRORES
+// =============================
+function mostrarError() {
+  const contenedor = document.getElementById('desgloseCobrosList');
+  if (contenedor) {
+    contenedor.innerHTML = `
+      <div class="text-center text-danger py-4">
+        <i class="ti ti-alert-circle fs-1"></i>
+        <p>Error al cargar datos</p>
+      </div>
     `;
   }
 }
 
-/**
- * Actualiza el resumen cada 30 segundos
- */
-function actualizarResumenPeriodicamente() {
-  setInterval(() => {
-    cargarResumenCuotasHoy();
-  }, 30000); // Cada 30 segundos
+// =============================
+// AUTO REFRESH INTELIGENTE
+// =============================
+function iniciarAutoRefresh() {
+  if (intervaloResumen) clearInterval(intervaloResumen);
+
+  intervaloResumen = setInterval(() => {
+    console.log("Actualizando resumen...");
+    cargarResumenHoy();
+  }, 30000);
 }
 
-
-
-/**
- * Abre el resumen en una nueva ventana para imprimir
- */
-function imprimirResumen() {
-  const printWindow = window.open('', '', 'height=600,width=800');
-  const fecha = new Date().toLocaleDateString('es-CO', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+// 🔥 CLAVE PARA ANDROID
+function controlarVisibilidadApp() {
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      console.log("App en segundo plano → detener refresh");
+      clearInterval(intervaloResumen);
+    } else {
+      console.log("App activa → reanudar refresh");
+      iniciarAutoRefresh();
+      cargarResumenHoy();
+    }
   });
-  
-  const contenido = document.querySelector('#desgloseCobrosList');
-  const htmlContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Resumen de Cobros - ${fecha}</title>
-      <link rel="stylesheet" href="../assets/css/styles.min.css" />
-      <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        h2 { color: #5D87FF; text-align: center; margin-bottom: 5px; }
-        .fecha { text-align: center; color: #666; margin-bottom: 20px; }
-        .stats { display: flex; justify-content: space-around; margin: 20px 0; }
-        .stat-item { text-align: center; }
-        .stat-value { font-size: 28px; font-weight: bold; color: #5D87FF; }
-        .list-group-item { border: 1px solid #ddd; padding: 15px; margin: 10px 0; }
-        .fw-semibold { font-weight: 600; }
-      </style>
-    </head>
-    <body>
-      <h2>RESUMEN DE COBROS DEL DÍA</h2>
-      <p class="fecha">Fecha: ${fecha}</p>
-      
-      <div class="stats">
-        <div class="stat-item">
-          <div class="stat-label">Total Cobrado:</div>
-          <div class="stat-value">${document.getElementById('totalCobrado')?.textContent || '$0.00'}</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-label">Clientes Visitados:</div>
-          <div class="stat-value">${document.getElementById('clientesVisitados')?.textContent || '0'}</div>
-        </div>
-      </div>
+}
 
-      <h3 style="margin-top: 30px; color: #333;">Desglose de Cobros</h3>
-      ${contenido ? contenido.innerHTML : '<p>Sin datos</p>'}
-      
-      <script>
-        window.print();
-        setTimeout(() => window.close(), 500);
-      </script>
-    </body>
+// =============================
+// IMPRIMIR
+// =============================
+function imprimirResumen() {
+  const fecha = new Date().toLocaleDateString('es-CO');
+  const contenido = document.getElementById('desgloseCobrosList')?.innerHTML;
+
+  const win = window.open('', '_blank');
+
+  win.document.write(`
+    <html>
+      <head>
+        <title>Resumen ${fecha}</title>
+        <style>
+          body { font-family: Arial; padding:20px }
+          h2 { text-align:center }
+        </style>
+      </head>
+      <body>
+        <h2>Resumen de Cobros</h2>
+        <p>${fecha}</p>
+        ${contenido || 'Sin datos'}
+        <script>
+          window.print();
+          setTimeout(()=>window.close(),500);
+        </script>
+      </body>
     </html>
-  `;
-  
-  printWindow.document.write(htmlContent);
-  printWindow.document.close();
+  `);
+
+  win.document.close();
 }
