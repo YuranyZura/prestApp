@@ -1,223 +1,176 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PrestApp</title>
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PrestApp - Plantilla Base</title>
+
   <!-- Favicon -->
-  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
-  
-  <!-- Bootstrap CSS -->
+  <link rel="shortcut icon" href="../assets/images/logos/favicon.png" />
+
+  <!-- CSS -->
   <link rel="stylesheet" href="../assets/css/styles.min.css" />
-  
-  <!-- Variables CSS Global (Sistema de Diseño) -->
   <link rel="stylesheet" href="../assets/css/variables.css" />
-  
-  <!-- Tabler Icons CSS -->
   <link rel="stylesheet" href="../assets/css/icons/tabler-icons/tabler-icons.css" />
-  
-  <!-- Estilos personalizados adicionales -->
-  <style>
-    /* Ajustes específicos de la aplicación */
-    .app-container {
-      display: flex;
-      min-height: 100vh;
-      background-color: var(--light-bg);
-    }
-    
-    .app-sidebar {
-      width: 260px;
-      background-color: var(--white);
-      border-right: 1px solid var(--border-color);
-      box-shadow: var(--shadow-sm);
-      overflow-y: auto;
-      position: fixed;
-      height: 100vh;
-      left: 0;
-      top: 0;
-    }
-    
-    .app-main {
-      margin-left: 260px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .app-header {
-      background-color: var(--white);
-      border-bottom: 1px solid var(--border-color);
-      padding: var(--spacing-md) var(--spacing-lg);
-      box-shadow: var(--shadow-sm);
-      position: sticky;
-      top: 0;
-      z-index: 1020;
-    }
-    
-    .app-content {
-      flex: 1;
-      padding: var(--spacing-xl);
-      overflow-y: auto;
-    }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-      .app-sidebar {
-        width: 100%;
-        position: relative;
-        height: auto;
-        border-right: none;
-        border-bottom: 1px solid var(--border-color);
-      }
-      
-      .app-main {
-        margin-left: 0;
-      }
-      
-      .app-content {
-        padding: var(--spacing-lg);
-      }
-    }
-  </style>
+
+  <!-- NUEVO CSS (sin estilos inline) -->
+  <link rel="stylesheet" href="../assets/css/template.css">
 </head>
+
 <body>
-  <!-- Contenedor principal de la aplicación -->
-  <div class="app-container">
-    
-    <!-- SIDEBAR (Navegación) -->
-    <aside class="app-sidebar">
-      <div class="p-4">
-        <!-- Logo -->
-        <div class="brand-logo mb-5">
-          <a href="./index.html" class="text-decoration-none d-block text-center">
-            <img src="../assets/images/logos/prestapp-remove.png" width="150" alt="PrestApp" />
-          </a>
-        </div>
-        
-        <!-- Navegación -->
-        <nav class="nav flex-column gap-2" id="sidebarNav">
-          <div class="nav-section-title ps-3 py-2">
-            <span class="text-muted small fw-bold">INICIO</span>
-          </div>
-          
-          <a href="./index.html" class="nav-link nav-link-sidebar">
-            <i class="ti ti-layout-dashboard me-2"></i>
-            <span>Dashboard</span>
-          </a>
-          
-          <div class="nav-section-title ps-3 py-2 mt-3">
-            <span class="text-muted small fw-bold">GESTIÓN</span>
-          </div>
-          
-          <a href="./trabajadores.html" class="nav-link nav-link-sidebar">
-            <i class="ti ti-users me-2"></i>
-            <span>Trabajadores</span>
-          </a>
-          
-          <a href="./clientes.html" class="nav-link nav-link-sidebar">
-            <i class="ti ti-user-check me-2"></i>
-            <span>Clientes</span>
-          </a>
-          
-          <div class="nav-section-title ps-3 py-2 mt-3">
-            <span class="text-muted small fw-bold">CUENTA</span>
-          </div>
-          
-          <a href="javascript:void(0)" class="nav-link nav-link-sidebar" id="btnCerrarSesion">
-            <i class="ti ti-logout me-2"></i>
-            <span>Cerrar Sesión</span>
-          </a>
-        </nav>
+
+<div class="app-container">
+
+  <!-- SIDEBAR -->
+  <aside class="app-sidebar" id="sidebar">
+
+    <div class="sidebar-content">
+
+      <!-- Logo -->
+      <div class="brand-logo text-center">
+        <a href="index.html" title="Ir al dashboard">
+          <img src="../assets/images/logos/prestapp-remove.png" alt="PrestApp Logo" width="150">
+        </a>
       </div>
-    </aside>
-    
-    <!-- CONTENIDO PRINCIPAL -->
-    <div class="app-main">
-      <!-- HEADER -->
-      <header class="app-header">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <button class="btn btn-sm btn-light d-md-none" id="toggleSidebar">
-              <i class="ti ti-menu-2"></i>
-            </button>
-          </div>
-          
-          <div class="d-flex align-items-center gap-3">
-            <!-- Notificaciones -->
-            <div class="dropdown">
-              <button class="btn btn-link text-decoration-none" data-bs-toggle="dropdown">
-                <i class="ti ti-bell-ringing fs-5"></i>
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  <span class="visually-hidden">nuevas notificaciones</span>
-                </span>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">Notificación 1</a></li>
-                <li><a class="dropdown-item" href="#">Notificación 2</a></li>
-              </ul>
-            </div>
-            
-            <!-- Perfil de Usuario -->
-            <div class="dropdown">
-              <button class="btn btn-link text-decoration-none p-0" data-bs-toggle="dropdown">
-                <img src="../assets/images/profile/user-1.jpg" alt="Usuario" width="35" height="35" class="rounded-circle">
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">
-                  <i class="ti ti-user me-2"></i>Mi Perfil
-                </a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="javascript:void(0)" id="btnCerrarSesionHeader">
-                  <i class="ti ti-logout me-2"></i>Cerrar Sesión
-                </a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </header>
-      
-      <!-- CONTENIDO -->
-      <div class="app-content">
-        <!-- CONTENIDO ESPECÍFICO DE CADA PÁGINA VA AQUÍ -->
-        <!-- Reemplazar con el contenido de cada página -->
-      </div>
+
+      <!-- Navegación -->
+      <nav class="nav flex-column" id="sidebarNav">
+
+        <span class="nav-title">INICIO</span>
+
+        <a href="index.html" class="nav-link nav-link-sidebar">
+          <i class="ti ti-layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+
+        <span class="nav-title">GESTIÓN</span>
+
+        <a href="trabajadores.html" class="nav-link nav-link-sidebar">
+          <i class="ti ti-users"></i>
+          <span>Trabajadores</span>
+        </a>
+
+        <a href="clientes.html" class="nav-link nav-link-sidebar">
+          <i class="ti ti-user-check"></i>
+          <span>Clientes</span>
+        </a>
+
+        <span class="nav-title">CUENTA</span>
+
+        <button class="nav-link nav-link-sidebar btn-logout"
+                id="btnCerrarSesion"
+                title="Cerrar sesión">
+          <i class="ti ti-logout"></i>
+          <span>Cerrar sesión</span>
+        </button>
+
+      </nav>
     </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="app-main">
+
+    <!-- HEADER -->
+    <header class="app-header">
+
+      <div class="header-left">
+        <button id="toggleSidebar"
+                class="btn btn-light d-md-none"
+                title="Abrir menú">
+          <i class="ti ti-menu-2"></i>
+        </button>
+      </div>
+
+      <div class="header-right">
+
+        <!-- Notificaciones -->
+        <div class="dropdown">
+          <button class="btn btn-link position-relative"
+                  data-bs-toggle="dropdown"
+                  title="Notificaciones">
+            <i class="ti ti-bell-ringing"></i>
+            <span class="badge-dot"></span>
+          </button>
+
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#">Notificación 1</a></li>
+            <li><a class="dropdown-item" href="#">Notificación 2</a></li>
+          </ul>
+        </div>
+
+        <!-- Usuario -->
+        <div class="dropdown">
+          <button class="btn p-0"
+                  data-bs-toggle="dropdown"
+                  title="Menú de usuario">
+            <img src="../assets/images/profile/user-1.jpg"
+                 alt="Usuario"
+                 class="avatar">
+          </button>
+
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item" href="#">
+                <i class="ti ti-user"></i> Mi perfil
+              </a>
+            </li>
+            <li><hr></li>
+            <li>
+              <button class="dropdown-item"
+                      id="btnCerrarSesionHeader"
+                      title="Cerrar sesión">
+                <i class="ti ti-logout"></i> Cerrar sesión
+              </button>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+    </header>
+
+    <!-- CONTENIDO -->
+    <main class="app-content" id="appContent">
+      <!-- Aquí va el contenido dinámico -->
+    </main>
+
   </div>
-  
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  
-  <!-- Scripts personalizados -->
-  <script>
-    // Activar enlace de navegación actual
-    document.querySelectorAll('.nav-link-sidebar').forEach(link => {
-      if (link.href === window.location.href) {
-        link.classList.add('active');
-      }
-    });
-    
-    // Toggle sidebar en móvil
-    const toggleSidebar = document.getElementById('toggleSidebar');
-    const appSidebar = document.querySelector('.app-sidebar');
-    
-    if (toggleSidebar) {
-      toggleSidebar.addEventListener('click', function() {
-        appSidebar.classList.toggle('show');
-      });
+
+</div>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+/* Activar link activo */
+document.querySelectorAll('.nav-link-sidebar').forEach(link => {
+  if (link.href.includes(window.location.pathname)) {
+    link.classList.add('active');
+  }
+});
+
+/* Sidebar móvil */
+const toggle = document.getElementById('toggleSidebar');
+const sidebar = document.getElementById('sidebar');
+
+if (toggle) {
+  toggle.addEventListener('click', () => {
+    sidebar.classList.toggle('show');
+  });
+}
+
+/* Cerrar sesión */
+document.querySelectorAll('#btnCerrarSesion, #btnCerrarSesionHeader')
+.forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (confirm('¿Cerrar sesión?')) {
+      window.location.href = '/logout';
     }
-    
-    // Cerrar sesión
-    const btnCerrarSesion = document.querySelectorAll('#btnCerrarSesion, #btnCerrarSesionHeader');
-    btnCerrarSesion.forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        if (confirm('¿Seguro que deseas cerrar sesión?')) {
-          // Redirigir a logout
-          window.location.href = '/logout';
-        }
-      });
-    });
-  </script>
+  });
+});
+</script>
+
 </body>
 </html>

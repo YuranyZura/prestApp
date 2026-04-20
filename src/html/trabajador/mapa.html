@@ -2,92 +2,131 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>PrestApp - Trabajador</title>
 
+    <!-- Viewport optimizado para Android -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+    <title>PrestApp - Mapa Trabajador</title>
+
+    <!-- Favicon -->
     <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
+
+    <!-- Estilos -->
     <link rel="stylesheet" href="../assets/css/styles.min.css" />
     <link rel="stylesheet" href="../assets/css/icons/tabler-icons/tabler-icons.css" />
-    <link rel="stylesheet" href="../assets/css/Rol2_trabajador.css">
+    <link rel="stylesheet" href="../assets/css/Rol2_trabajador.css" />
 
+    <!-- NUEVO: CSS separado (sin inline styles) -->
+    <link rel="stylesheet" href="../assets/css/mapa.css">
+
+    <!-- Google Maps -->
     <script src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY"></script>
-
-    <style>
-        #map {
-            height: 80vh;
-            width: 100%;
-            border-radius: 10px;
-        }
-    </style>
 </head>
+
 <body>
-    <!-- Header con Avatar de Usuario -->
-    <div class="app-header">
-        <div class="app-header-left">
-            <!-- Avatar de usuario en lugar de logo -->
-            <div class="user-avatar">
+
+    <!-- HEADER -->
+    <header class="app-header d-flex justify-content-between align-items-center px-3 py-2">
+
+        <div class="d-flex align-items-center gap-2">
+            <div class="user-avatar" aria-label="Avatar del usuario">
                 JD
             </div>
+
             <div class="user-info">
                 <div class="user-info-name" id="userName">Juan Delgado</div>
                 <div class="user-info-role">Cobrador</div>
             </div>
         </div>
-    
-            <button class="btn btn-outline-primary" onclick="cerrarSesion()">
-                <i class="ti ti-logout"></i>
-                Salir
+
+        <button 
+            class="btn btn-outline-primary"
+            onclick="cerrarSesion()"
+            title="Cerrar sesión"
+            aria-label="Cerrar sesión">
+            <i class="ti ti-logout"></i>
+            <span class="d-none d-sm-inline">Salir</span>
+        </button>
+
+    </header>
+
+    <!-- CONTENIDO -->
+    <main class="app-content container-fluid">
+
+        <!-- SECCIÓN MAPA -->
+        <section class="app-section active" id="section-mapa">
+
+            <div class="card">
+
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="ti ti-map me-2"></i>
+                        Ruta en Tiempo Real
+                    </h5>
+                </div>
+
+                <div class="card-body">
+                    <!-- SIN estilos inline -->
+                    <div id="map" class="map-container" role="region" aria-label="Mapa de rutas"></div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- MENÚ INFERIOR (Mobile Friendly) -->
+    <nav class="navbar fixed-bottom bg-light border-top safe-area-bottom">
+
+        <div class="d-flex w-100 justify-content-around">
+
+            <button 
+                class="btn btn-link app-nav-item active"
+                onclick="cambiarSeccion('mapa', this)"
+                title="Ver mapa"
+                aria-label="Ver mapa">
+
+                <i class="ti ti-map"></i>
+                <div class="nav-text">Mapa</div>
             </button>
+
+            <button 
+                class="btn btn-link app-nav-item"
+                onclick="cambiarSeccion('ruta', this)"
+                title="Ver ruta"
+                aria-label="Ver ruta">
+
+                <i class="ti ti-route"></i>
+                <div class="nav-text">Ruta</div>
+            </button>
+
         </div>
 
-    <!-- Main Content -->
-    <div class="app-content">
-        
-        <!-- 1. RUTA DEL DÍA - Clientes de hoy con pago expandible -->
-        <section class="app-section active" id="section-mapa">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5><i class="ti ti-map"></i> Ruta en Tiempo Real</h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="map"></div>
-                    </div>
-            </div>
-        </section>
-          <!-- MENÚ INFERIOR -->
-<nav class="navbar fixed-bottom bg-light border-top">
-    <div class="d-flex w-100 justify-content-around">
+    </nav>
 
-        <!-- 🔥 BOTÓN MAPA -->
-        <button class="btn btn-link app-nav-item" onclick="cambiarSeccion('mapa', this)">
-            <i class="ti ti-map"></i>
-            <div style="font-size: 0.75rem;">Mapa</div>
-        </button>
+    <!-- SCRIPTS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-        <button class="btn btn-link app-nav-item active" onclick="cambiarSeccion('ruta', this)">
-            <i class="ti ti-route"></i>
-            <div style="font-size: 0.75rem;">Ruta</div>
-        </button>
+    <!-- Script del mapa -->
+    <script src="../../js/mapa.js"></script>
 
-    </div>
-</nav>
+    <script>
+        function cambiarSeccion(seccion, btn) {
+            document.querySelectorAll(".app-section").forEach(sec => sec.classList.remove("active"));
+            document.getElementById("section-" + seccion).classList.add("active");
 
-<!-- SCRIPTS -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+            document.querySelectorAll(".app-nav-item").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+        }
 
-<!-- ✅ CORREGIDO -->
-<script src="../../js/mapa.js"></script>
-
-<script>
-function cambiarSeccion(seccion, btn) {
-    document.querySelectorAll(".app-section").forEach(sec => sec.classList.remove("active"));
-    document.getElementById("section-" + seccion).classList.add("active");
-
-    document.querySelectorAll(".app-nav-item").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-}
-</script>
+        function cerrarSesion() {
+            if (confirm("¿Deseas cerrar sesión?")) {
+                window.location.href = "/login";
+            }
+        }
+    </script>
 
 </body>
-</html>                 
+</html>

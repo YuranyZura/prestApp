@@ -1,503 +1,186 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PrestApp - Detalle Cliente</title>
-  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
-  <link rel="stylesheet" href="../assets/css/styles.min.css" />
-  <!-- Leaflet para mapas -->
+
+  <!-- CSS -->
+
+  <link rel="shortcut icon" href="../../assets/images/logos/favicon.png" />
+  <link rel="stylesheet" href="../../assets/css/styles.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 </head>
+
 <body>
-  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
-    data-sidebar-position="fixed" data-header-position="fixed">
-    <!-- Sidebar Start -->
-    <aside class="left-sidebar">
-      <div>
-        <div class="brand-logo d-flex align-items-center justify-content-between">
-          <a href="./index.html" class="text-nowrap logo-img" aria-label = "Ir al inicio">
-            <img src="../assets/images/logos/prestapp-remove.png" width="180" alt="" />
-          </a>
-          <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
-            <i class="ti ti-x fs-8"></i>
-          </div>
-        </div>
-        <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
-          <ul id="sidebarnav">
-            <li class="nav-small-cap">
-              <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-              <span class="hide-menu">Home</span>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./index.html" aria-expanded="false">
-                <span><i class="ti ti-layout-dashboard"></i></span>
-                <span class="hide-menu">Dashboard</span>
-              </a>
-            </li>
-            <li class="nav-small-cap">
-              <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-              <span class="hide-menu">GESTIÓN</span>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="./Rol2_trabajador.html" aria-expanded="false">
-                <span><i class="ti ti-users"></i></span>
-                <span class="hide-menu">Panel Cobrador</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </aside>
-    <!-- Sidebar End -->
-    <!-- Main wrapper -->
-    <div class="body-wrapper">
-      <!-- Header Start -->
-      <header class="app-header">
-        <nav class="navbar navbar-expand-lg navbar-light">
-          <ul class="navbar-nav">
-            <li class="nav-item d-block d-xl-none">
-              <a class= "nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0) " aria-label="Toggle navigation">
-                <i class="ti ti-menu-2"></i>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link nav-icon-hover" href="javascript:void(0)" aria-label="Notificaciones">
-                <i class="ti ti-bell-ringing"></i>
-                <div class="notification bg-primary rounded-circle"></div>
-              </a>
-            </li>
-          </ul>
-          <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
-            <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
-              <li class="nav-item dropdown">
-                <a class="nav-link nav-icon-hover" href="javascript:void(0)" id= "drop2" data-bs-toggle = "dropdown" aria-expanded = "false" aria-label="Perfil de usuario">
-                  <img src="../assets/images/profile/user-1.jpg" alt="" width="35" height="35" class="rounded-circle">
-                </a>
-                <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
-                  <div class="message-body">
-                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-                      <i class="ti ti-user fs-6"></i>
-                      <p class="mb-0 fs-3">Mi Perfil</p>
-                    </a>
-                    <button id="btnCerrarSesion" class="btn btn-outline-primary mx-3 mt-2 d-block">Cerrar Sesión</button>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </nav>
-      </header>
-      <!-- Header End -->
-      <!-- Content Start -->
-      <div class="container-fluid">
-        <!-- Botón Volver -->
-        <div class="row mb-3">
-          <div class="col-12">
-            <a href="./Rol2_trabajador.html" class="btn btn-light">
-              <i class="ti ti-arrow-left"></i> Volver a clientes
-            </a>
-          </div>
-        </div>
-        <!-- Información del Cliente -->
-        <div class="row">
-          <!-- Datos Principales -->
-          <div class="col-lg-8">
-            <!-- Card: Información Personal -->
-            <div class="card mb-3">
-              <div class="card-body">
-                <h5 class="card-title fw-semibold mb-4">
-                  <i class="ti ti-user-circle"></i> Información del Cliente
-                </h5>
-                <div class="row">
-                  <div class="col-md-4 text-center mb-4">
-                    <img id="fotoCliente" src="https://via.placeholder.com/150?text=Cliente" alt="Foto del cliente" class="rounded-circle" width="150" height="150" style="object-fit: cover; border: 3px solid #5D87FF; box-shadow: 0 4px 12px rgba(93, 135, 255, 0.2);">
-                  </div>
-                  <div class="col-md-8">
-                    <div class="mb-3">
-                      <label class="form-label fw-bold">Nombre Completo</label>
-                      <p class="fs-6 fw-normal" id="nombreCliente">-</p>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Cédula</label>
-                        <p class="fs-7 fw-normal" id="cedulaCliente">-</p>
-                      </div>
-                      <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Teléfono</label>
-                        <p class="fs-7 fw-normal" id="telefonoCliente">-</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <hr>
-                <div class="row">
-                  <div class="col-md-12 mb-3">
-                    <label class="form-label fw-bold">
-                      <i class="ti ti-map-pin"></i> Dirección
-                    </label>
-                    <p class="fs-7 fw-normal" id="direccionCliente">-</p>
-                  </div>
-                </div>
-                <!-- Estado General -->
-                <div class="row mt-4 pt-3 border-top">
-                  <div class="col-md-4">
-                    <div class="text-center">
-                    <div style = " font-size: 2rem ; color: #13DEB9; " aria-hidden = "true" >  
-                       <i class="ti ti-check-circle"></i>
-                      </div>
-                      <p class="text-muted small">Total Prestados</p>
-                      <h5 class="fw-bold">$<span id="totalPrestado">0.00</span></h5>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="text-center">
-                      <div style="font-size: 2rem; color: #FFAE1F;">
-                        <i class="ti ti-clock"></i>
-                      </div>
-                      <p class="text-muted small">Pendiente Pagar</p>
-                      <h5 class="fw-bold">$<span id="totalPendiente">0.00</span></h5>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="text-center">
-                      <div style="font-size: 2rem; color: #5D87FF;">
-                        <i class="ti ti-history"></i>
-                      </div>
-                      <p class="text-muted small">Préstamos</p>
-                      <h5 class="fw-bold" id="totalPrestamos">0</h5>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- Card: Mapa de Ubicación -->
-            <div class="card mb-3">
-              <div class="card-body">
-                <h5 class="card-title fw-semibold mb-3">
-                  <i class="ti ti-map-check"></i> Ubicación
-                </h5>
-                <div id="mapaCliente" style="height: 350px; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                  <!-- Mapa será cargado aquí -->
-                </div>
-                <small class="text-muted d-block mt-2">
-                  <i class="ti ti-info-circle"></i> Haz clic en el mapa para ver más detalles
-                </small>
-              </div>
-            </div>
-            <!-- Card: Historial de Préstamos -->
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title fw-semibold mb-4">
-                  <i class="ti ti-file-invoice"></i> Historial de Préstamos
-                </h5>
-                <div class="table-responsive">
-                  <table class="table table-hover mb-0">
-                    <thead style="background-color: #F5F7FA;">
-                      <tr>
-                        <th class="fw-semibold">Monto</th>
-                        <th class="fw-semibold">Fecha Inicio</th>
-                        <th class="fw-semibold">Plazo</th>
-                        <th class="fw-semibold">Total Pagar</th>
-                        <th class="fw-semibold">Estado</th>
-                      </tr>
-                    </thead>
-                    <tbody id="tablaPrestamos">
-                      <tr>
-                        <td colspan="5" class="text-center py-4">
-                          <p class="text-muted mb-0">
-                            <i class="ti ti-inbox"></i> No hay préstamos registrados
-                          </p>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-            <!-- Card: Historial de Cuotas -->
-            <div class="card mt-3">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                  <h5 class="card-title fw-semibold mb-0">
-                    <i class="ti ti-receipt"></i> Historial de Cuotas
-                  </h5>
-                  <div>
-                    <button class="btn btn-sm btn-outline-primary me-2" onclick="enviarHistorialCorreo()">
-                      <i class="ti ti-mail"></i> Enviar por Correo
-                    </button>
-                    <button class="btn btn-sm btn-outline-success" onclick="enviarHistorialWhatsApp()">
-                      <i class="ti ti-brand-whatsapp"></i> Enviar por WhatsApp
-                    </button>
-                  </div>
-                </div>
-                <div class="table-responsive">
-                  <table class="table table-hover mb-0">
-                    <thead style="background-color: #F5F7FA;">
-                      <tr>
-                        <th class="fw-semibold">#</th>
-                        <th class="fw-semibold">Fecha</th>
-                        <th class="fw-semibold">Monto</th>
-                        <th class="fw-semibold">Método</th>
-                        <th class="fw-semibold">Estado</th>
-                      </tr>
-                    </thead>
-                    <tbody id="tablaCuotas">
-                      <tr>
-                        <td colspan="5" class="text-center py-4">
-                          <p class="text-muted mb-0">
-                            <i class="ti ti-inbox"></i> No hay cuotas registradas
-                          </p>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Sidebar Derecho -->
-          <div class="col-lg-4">
-            <!-- Card: Resumen de Cuotas -->
-            <div class="card mb-3">
-              <div class="card-body">
-                <h5 class="card-title fw-semibold mb-4">
-                  <i class="ti ti-coin"></i> Resumen de Cuotas
-                </h5>
-                <div class="alert alert-light border-start border-success border-3">
-                  <div class="mb-3">
-                    <small class="text-muted">Cuotas Pagadas</small>
-                    <div class="h4 mb-0 fw-bold text-success" id="cuotasPagadas">0</div>
-                  </div>
-                </div>
-                <div class="alert alert-light border-start border-warning border-3">
-                  <div class="mb-3">
-                    <small class="text-muted">Cuotas Pendientes</small>
-                    <div class="h4 mb-0 fw-bold text-warning" id="cuotasPendientes">0</div>
-                  </div>
-                </div>
-                <div class="alert alert-light border-start border-danger border-3">
-                  <div class="mb-3">
-                    <small class="text-muted">Cuotas en Mora</small>
-                    <div class="h4 mb-0 fw-bold text-danger" id="cuotasMora">0</div>
-                  </div>
-                </div>
-                <!-- Barra de progreso -->
-                <div class="mt-4">
-                  <small class="text-muted">Progreso General</small>
-                  <div class="progress mt-2" style="height: 8px;">
-                    <div class="progress-bar bg-success" id="barraProgreso" role="progressbar" style="width: 0%">
-                    </div>
-                  </div>
-                  <small class="text-muted d-block mt-2">
-                    <span id="porcentajePago">0</span>% del total pagado
-                  </small>
-                </div>
-              </div>
-            </div>
-            <!-- Card: Últimas Transacciones -->
-            <div class="card mb-3">
-              <div class="card-body">
-                <h5 class="card-title fw-semibold mb-3">
-                  <i class="ti ti-exchange"></i> Últimos Pagos
-                </h5>
-                <div id="ultimosPagos">
-                  <div class="text-center py-4">
-                    <p class="text-muted small mb-0">
-                      <i class="ti ti-inbox"></i> No hay pagos registrados
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- Card: Acciones -->
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title fw-semibold mb-3">
-                  <i class="ti ti-settings"></i> Acciones
-                </h5>
-                <div class="d-grid gap-2">
-                  <button class="btn btn-primary" onclick="abrirRegistroPago()">
-                    <i class="ti ti-coin"></i> Registrar Pago
-                  </button>
-                  <button class="btn btn-success" onclick="abrirNuevoPrestamo()">
-                    <i class="ti ti-plus-circle"></i> Nuevo Préstamo
-                  </button>
-                  <button class="btn btn-warning" onclick="abrirEditar()">
-                    <i class="ti ti-edit"></i> Editar Información
-                  </button>
-                  <button class="btn btn-danger" onclick="abrirEliminar()">
-                    <i class="ti ti-trash"></i> Eliminar Cliente
-                  </button>
-                </div>
-              </div>
-            </div>
-            <!-- Card: Información del Sistema -->
-            <div class="card mt-3">
-              <div class="card-body">
-                <h6 class="card-title fw-semibold mb-3">Información del Sistema</h6>
-                <div class="mb-2">
-                  <small class="text-muted">Fecha de registro:</small>
-                  <p class="mb-0 fs-7" id="fechaRegistro">-</p>
-                </div>
-                <div class="mb-2">
-                  <small class="text-muted">Última actualización:</small>
-                  <p class="mb-0 fs-7" id="ultimaActualizacion">-</p>
-                </div>
-                <div>
-                  <small class="text-muted">Estado:</small>
-                  <p class="mb-0">
-                    <span class="badge bg-success" id="estadoCliente">Activo</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Content End -->
+
+<div class="page-wrapper" id="main-wrapper">
+
+  <!-- SIDEBAR -->
+
+  <aside class="left-sidebar">
+    <div class="brand-logo text-center p-3">
+      <img src="../../assets/images/logos/prestapp-remove.png" width="160" alt="PrestApp">
     </div>
-  </div>
-  <!-- Modal para registrar pago -->
-  <div class="modal fade" id="modalRegistroPago" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title"><i class="ti ti-coin"></i> Registrar Pago</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <p class="text-muted mb-3">Registra un pago de <strong id="nombreClienteModal">-</strong></p>
-          <div class="mb-3">
-            <label class="form-label fw-bold">Monto</label>
-            <div class="input-group">
-              <span class="input-group-text">$</span>
-              <input type="number" class="form-control" id="montoPago" step="0.01" min="0.01" placeholder="0.00">
-            </div>
-          </div>
-          <div class="mb-3">
-            <label class="form-label fw-bold">Fecha de Pago</label>
-            <input type="date" class="form-control" id="fechaPago">
-          </div>
-          <div class="mb-3">
-            <label class="form-label fw-bold">Método de Pago</label>
-            <select class="form-select" id="metodoPago">
-              <option value="">Seleccione...</option>
-              <option value="efectivo">Efectivo</option>
-              <option value="transferencia">Transferencia</option>
-              <option value="cheque">Cheque</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Nota (Opcional)</label>
-            <textarea class="form-control" id="notaPago" rows="3" placeholder="Agregar observaciones..."></textarea>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-primary" onclick="guardarPago()">
-            <i class="ti ti-device-floppy"></i> Registrar Pago
-          </button>
-        </div>
+
+```
+<nav class="sidebar-nav">
+  <ul class="nav flex-column">
+    <li class="sidebar-item">
+      <a class="sidebar-link" href="./index.html">
+        <i class="ti ti-layout-dashboard"></i> Dashboard
+      </a>
+    </li>
+    <li class="sidebar-item">
+      <a class="sidebar-link" href="./Rol2_trabajador.html">
+        <i class="ti ti-users"></i> Clientes
+      </a>
+    </li>
+  </ul>
+</nav>
+```
+
+  </aside>
+
+  <!-- CONTENIDO -->
+
+  <div class="body-wrapper p-3">
+
+```
+<!-- HEADER -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <button id="btnVolver" class="btn btn-light">
+    <i class="ti ti-arrow-left"></i>volver
+  </button> "btn btn-light" <i class="ti ti-arrow-left"></i> volver
+  </button>
+  <h5 class="mb-0">Detalle Cliente</h5>
+  <div></div>
+</div>
+
+<div class="row">
+
+  <!-- IZQUIERDA -->
+  <div class="col-lg-8">
+
+    <!-- INFO CLIENTE -->
+    <div class="card p-3 mb-3">
+      <h5><i class="ti ti-user"></i> Información</h5>
+
+      <div class="text-center mb-3">
+        <img id="fotoCliente" src="https://via.placeholder.com/120" alt ="Foto Cliente"
+          class="rounded-circle" width="120" height="120">
+      </div>
+
+      <p><strong>Nombre:</strong> <span id="nombreCliente">-</span></p>
+      <p><strong>Cédula:</strong> <span id="cedulaCliente">-</span></p>
+      <p><strong>Teléfono:</strong> <span id="telefonoCliente">-</span></p>
+      <p><strong>Dirección:</strong> <span id="direccionCliente">-</span></p>
+    </div>
+
+    <!-- MAPA -->
+    <div class="card p-3 mb-3">
+      <h5><i class="ti ti-map"></i> Ubicación</h5>
+      <div id="mapaCliente" class="mapa-cliente"></div>
+    </div>
+
+    <!-- PRESTAMOS -->
+    <div class="card p-3">
+      <h5><i class="ti ti-file"></i> Préstamos</h5>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Monto</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="tablaPrestamos">
+            <tr><td colspan="3">Sin datos</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
+
   </div>
-  <!-- Modal para editar cliente -->
-  <div class="modal fade" id="modalEditarCliente" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header bg-warning text-white">
-          <h5 class="modal-title"><i class="ti ti-edit"></i> Editar Cliente</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form id="formEditarCliente">
-            <!-- Foto del cliente -->
-            <div class="row mb-4">
-              <div class="col-12">
-                <div class="text-center">
-                  <img id="editFotoPreview" src="https://via.placeholder.com/120?text=Cliente" 
-                       alt="Vista previa" class="rounded-circle mb-3" 
-                       width="120" height="120" style="object-fit: cover; border: 3px solid #FEC90F;">
-                </div>
-                <div class="mb-3">
-                  <label class="form-label fw-bold">
-                    <i class="ti ti-camera"></i> Foto del Cliente
-                  </label>
-                  <input type="file" class="form-control" id="editFoto" accept="image/*" 
-                         onchange="previsualizarFoto(this)">
-                  <small class="text-muted">Formatos: JPG, PNG, GIF (máx 5MB)</small>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label fw-bold">Nombre Completo *</label>
-                <input type="text" class="form-control" id="editNombre" required>
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label fw-bold">Cédula *</label>
-                <input type="text" class="form-control" id="editCedula" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label fw-bold">Teléfono *</label>
-                <input type="tel" class="form-control" id="editTelefono" required>
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Fecha de Nacimiento</label>
-                <input type="date" class="form-control" id="editFechaNacimiento">
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-8 mb-3">
-                <label class="form-label fw-bold">Dirección *</label>
-                <input type="text" class="form-control" id="editDireccion" required>
-              </div>
-              <div class="col-md-4 mb-3">
-                <label class="form-label">Ciudad</label>
-                <input type="text" class="form-control" id="editCiudad">
-              </div>
-            </div>
-            <div class="alert alert-info">
-              <i class="ti ti-info-circle"></i> 
-              Si cambias la dirección, el sistema intentará geocodificarla automáticamente.
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-warning" onclick="guardarEdicionCliente()">
-            <i class="ti ti-device-floppy"></i> Guardar Cambios
-          </button>
-        </div>
-      </div>
+
+  <!-- DERECHA -->
+  <div class="col-lg-4">
+
+    <!-- RESUMEN -->
+    <div class="card p-3 mb-3">
+      <h5>Resumen</h5>
+      <p>Pagadas: <span id="cuotasPagadas">0</span></p>
+      <p>Pendientes: <span id="cuotasPendientes">0</span></p>
+      <p>Mora: <span id="cuotasMora">0</span></p>
     </div>
-  </div>
-  <!-- Toast Container -->
-  <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999">
-    <div id="toastNotificacion" class="toast" role="alert">
-      <div class="toast-header" id="toastHeader">
-        <i class="ti ti-checks me-2" id="toastIcon"></i>
-        <strong class="me-auto" id="toastTitle">Notificación</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
-      </div>
-      <div class="toast-body" id="toastBody">
-        Mensaje
-      </div>
+
+    <!-- ACCIONES -->
+    <div class="card p-3">
+      <button id="btnRegistrarPago" class="btn btn-primary w-100 mb-2">
+        Registrar Pago
+      </button>
+
+      <button id="btnNuevoPrestamo" class="btn btn-success w-100 mb-2">
+        Nuevo Préstamo
+      </button>
+
+      <button id="btnEditar" class="btn btn-warning w-100 mb-2">
+        Editar
+      </button>
+
+      <button id="btnEliminar" class="btn btn-danger w-100">
+        Eliminar
+      </button>
     </div>
+
   </div>
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
-  <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="../assets/js/sidebarmenu.js"></script>
-  <script src="../assets/js/app.min.js"></script>
-  <!-- Leaflet para mapas -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-  <script src="../assets/js/detalle-cliente.js"></script>
+
+</div>
+```
+
+  </div>
+</div>
+
+<!-- JS -->
+
+<script src="../../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<script src="../../assets/js/detalle-cliente.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  console.log("Detalle Cliente listo en Android");
+
+  // VOLVER
+  document.getElementById("btnVolver").addEventListener("click", () => {
+    window.location.href = "./Rol2_trabajador.html";
+  });
+
+  // BOTONES
+  document.getElementById("btnRegistrarPago").addEventListener("click", () => {
+    abrirRegistroPago();
+  });
+
+  document.getElementById("btnNuevoPrestamo").addEventListener("click", () => {
+    abrirNuevoPrestamo();
+  });
+
+  document.getElementById("btnEditar").addEventListener("click", () => {
+    abrirEditar();
+  });
+
+  document.getElementById("btnEliminar").addEventListener("click", () => {
+    abrirEliminar();
+  });
+
+});
+</script>
 
 </body>
-
 </html>
