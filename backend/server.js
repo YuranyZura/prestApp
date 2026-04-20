@@ -18,7 +18,7 @@ import cobradorRoutes from "./router/rol2_cobrador.js";
 import clientesRoutes from "./router/clientes.js";
 import administradoresRoutes from "./router/administradores.js";
 import pagosRoutes from "./router/pagos.js";
-import rutasRoutes from "./router/rutas.js";
+
 
 const app = express();
 
