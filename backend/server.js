@@ -1,17 +1,16 @@
 import dotenv from "dotenv";
-dotenv.config();
 
-import rutasRoutes from "./router/rutas.js";
+
 import express from "express";
 import cors from "cors";
 import path from "path";
-import fs from "fs";
 import { fileURLToPath } from "url";
 import session from "express-session";
 
 // ✅ IMPORTAR pool correcto
-import pool from "./config/db.js";
-
+dotenv.config();
+import rutasRoutes from "./router/rutas.js";
+import { uploadsDir } from "./config/uploads.js";
 import trabajadoresRoutes from "./router/trabajadores.js";
 import authRouter from "./router/auth.js";
 import cobradorRoutes from "./router/rol2_cobrador.js";
@@ -25,10 +24,6 @@ const app = express();
 // __dirname fix
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// 📁 uploads
-const uploadsDir = path.join(__dirname, "../uploads");
-fs.mkdirSync(uploadsDir, { recursive: true });
 
 // 🔥 Middleware
 app.use(cors({
@@ -56,7 +51,9 @@ app.use(
 // 📂 Archivos
 app.use("/uploads", express.static(uploadsDir));
 app.use(express.static(path.join(__dirname, "../src")));
-
+app.get("/", (req, res) => {
+  res.redirect("/html/login.html");
+});
 // 🔒 No cache
 app.use((req, res, next) => {
   res.setHeader("Cache-Control", "no-store");
@@ -70,31 +67,45 @@ function verificarSesion(req, res, next) {
 }
 
 // 🚀 RUTAS API
-
-app.use("/api/auth", authRouter);
-app.use("/api/trabajadores", trabajadoresRoutes);
-app.use("/api/cobrador", cobradorRoutes);
-app.use("/api/clientes", verificarSesion, clientesRoutes);
-app.use("/api/administradores", verificarSesion, administradoresRoutes);
-app.use("/api/pagos", verificarSesion, pagosRoutes);
-app.use("/api/rutas", rutasRoutes);
+app.get("/test", (req, res) => {
+  console.log("👉 Entró a /test");
+  res.send("TEST OK 🚀");
+});
+app.get("/test", (req, res) => {
+  console.log("👉 Entró a /test");
+  res.send("TEST OK 🚀");
+});
+//app.use("/api/auth", authRouter);
+//app.use("/api/trabajadores", trabajadoresRoutes);
+//app.use("/api/cobrador", cobradorRoutes);
+//app.use("/api/clientes", verificarSesion, clientesRoutes);
+//app.use("/api/administradores", verificarSesion, administradoresRoutes);
+//app.use("/api/pagos", verificarSesion, pagosRoutes);
+//app.use("/api/rutas", rutasRoutes);
 
 // 🌐 Frontend
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../src/html/register.html"));
-});
+//app.get("/", (req, res) => {
+ // res.sendFile(path.join(__dirname, "../src/html/register.html"));
+//});
 
-app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "../src/html/login.html"));
-});
+//app.get("/login", (req, res) => {
+ // res.sendFile(path.join(__dirname, "../src/html/login.html"));
+//});
 
-app.get("/dashboard", (req, res) => {
-  res.sendFile(path.join(__dirname, "../src/html/index.html"));
-});
+//app.get("/dashboard", (req, res) => {
+ // res.sendFile(path.join(__dirname, "../src/html/index.html"));
+//});
 
 // 🚀 SERVER
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
+});
+process.on("uncaughtException", (err) => {
+  console.error("🔥 ERROR GLOBAL:", err);
+});
+
+process.on("unhandledRejection", (err) => {
+  console.error("🔥 PROMESA FALLÓ:", err);
 });

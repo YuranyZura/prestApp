@@ -1,7 +1,7 @@
 // Ruta: /rol2_cobrador.js los endpoints para el rol de cobrador como editar su perfil y ver estadísticas, cobros, etc
 
 import { Router } from "express";
-import { pool } from "../server.js";
+import  pool  from "../config/db.js";
 
 const router = Router();
 

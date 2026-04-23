@@ -1,5 +1,5 @@
 import express from "express";
-import pool from "../server.js";
+import pool from "../config/db.js"; // ✅ CORREGIDO
 
 const router = express.Router();
 
@@ -43,3 +43,4 @@ router.post("/ubicacion", async (req, res) => {
   }
 });
 
+export default router; // ✅ IMPORTANTE (si no lo tienes)

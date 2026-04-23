@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ===============================
   // CONFIGURACIÓN BASE (IMPORTANTE)
   // ===============================
-  const API_URL = "http://192.168.1.10:3000/api"; // ⚠️ CAMBIA POR TU IP
+  const API_URL = "http://192.168.1.10:4000/api"; // ⚠️ CAMBIA POR TU IP
 
   // ===============================
   // VALIDAR SESIÓN

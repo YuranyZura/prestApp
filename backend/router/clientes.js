@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { pool } from "../server.js";
+import  pool  from "../config/db.js"; // ✅ CORREGIDO
 import fetch from "node-fetch";
 import multer from "multer";
 import path from "path";

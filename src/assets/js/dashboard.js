@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ===============================
   // 🌐 CONFIG API (CAMBIAR IP)
   // ===============================
-  const API_URL = "http://192.168.1.10:3000/api"; // ⚠️ CAMBIA ESTO
+  const API_URL = "http://192.168.1.10:4000/api"; // ⚠️ CAMBIA ESTO
 
   // ===============================
   // 🔐 VALIDAR SESIÓN Y ROL

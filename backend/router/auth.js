@@ -3,7 +3,7 @@
 
 import { Router } from "express";
 import bcrypt from "bcrypt";
-import { pool } from "../config/db.js"; // importar pool del servidor
+import  pool  from "../config/db.js"; // importar pool del servidor
 import { enviarCodigoVerificacion } from "../config/mailer.js";
 import jwt from "jsonwebtoken";
 
@@ -130,12 +130,28 @@ router.post("/verify-email", async (req, res) => {
       return res.status(400).json({ success: false, message: "El código ha expirado." });
     }
 
-    //  Verificar
-    if (!correo || !codigo) {
+   //  Verificar
+if (!correo || !codigo) {
   return res.status(400).json({ success: false, message: "Datos incompletos" });
 }
 
 if (usuario.codigo_verificacion !== String(codigo)) {
+  return res.status(400).json({ success: false, message: "Código incorrecto" });
+}
+
+// ✅ marcar como verificado
+await pool.query(
+  "UPDATE usuarios SET verificado = 1 WHERE id_usuarios = ?",
+  [usuario.id_usuarios]
+);
+
+return res.json({ success: true, message: "Cuenta verificada correctamente" });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Error del servidor" });
+  }
+});
 
 // POST /auth/reenvio del codigo de verificacion 
 router.post("/reenvio_codigo", async (req, res) => {
@@ -280,7 +296,7 @@ router.post("/login", async (req, res) => {
         message: "Contraseña incorrecta" 
       });
     }
-
+  
     // Login exitoso
 req.session.usuario = {
   id: user.id_usuarios,
@@ -398,4 +414,4 @@ router.post("/create-credenciales", async (req, res) => {
 
 
 
-export default router;
+export default router;        

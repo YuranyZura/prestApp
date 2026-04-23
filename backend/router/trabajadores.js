@@ -2,7 +2,7 @@
 //de los trabajadores etc
 
 import express from "express";
-import { pool, uploadsDir } from "../server.js";
+import  pool from "../config/db.js"; // ✅ CORREGIDO
 import multer from "multer";
 
 const router = express.Router();

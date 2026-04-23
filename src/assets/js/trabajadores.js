@@ -1,9 +1,9 @@
 // ===============================
 // CONFIG GLOBAL (IMPORTANTE ANDROID)
 // ===============================
-const API_URL = "http://TU_IP_LOCAL:3000/api"; 
+const API_URL = "http://TU_IP_LOCAL:4000/api"; 
 // ⚠️ CAMBIA ESTO:
-// Ejemplo: http://192.168.1.10:3000/api
+// Ejemplo: http://192.168.1.10:4000/api
 // ❌ NO usar localhost en Android
 
 let trabajadoresCache = [];
