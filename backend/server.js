@@ -8,6 +8,8 @@ import session from "express-session";
 // CONFIG
 dotenv.config();
 
+import { corsOptions } from "./config/cors.js";
+import { sessionConfig } from "./config/session.js";
 import rutasRoutes from "./router/rutas.js";
 import { uploadsDir } from "./config/uploads.js";
 import trabajadoresRoutes from "./router/trabajadores.js";
@@ -24,10 +26,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // 🔥 CORS (MEJORADO PARA ANDROID)
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
+app.use(cors(corsOptions));
+app.use(session(sessionConfig));
 
 // 🔥 BODY
 app.use(express.json());
@@ -40,8 +40,9 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false,
+      secure:  process.env.NODE_ENV === "production", // solo HTTPS
       httpOnly: true,
+      sameSite: "lax",
       maxAge: 1000 * 60 * 60
     }
   })
@@ -79,7 +80,6 @@ app.use("/api/pagos", verificarSesion, pagosRoutes);
 app.use("/api/rutas", rutasRoutes);
 
 // 🌐 FRONTEND (CORREGIDO)
-// 🌐 FRONTEND CORREGIDO
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../src/html/auth/login.html"));
@@ -96,7 +96,7 @@ app.get("/dashboard", (req, res) => {
 // 🚀 SERVER
 const PORT = process.env.PORT || 4000;
 
-app.listen(PORT, "0.0.0.0", () => {
+app.listen(PORT,  () => {
   console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
 });
 

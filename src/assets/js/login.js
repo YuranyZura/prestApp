@@ -18,30 +18,39 @@ document.addEventListener("DOMContentLoaded", () => {
   // FETCH GLOBAL
   // ==========================================
   async function apiFetch(endpoint, options = {}) {
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`${API_URL}${endpoint}`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(options.headers || {})
+      },
+      credentials: "include",
+      ...options
+    });
+
+    let data;
     try {
-      const res = await fetch(`${API_URL}${endpoint}`, {
-        headers: {
-          "Content-Type": "application/json",
-          ...(options.headers || {})
-        },
-        ...options
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Error en la API");
-      }
-
-      return data;
-
-    } catch (error) {
-      console.error("API ERROR:", error);
-      mostrarToast("Error de conexión", "error");
+      data = await res.json();
+    } catch {
+      throw new Error("Respuesta inválida del servidor");
     }
-  }
 
-  // ==========================================
+    if (!res.ok) {
+      throw new Error(data.message || "Error en la API");
+    }
+
+    return data;
+
+  } catch (error) {
+    console.error("API ERROR:", error);
+    mostrarToast(error.message || "Error de conexión", "error");
+    return null;
+  }
+}
+   // ==========================================
   // TOAST
   // ==========================================
   function mostrarToast(mensaje, tipo) {
@@ -55,12 +64,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const role = sessionStorage.getItem("user_role");
 
         if (role === "trabajador") {
-          window.location.href = "./Rol2_trabajador.html";
-        } else if (role === "administrador") {
-          window.location.href = "./administradores.html";
-        } else {
-          window.location.href = "./dashboard";
-        }
+  window.location.href = "/html/trabajador/Rol2_trabajador.html";
+} else if (role === "administrador") {
+  window.location.href = "/html/admin/administradores.html";
+} else {
+  window.location.href = "/dashboard";
+}
       });
 
       toast.show();
@@ -114,10 +123,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // ✅ Guardar token (IMPORTANTE PARA ANDROID)
-      if (result.token) {
-        localStorage.setItem("token", result.token);
-      }
-
+      
+if (result.token) {
+  localStorage.setItem("token", result.token);
+}
       mostrarToast("Inicio de sesión exitoso", "exito");
 
     } else {

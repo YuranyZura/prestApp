@@ -1,30 +1,45 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import pool from "../config/db.js";
+
 dotenv.config();
 
+// 🔐 Middleware de verificación de token
 export function verificarToken(req, res, next) {
-  const authHeader = req.headers["authorization"];
-
-  // ✅ Validar header
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Token requerido (Bearer)" });
-  }
-
-  const token = authHeader.split(" ")[1];
-
   try {
-    // ✅ Usar variable de entorno
+    const authHeader = req.headers.authorization;
+
+    // ❌ No hay header
+    if (!authHeader) {
+      return res.status(401).json({
+        success: false,
+        message: "Token requerido",
+      });
+    }
+
+    // ❌ Formato incorrecto
+    if (!authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        success: false,
+        message: "Formato de token inválido",
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    // 🔒 Verificar token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.user = decoded;
+    // 📌 Guardar usuario en request
+    req.usuario = decoded;
+
     next();
 
   } catch (error) {
-    console.error("Error verificando token:", error.message);
+    console.error("❌ Error verificando token:", error.message);
 
     return res.status(403).json({
-      message: "Token inválido o expirado"
+      success: false,
+      message: "Token inválido o expirado",
     });
   }
 }

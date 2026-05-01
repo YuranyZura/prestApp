@@ -1,110 +1,88 @@
-// Aquí van todos los endpoints relacionados con REGISTRO Y INCIO DE SESION,VALIDACION DE CORREO
-// VALIDACION DE SONTRASEÑAS,TODOS LO QUE TENGA QUE VER OCN AUTENTICACION por eso el archivo se llama auth.
-
 import { Router } from "express";
 import bcrypt from "bcrypt";
-import  pool  from "../config/db.js"; // importar pool del servidor
+import pool from "../config/db.js";
 import { enviarCodigoVerificacion } from "../config/mailer.js";
 import jwt from "jsonwebtoken";
 
 const router = Router();
-// Si se activa, las contraseñas se guardan en claro (inseguro). Usar solo en desarrollo local.
+
 const USE_PLAIN_PASSWORDS = process.env.PLAIN_PASSWORDS === "true";
+
 if (USE_PLAIN_PASSWORDS) {
-  console.warn("WARNING: PLAIN_PASSWORDS=true — las contraseñas se almacenarán en texto plano. Esto es INSEGURO.");
+  console.warn("⚠️ MODO INSEGURO: contraseñas en texto plano");
 }
 
-
-//  correos válidos
+// =============================
+// VALIDACIONES
+// =============================
 const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const dominiosProhibidos = ["tempmail.com", "example.com", "test.com"];
 
-// Lista de dominios  que queremos bloquear
-const dominiosProhibidos = [ "tempmail.com", "example.com", "test.com"];
-
-
-// POST /auth/register
+// =============================
+// REGISTER
+// =============================
 router.post("/register", async (req, res) => {
   try {
     const { nombre, apellido, correo, contrasena } = req.body;
 
     if (!nombre || !apellido || !correo || !contrasena) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Faltan datos requeridos" 
-      });
+      return res.status(400).json({ success: false, message: "Faltan datos" });
     }
 
     if (!correoRegex.test(correo)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Correo no válido" 
-      });
+      return res.status(400).json({ success: false, message: "Correo inválido" });
     }
 
-    const dominio = correo.split("@")[1].toLowerCase();
+    const dominio = correo.split("@")[1];
     if (dominiosProhibidos.includes(dominio)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "No se permiten correos de prueba" 
-      });
+      return res.status(400).json({ success: false, message: "Correo no permitido" });
     }
 
-    const [existingUser] = await pool.query("SELECT * FROM usuarios WHERE correo = ?", [correo]);
-    if (existingUser.length > 0) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Ya existe un usuario con ese correo" 
-      });
+    const [exists] = await pool.query("SELECT id_usuarios FROM usuarios WHERE correo = ?", [correo]);
+    if (exists.length > 0) {
+      return res.status(400).json({ success: false, message: "Correo ya registrado" });
     }
 
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
     if (!passwordRegex.test(contrasena)) {
       return res.status(400).json({
         success: false,
-        message: "La contraseña debe tener al menos 8 caracteres, incluyendo letras y números",
+        message: "Contraseña débil (mínimo 8 caracteres con letras y números)"
       });
     }
 
     const hash = USE_PLAIN_PASSWORDS ? contrasena : await bcrypt.hash(contrasena, 10);
 
-    //  Rol FIJO: solo dueño puede registrarse
-    const rolFinal = "dueno";
+    const codigo = Math.floor(100000 + Math.random() * 900000).toString();
+    const expira = new Date(Date.now() + 10 * 60 * 1000);
 
-    // Generar código de verificación
-    const codigo = Math.floor(100000 + Math.random() * 900000);
-    const codigoExpira = new Date(Date.now() + 10 * 60 * 1000); // 10 minutos
-
-    // Guardar usuario como dueño
     await pool.query(
       `INSERT INTO usuarios 
-      (nombre, apellido, correo, contrasena, rol, verificado, codigo_verificacion, codigo_expira)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [nombre, apellido, correo, hash, rolFinal, 0, codigo, codigoExpira] 
+      (nombre, apellido, correo, contrasena, rol, verificado, codigo_verificacion, codigo_expira, activo)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [nombre, apellido, correo, hash, "dueno", 0, codigo, expira, 1]
     );
 
-    // Enviar correo con código
     await enviarCodigoVerificacion(correo, codigo);
 
-    return res.json({
-      success: true,
-      message: "Usuario registrado. Revisa tu correo para verificar la cuenta.",
-    });
+    res.json({ success: true, message: "Usuario registrado. Verifica tu correo." });
+
   } catch (err) {
-    console.error("Error en auth:", err.message);
-    return res.status(500).json({ 
-      success: false, 
-      message: "Error del servidor" 
-    });
+    console.error(err);
+    res.status(500).json({ success: false, message: "Error del servidor" });
   }
 });
 
-
-
-
-// backend/router/auth.js
+// =============================
+// VERIFY EMAIL
+// =============================
 router.post("/verify-email", async (req, res) => {
   try {
     const { correo, codigo } = req.body;
+
+    if (!correo || !codigo) {
+      return res.status(400).json({ success: false, message: "Datos incompletos" });
+    }
 
     const [rows] = await pool.query(
       "SELECT id_usuarios, codigo_verificacion, codigo_expira, verificado FROM usuarios WHERE correo = ?",
@@ -112,48 +90,39 @@ router.post("/verify-email", async (req, res) => {
     );
 
     if (rows.length === 0) {
-      return res.status(404).json({ success: false, message: "Usuario no encontrado." });
+      return res.status(404).json({ success: false, message: "Usuario no encontrado" });
     }
 
-    const usuario = rows[0];
+    const user = rows[0];
 
-    if (usuario.verificado) {
-      return res.json({ success: true, message: "El usuario ya está verificado." });
+    if (user.verificado) {
+      return res.json({ success: true, message: "Ya verificado" });
     }
 
-    if (usuario.codigo_verificacion !== codigo) {
-      return res.status(400).json({ success: false, message: "El código es incorrecto." });
+    if (user.codigo_verificacion !== String(codigo)) {
+      return res.status(400).json({ success: false, message: "Código incorrecto" });
     }
 
-    const ahora = new Date();
-    if (ahora > new Date(usuario.codigo_expira)) {
-      return res.status(400).json({ success: false, message: "El código ha expirado." });
+    if (new Date() > new Date(user.codigo_expira)) {
+      return res.status(400).json({ success: false, message: "Código expirado" });
     }
 
-   //  Verificar
-if (!correo || !codigo) {
-  return res.status(400).json({ success: false, message: "Datos incompletos" });
-}
+    await pool.query(
+      "UPDATE usuarios SET verificado = 1 WHERE id_usuarios = ?",
+      [user.id_usuarios]
+    );
 
-if (usuario.codigo_verificacion !== String(codigo)) {
-  return res.status(400).json({ success: false, message: "Código incorrecto" });
-}
-
-// ✅ marcar como verificado
-await pool.query(
-  "UPDATE usuarios SET verificado = 1 WHERE id_usuarios = ?",
-  [usuario.id_usuarios]
-);
-
-return res.json({ success: true, message: "Cuenta verificada correctamente" });
+    res.json({ success: true, message: "Cuenta verificada" });
 
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ success: false, message: "Error del servidor" });
+    res.status(500).json({ success: false, message: "Error del servidor" });
   }
 });
 
-// POST /auth/reenvio del codigo de verificacion 
+// =============================
+// REENVIAR CÓDIGO
+// =============================
 router.post("/reenvio_codigo", async (req, res) => {
   try {
     const { correo } = req.body;
@@ -164,254 +133,111 @@ router.post("/reenvio_codigo", async (req, res) => {
     );
 
     if (rows.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Usuario no encontrado." 
-      });
+      return res.status(404).json({ success: false, message: "Usuario no encontrado" });
     }
 
-    const usuario = rows[0];
-
-    if (usuario.verificado) {
-      return res.json({ 
-        success: true, 
-        message: "Tu cuenta ya está verificada." 
-      });
+    if (rows[0].verificado) {
+      return res.json({ success: true, message: "Ya verificado" });
     }
 
-    // Generar nuevo código
-    const nuevoCodigo = Math.floor(100000 + Math.random() * 900000).toString();
-    const expira = new Date(Date.now() + 10 * 60 * 1000); // 10 minutos
+    const codigo = Math.floor(100000 + Math.random() * 900000).toString();
+    const expira = new Date(Date.now() + 10 * 60 * 1000);
 
-    // Guardar en BD
     await pool.query(
       "UPDATE usuarios SET codigo_verificacion = ?, codigo_expira = ? WHERE id_usuarios = ?",
-      [nuevoCodigo, expira, usuario.id_usuarios]
+      [codigo, expira, rows[0].id_usuarios]
     );
 
-    //  ENVIAR EL CORREO CON EL NUEVO CÓDIGO
-    await enviarCodigoVerificacion(correo, nuevoCodigo);
+    await enviarCodigoVerificacion(correo, codigo);
 
-    // Responder éxito
-    return res.json({ 
-      success: true, 
-      message: "Se ha enviado un nuevo código de verificación." 
-    });
+    res.json({ success: true, message: "Código reenviado" });
 
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ 
-      success: false, 
-      message: "Error en el servidor." 
-    });
+    res.status(500).json({ success: false, message: "Error del servidor" });
   }
 });
 
-
-// Obtener usuario por id
-router.get("/user/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const [rows] = await pool.query("SELECT id_usuarios, nombre, apellido, correo, rol, verificado FROM usuarios WHERE id_usuarios = ?", [id]);
-    if (rows.length === 0) return res.status(404).json({ success: false, message: "Usuario no encontrado" });
-    return res.json(rows[0]);
-  } catch (err) {
-    console.error("Error en auth:", err.message);
-    return res.status(500).json({ success: false, message: "Error del servidor" });
-  }
-});
-
-
-// Devuelve la contraseña en texto plano SOLO si la app está configurada para almacenar contraseñas en claro.
-router.get("/user-password/:id", async (req, res) => {
-  try {
-    if (!USE_PLAIN_PASSWORDS) {
-      return res.status(403).json({ success: false, message: "Operación no permitida en este entorno" });
-    }
-
-    const { id } = req.params;
-    const [rows] = await pool.query("SELECT contrasena FROM usuarios WHERE id_usuarios = ? LIMIT 1", [id]);
-    if (rows.length === 0) return res.status(404).json({ success: false, message: "Usuario no encontrado" });
-    return res.json({ contrasena: rows[0].contrasena });
-  } catch (err) {
-    console.error("Error en auth:", err.message);
-    return res.status(500).json({ success: false, message: "Error del servidor" });
-  }
-});
-
-
-// Alternar acceso (activar/desactivar) — cambia el flag `verificado` para bloquear/permitir inicio de sesión.
-router.post("/toggle-acceso", async (req, res) => {
-  try {
-    const { id_usuarios, activo } = req.body;
-    if (!id_usuarios) return res.status(400).json({ success: false, message: "Falta id_usuarios" });
-
-    const nuevo = activo ? 1 : 0;
-    const [result] = await pool.query("UPDATE usuarios SET verificado = ? WHERE id_usuarios = ?", [nuevo, id_usuarios]);
-    if (result.affectedRows === 0) return res.status(404).json({ success: false, message: "Usuario no encontrado" });
-
-    return res.json({ success: true, message: `Acceso ${activo ? 'activado' : 'desactivado'}` });
-  } catch (err) {
-    console.error("Error en auth:", err.message);
-    return res.status(500).json({ success: false, message: "Error del servidor" });
-  }
-});
-
-
-
-
-// POST /auth/login
+// =============================
+// LOGIN (SESION + JWT)
+// =============================
 router.post("/login", async (req, res) => {
   try {
     const { correo, contrasena } = req.body;
 
-    // Añadir 'verificado' en el SELECT
     const [rows] = await pool.query(
-      "SELECT id_usuarios, nombre, correo, contrasena, rol, verificado FROM usuarios WHERE correo = ? LIMIT 1",
+      "SELECT * FROM usuarios WHERE correo = ? LIMIT 1",
       [correo]
     );
 
     if (rows.length === 0) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Usuario no encontrado" 
-      });
+      return res.status(400).json({ success: false, message: "Usuario no encontrado" });
     }
 
     const user = rows[0];
 
-    //  Validar si el correo no está verificado
     if (!user.verificado) {
-      return res.status(403).json({
-        success: false,
-        message: "Tu cuenta no está verificada. Revisa tu correo para activarla."
-      });
+      return res.status(403).json({ success: false, message: "Cuenta no verificada" });
     }
 
-    // Verificar contraseña (condicional según flag)
-    const ok = USE_PLAIN_PASSWORDS ? (contrasena === user.contrasena) : await bcrypt.compare(contrasena, user.contrasena);
+    if (!user.activo) {
+      return res.status(403).json({ success: false, message: "Usuario desactivado" });
+    }
+
+    const ok = USE_PLAIN_PASSWORDS
+      ? contrasena === user.contrasena
+      : await bcrypt.compare(contrasena, user.contrasena);
+
     if (!ok) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Contraseña incorrecta" 
-      });
+      return res.status(400).json({ success: false, message: "Contraseña incorrecta" });
     }
-  
-    // Login exitoso
-req.session.usuario = {
-  id: user.id_usuarios,
-  nombre: user.nombre,
-  correo: user.correo,
-  rol: user.rol
-};
 
-// Ahora sí responde
-return res.json({ 
-  success: true, 
-  message: `¡Bienvenido, ${user.nombre}!`,
-  user: req.session.usuario
-});
+    // ✅ sesión
+    req.session.usuario = {
+      id: user.id_usuarios,
+      nombre: user.nombre,
+      correo: user.correo,
+      rol: user.rol
+    };
 
+    // ✅ JWT
+    const token = jwt.sign(
+      { id: user.id_usuarios, rol: user.rol },
+      process.env.JWT_SECRET,
+      { expiresIn: "2h" }
+    );
+
+    res.json({
+      success: true,
+      message: "Login exitoso",
+      user: req.session.usuario,
+      token
+    });
 
   } catch (err) {
-    console.error("Error en auth:", err.message);
-    return res.status(500).json({ 
-      success: false, 
-      message: "Error del servidor" 
-    });
+    console.error(err);
+    res.status(500).json({ success: false, message: "Error del servidor" });
   }
 });
 
-
-
-// (cerrar sesión)
+// =============================
+// LOGOUT
+// =============================
 router.post("/logout", (req, res) => {
-  if (req.session) {
-    req.session.destroy(err => {
-      if (err) return res.status(500).json({ message: "Error al cerrar sesión" });
-      // borrar cookie
-      res.clearCookie("connect.sid", { path: "/" });
-      return res.json({ ok: true });
-    });
-  } else {
-    return res.json({ ok: true });
-  }
+  req.session.destroy(() => {
+    res.clearCookie("connect.sid");
+    res.json({ success: true });
+  });
 });
 
-
-// CHECK — endpoint para que el frontend confirme si sigue logueado
+// =============================
+// CHECK SESSION
+// =============================
 router.get("/check", (req, res) => {
-  if (req.session && req.session.usuario) {
+  if (req.session?.usuario) {
     return res.json({ loggedIn: true, user: req.session.usuario });
   }
-  return res.status(401).json({ loggedIn: false });
+  res.status(401).json({ loggedIn: false });
 });
 
-
-
-
-
-
-// Crear o actualizar credenciales para un trabajador (rol = 'trabajador')
-router.post("/create-credenciales", async (req, res) => {
-  try {
-    const { id_trabajador, correo, contrasena } = req.body;
-
-    if (!id_trabajador || !correo || !contrasena) {
-      return res.status(400).json({ success: false, message: "Faltan datos requeridos" });
-    }
-
-    if (!correoRegex.test(correo)) {
-      return res.status(400).json({ success: false, message: "Correo no válido" });
-    }
-
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$%&*]{8,}$/;
-    if (!passwordRegex.test(contrasena)) {
-      return res.status(400).json({ success: false, message: "La contraseña debe tener al menos 8 caracteres, incluyendo letras y números" });
-    }
-
-    // Obtener datos del trabajador (para nombre/apellido y para saber si ya tiene usuario)
-    const [trabRows] = await pool.query("SELECT id_usuario, nombre, apellido FROM trabajadores WHERE id_trabajador = ?", [id_trabajador]);
-    if (trabRows.length === 0) return res.status(404).json({ success: false, message: "Trabajador no encontrado" });
-    const trabajador = trabRows[0];
-
-    // Verificar que el correo no esté en uso por otro usuario distinto
-    const [existingByEmail] = await pool.query("SELECT id_usuarios FROM usuarios WHERE correo = ?", [correo]);
-    if (existingByEmail.length > 0 && (!trabajador.id_usuario || existingByEmail[0].id_usuarios !== trabajador.id_usuario)) {
-      return res.status(400).json({ success: false, message: "El correo ya está en uso por otro usuario" });
-    }
-
-    const hash = USE_PLAIN_PASSWORDS ? contrasena : await bcrypt.hash(contrasena, 10);
-
-    const rolFinal = "trabajador";
-
-    let id_usuario = trabajador.id_usuario;
-    if (id_usuario) {
-      // Actualizar usuario existente
-      await pool.query(
-        "UPDATE usuarios SET correo = ?, contrasena = ?, rol = ?, verificado = 1 WHERE id_usuarios = ?",
-        [correo, hash, rolFinal, id_usuario]
-      );
-    } else {
-      // Insertar nuevo usuario y vincular al trabajador
-      const nombre = trabajador.nombre || null;
-      const apellido = trabajador.apellido || null;
-      const [result] = await pool.query(
-        `INSERT INTO usuarios (nombre, apellido, correo, contrasena, rol, verificado) VALUES (?, ?, ?, ?, ?, ?)`,
-        [nombre, apellido, correo, hash, rolFinal, 1]
-      );
-      id_usuario = result.insertId;
-      await pool.query("UPDATE trabajadores SET id_usuario = ? WHERE id_trabajador = ?", [id_usuario, id_trabajador]);
-    }
-
-    return res.json({ success: true, message: "Credenciales guardadas correctamente", id_usuario, correo });
-  } catch (err) {
-    console.error("Error en auth:", err.message);
-    return res.status(500).json({ success: false, message: "Error del servidor" });
-  }
-});
-
-
-
-
-export default router;        
+export default router;
