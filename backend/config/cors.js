@@ -1,7 +1,8 @@
 // config/cors.js
+import cors from "cors";
 
 const allowedOrigins = [
-  "http://localhost:3000",
+  "http://localhost:4000",
   "http://localhost:5173",
   "http://127.0.0.1:5500",
   // 👉 agrega aquí tu IP local si usas Android
@@ -9,16 +10,15 @@ const allowedOrigins = [
 ];
 
 export const corsOptions = {
-  origin: (origin, callback) => {
-    // Permitir requests sin origin (Postman, Android WebView, etc.)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
     } else {
-      console.warn("⚠️ CORS bloqueado para:", origin);
-      return callback(new Error("No permitido por CORS"));
+      console.log("cors bloqueado para:", origin);
+      callback(new Error("No permitido por CORS"));
     }
   },
-  credentials: true,
+  credentials: true
 };
+
+export default cors(corsOptions);

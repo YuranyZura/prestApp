@@ -1,176 +1,254 @@
-<!DOCTYPE html>
-<html lang="es">
+// ==========================================
+// BACKEND PRESTAPP - TRABAJADORES
+// backend/routes/trabajadores.routes.js
+// Node.js + Express + MySQL
+// ==========================================
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PrestApp - Plantilla Base</title>
+const express = require("express");
+const router = express.Router();
+const db = require("../database/db");
+const multer = require("multer");
+const path = require("path");
 
-  <!-- Favicon -->
-  <link rel="shortcut icon" href="/assets/images/logos/favicon.png" />
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="/assets/css/styles.min.css" />
-  <link rel="stylesheet" href="/assets/css/variables.css" />
-  <link rel="stylesheet" href="/assets/css/icons/tabler-icons/tabler-icons.css" />
-
-  <!-- NUEVO CSS (sin estilos inline) -->
-  <link rel="stylesheet" href="/assets/css/template.css">
-</head>
-
-<body>
-
-<div class="app-container">
-
-  <!-- SIDEBAR -->
-  <aside class="app-sidebar" id="sidebar">
-
-    <div class="sidebar-content">
-
-      <!-- Logo -->
-      <div class="brand-logo text-center">
-        <a href="index.html" title="Ir al dashboard">
-          <img src="/assets/images/logos/prestapp-remove.png" alt="PrestApp Logo" width="150">
-        </a>
-      </div>
-
-      <!-- Navegación -->
-      <nav class="nav flex-column" id="sidebarNav">
-
-        <span class="nav-title">INICIO</span>
-
-        <a href="index.html" class="nav-link nav-link-sidebar">
-          <i class="ti ti-layout-dashboard"></i>
-          <span>Dashboard</span>
-        </a>
-
-        <span class="nav-title">GESTIÓN</span>
-
-        <a href="trabajadores.html" class="nav-link nav-link-sidebar">
-          <i class="ti ti-users"></i>
-          <span>Trabajadores</span>
-        </a>
-
-        <a href="clientes.html" class="nav-link nav-link-sidebar">
-          <i class="ti ti-user-check"></i>
-          <span>Clientes</span>
-        </a>
-
-        <span class="nav-title">CUENTA</span>
-
-        <button class="nav-link nav-link-sidebar btn-logout"
-                id="btnCerrarSesion"
-                title="Cerrar sesión">
-          <i class="ti ti-logout"></i>
-          <span>Cerrar sesión</span>
-        </button>
-
-      </nav>
-    </div>
-  </aside>
-
-  <!-- MAIN -->
-  <div class="app-main">
-
-    <!-- HEADER -->
-    <header class="app-header">
-
-      <div class="header-left">
-        <button id="toggleSidebar"
-                class="btn btn-light d-md-none"
-                title="Abrir menú">
-          <i class="ti ti-menu-2"></i>
-        </button>
-      </div>
-
-      <div class="header-right">
-
-        <!-- Notificaciones -->
-        <div class="dropdown">
-          <button class="btn btn-link position-relative"
-                  data-bs-toggle="dropdown"
-                  title="Notificaciones">
-            <i class="ti ti-bell-ringing"></i>
-            <span class="badge-dot"></span>
-          </button>
-
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="#">Notificación 1</a></li>
-            <li><a class="dropdown-item" href="#">Notificación 2</a></li>
-          </ul>
-        </div>
-
-        <!-- Usuario -->
-        <div class="dropdown">
-          <button class="btn p-0"
-                  data-bs-toggle="dropdown"
-                  title="Menú de usuario">
-            <img src="/assets/images/profile/user-1.jpg"
-                 alt="Usuario"
-                 class="avatar">
-          </button>
-
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li>
-              <a class="dropdown-item" href="#">
-                <i class="ti ti-user"></i> Mi perfil
-              </a>
-            </li>
-            <li><hr></li>
-            <li>
-              <button class="dropdown-item"
-                      id="btnCerrarSesionHeader"
-                      title="Cerrar sesión">
-                <i class="ti ti-logout"></i> Cerrar sesión
-              </button>
-            </li>
-          </ul>
-        </div>
-
-      </div>
-
-    </header>
-
-    <!-- CONTENIDO -->
-    <main class="app-content" id="appContent">
-      <!-- Aquí va el contenido dinámico -->
-    </main>
-
-  </div>
-
-</div>
-
-<!-- JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-/* Activar link activo */
-document.querySelectorAll('.nav-link-sidebar').forEach(link => {
-  if (link.href.includes(window.location.pathname)) {
-    link.classList.add('active');
+// ==========================================
+// CONFIGURAR MULTER (SUBIR FOTO)
+// ==========================================
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/uploads/trabajadores/");
+  },
+  filename: (req, file, cb) => {
+    const nombre =
+      Date.now() + path.extname(file.originalname);
+    cb(null, nombre);
   }
 });
 
-/* Sidebar móvil */
-const toggle = document.getElementById('toggleSidebar');
-const sidebar = document.getElementById('sidebar');
+const upload = multer({ storage });
 
-if (toggle) {
-  toggle.addEventListener('click', () => {
-    sidebar.classList.toggle('show');
-  });
-}
+// ==========================================
+// GET TODOS LOS TRABAJADORES
+// ==========================================
+router.get("/", async (req, res) => {
+  try {
+    const sql = `
+      SELECT *
+      FROM trabajadores
+      ORDER BY id_trabajadores DESC
+    `;
 
-/* Cerrar sesión */
-document.querySelectorAll('#btnCerrarSesion, #btnCerrarSesionHeader')
-.forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (confirm('¿Cerrar sesión?')) {
-      window.location.href = '/logout';
-    }
-  });
+    const [rows] = await db.query(sql);
+
+    res.json({
+      success: true,
+      trabajadores: rows
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Error al obtener trabajadores"
+    });
+  }
 });
-</script>
 
-</body>
-</html>
+// ==========================================
+// GET UN TRABAJADOR
+// ==========================================
+router.get("/:id", async (req, res) => {
+  try {
+
+    const id = req.params.id;
+
+    const sql = `
+      SELECT *
+      FROM trabajadores
+      WHERE id_trabajadores = ?
+    `;
+
+    const [rows] = await db.query(sql, [id]);
+
+    if (!rows.length) {
+      return res.status(404).json({
+        success: false,
+        message: "Trabajador no encontrado"
+      });
+    }
+
+    res.json({
+      success: true,
+      trabajador: rows[0]
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Error al buscar trabajador"
+    });
+  }
+});
+
+// ==========================================
+// CREAR TRABAJADOR
+// ==========================================
+router.post(
+  "/",
+  upload.single("foto"),
+  async (req, res) => {
+    try {
+
+      const {
+        nombre,
+        apellido,
+        cedula,
+        celular,
+        correo
+      } = req.body;
+
+      const foto = req.file
+        ? `/uploads/trabajadores/${req.file.filename}`
+        : null;
+
+      const sql = `
+        INSERT INTO trabajadores
+        (
+          nombre,
+          apellido,
+          cedula,
+          celular,
+          correo,
+          foto
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+      `;
+
+      const [result] = await db.query(sql, [
+        nombre,
+        apellido,
+        cedula,
+        celular,
+        correo,
+        foto
+      ]);
+
+      res.json({
+        success: true,
+        message: "Trabajador registrado",
+        id: result.insertId
+      });
+
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        success: false,
+        message: "Error al guardar trabajador"
+      });
+    }
+  }
+);
+
+// ==========================================
+// EDITAR TRABAJADOR
+// ==========================================
+router.put(
+  "/:id",
+  upload.single("foto"),
+  async (req, res) => {
+    try {
+
+      const id = req.params.id;
+
+      const {
+        nombre,
+        apellido,
+        cedula,
+        celular,
+        correo
+      } = req.body;
+
+      let sql = `
+        UPDATE trabajadores
+        SET
+          nombre = ?,
+          apellido = ?,
+          cedula = ?,
+          celular = ?,
+          correo = ?
+      `;
+
+      let values = [
+        nombre,
+        apellido,
+        cedula,
+        celular,
+        correo
+      ];
+
+      if (req.file) {
+        sql += `, foto = ?`;
+        values.push(
+          `/uploads/trabajadores/${req.file.filename}`
+        );
+      }
+
+      sql += `
+        WHERE id_trabajadores = ?
+      `;
+
+      values.push(id);
+
+      await db.query(sql, values);
+
+      res.json({
+        success: true,
+        message: "Trabajador actualizado"
+      });
+
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        success: false,
+        message: "Error al actualizar trabajador"
+      });
+    }
+  }
+);
+
+// ==========================================
+// ELIMINAR TRABAJADOR
+// ==========================================
+router.delete("/:id", async (req, res) => {
+  try {
+
+    const id = req.params.id;
+
+    await db.query(
+      `
+      DELETE FROM trabajadores
+      WHERE id_trabajadores = ?
+      `,
+      [id]
+    );
+
+    res.json({
+      success: true,
+      message: "Trabajador eliminado"
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Error al eliminar trabajador"
+    });
+  }
+});
+
+module.exports = router;

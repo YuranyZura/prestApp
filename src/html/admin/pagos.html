@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pagos | PrestApp</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/icons/tabler-icons/tabler-icons.css">
+
+<style>
+body{
+background:#f5f7fa;
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+.layout{
+display:flex;
+min-height:100vh;
+}
+
+/* SIDEBAR */
+.sidebar{
+width:260px;
+background:#111827;
+color:white;
+padding:20px;
+}
+
+.sidebar h4{
+margin-bottom:25px;
+font-weight:700;
+}
+
+.sidebar a,
+.sidebar button{
+display:flex;
+align-items:center;
+gap:10px;
+width:100%;
+padding:12px;
+margin-bottom:8px;
+border:none;
+border-radius:10px;
+background:none;
+color:white;
+text-decoration:none;
+text-align:left;
+}
+
+.sidebar a:hover,
+.sidebar button:hover,
+.sidebar .active{
+background:#2563eb;
+}
+
+.main{
+flex:1;
+padding:30px;
+}
+
+.card-box{
+border:none;
+border-radius:18px;
+box-shadow:0 5px 20px rgba(0,0,0,.05);
+}
+
+.total{
+font-size:28px;
+font-weight:700;
+color:#2563eb;
+}
+
+.badge-ok{
+background:#198754;
+}
+
+@media(max-width:991px){
+.layout{
+flex-direction:column;
+}
+
+.sidebar{
+width:100%;
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+
+<h4>PrestApp</h4>
+
+<a href="/html/admin/dashboard.html">
+<i class="ti ti-home"></i> Dashboard
+</a>
+
+<a href="/html/admin/clientes.html">
+<i class="ti ti-users"></i> Clientes
+</a>
+
+<a href="/html/admin/prestamos.html">
+<i class="ti ti-cash"></i> Préstamos
+</a>
+
+<a href="/html/admin/crearPrestamo.html">
+<i class="ti ti-plus"></i> Nuevo préstamo
+</a>
+
+<a href="/html/admin/pagos.html" class="active">
+<i class="ti ti-credit-card"></i> Pagos
+</a>
+
+<a href="/html/admin/administradores.html" id="menuUsuarios">
+<i class="ti ti-user-cog"></i> Usuarios
+</a>
+
+<hr>
+
+<button id="btnLogout">
+<i class="ti ti-logout"></i> Cerrar sesión
+</button>
+
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+<div>
+<h2 class="fw-bold">Pagos</h2>
+<p class="text-muted mb-0">Registrar cobros diarios</p>
+</div>
+</div>
+
+<!-- STATS -->
+<div class="row g-3 mb-4">
+
+<div class="col-md-4">
+<div class="card card-box p-3">
+<h6>Total Cobrado Hoy</h6>
+<div class="total" id="pagosHoy">$0</div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card card-box p-3">
+<h6>Cantidad Pagos</h6>
+<div class="total" id="cantidadPagos">0</div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card card-box p-3">
+<h6>Préstamos Pendientes</h6>
+<div class="total" id="pendientes">0</div>
+</div>
+</div>
+
+</div>
+
+<div class="row g-4">
+
+<!-- FORM -->
+<div class="col-lg-4">
+<div class="card card-box p-4">
+
+<h5 class="mb-3">Registrar Pago</h5>
+
+<form id="formPago">
+
+<div class="mb-3">
+  <label for="prestamo" class="form-label">
+    Préstamo
+  </label>
+
+  <select
+    id="prestamo"
+    name="prestamo"
+    class="form-select"
+    required
+    aria-label="Seleccionar préstamo"
+    title="Seleccionar préstamo">
+
+    <option value="">Cargando...</option>
+  </select>
+</div>
+
+<div class="mb-3">
+  <label for="monto" class="form-label">
+    Monto
+  </label>
+
+  <input
+    type="number"
+    id="monto"
+    name="monto"
+    class="form-control"
+    required
+    placeholder="Ej: 500"
+    title="Ingrese monto del pago"
+    aria-label="Monto del pago">
+</div>
+
+<div class="mb-3">
+  <label for="fecha_pago" class="form-label">
+    Fecha
+  </label>
+
+  <input
+    type="date"
+    id="fecha_pago"
+    name="fecha_pago"
+    class="form-control"
+    required
+    title="Seleccione fecha de pago"
+    aria-label="Fecha de pago">
+</div>
+
+<button type="submit" class="btn btn-primary w-100">
+Guardar Pago
+</button>
+
+</form>
+
+</div>
+</div>
+
+<!-- TABLA -->
+<div class="col-lg-8">
+<div class="card card-box p-4">
+
+<h5 class="mb-3">Historial</h5>
+
+<div class="table-responsive">
+<table class="table align-middle">
+
+<thead>
+<tr>
+<th>Cliente</th>
+<th>Monto</th>
+<th>Fecha</th>
+<th>Método</th>
+<th>Estado</th>
+</tr>
+</thead>
+
+<tbody id="tablaPagos">
+<tr>
+<td colspan="5" class="text-center">
+Cargando pagos...
+</td>
+</tr>
+</tbody>
+
+</table>
+</div>
+
+</div>
+</div>
+
+</div>
+
+</main>
+</div>
+
+<script>
+const API="/api";
+let usuario=null;
+
+/* ==========================
+VALIDAR SESION
+========================== */
+async function validarSesion(){
+try{
+const res=await fetch(`${API}/auth/check`,{
+credentials:"include"
+});
+
+if(!res.ok){
+location.href="/login";
+return;
+}
+
+const data=await res.json();
+usuario=data.usuario;
+
+/* ocultar usuarios si trabajador */
+if(usuario.rol_id==3){
+document.getElementById("menuUsuarios").style.display="none";
+}
+
+}catch(e){
+location.href="/login";
+}
+}
+
+/* ==========================
+FECHA HOY
+========================== */
+document.getElementById("fecha_pago").value=
+new Date().toISOString().split("T")[0];
+
+/* ==========================
+CARGAR PRESTAMOS
+========================== */
+async function cargarPrestamos(){
+
+const res=await fetch(`${API}/prestamos`,{
+credentials:"include"
+});
+
+const data=await res.json();
+
+const select=document.getElementById("prestamo");
+
+select.innerHTML='<option value="">Seleccione</option>';
+
+if(data.success){
+
+data.prestamos.forEach(p=>{
+
+select.innerHTML+=`
+<option value="${p.id_prestamos}">
+${p.nombreCompleto} - $${p.total_pagar}
+</option>
+`;
+
+});
+
+}
+
+}
+
+/* ==========================
+CARGAR PAGOS
+========================== */
+async function cargarPagos(){
+
+const res=await fetch(`${API}/pagos`,{
+credentials:"include"
+});
+
+const data=await res.json();
+
+if(!data.success) return;
+
+renderPagos(data.pagos);
+
+}
+
+/* ==========================
+RENDER
+========================== */
+function renderPagos(lista){
+
+const tbody=document.getElementById("tablaPagos");
+
+if(!lista.length){
+tbody.innerHTML=`
+<tr>
+<td colspan="5" class="text-center">
+Sin pagos
+</td>
+</tr>
+`;
+return;
+}
+
+let total=0;
+
+tbody.innerHTML=lista.map(p=>{
+
+total+=Number(p.monto_pagos);
+
+return `
+<tr>
+<td>${p.nombreCompleto||"-"}</td>
+<td>$${p.monto_pagos}</td>
+<td>${new Date(p.fecha_pago).toLocaleDateString()}</td>
+<td>${p.metodo}</td>
+<td><span class="badge badge-ok">Aplicado</span></td>
+</tr>
+`;
+
+}).join("");
+
+document.getElementById("pagosHoy").textContent="$"+total.toFixed(2);
+document.getElementById("cantidadPagos").textContent=lista.length;
+
+}
+
+/* ==========================
+GUARDAR PAGO
+========================== */
+document.getElementById("formPago")
+.addEventListener("submit",async e=>{
+
+e.preventDefault();
+
+const body={
+id_prestamos:prestamo.value,
+monto_pagos:monto.value,
+fecha_pago:fecha_pago.value,
+metodo:metodo.value
+};
+
+const res=await fetch(`${API}/pagos`,{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+credentials:"include",
+body:JSON.stringify(body)
+});
+
+const data=await res.json();
+
+if(data.success){
+
+alert("Pago registrado");
+
+e.target.reset();
+
+fecha_pago.value=
+new Date().toISOString().split("T")[0];
+
+cargarPagos();
+
+}else{
+alert(data.message);
+}
+
+});
+
+/* ==========================
+LOGOUT
+========================== */
+document.getElementById("btnLogout")
+.addEventListener("click",async()=>{
+
+await fetch(`${API}/auth/logout`,{
+method:"POST",
+credentials:"include"
+});
+
+location.href="/login";
+
+});
+
+/* ==========================
+INIT
+========================== */
+(async()=>{
+
+await validarSesion();
+await cargarPrestamos();
+await cargarPagos();
+
+})();
+</script>
+
+</body>
+</html>

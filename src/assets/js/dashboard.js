@@ -1,152 +1,222 @@
+// ==========================================
+// PRESTAPP - DASHBOARD PRO
+// dashboard.js
+// ==========================================
+
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("Dashboard iniciado");
+  console.log("✅ Dashboard iniciado");
 
-  // ===============================
-  // 🌐 CONFIG API (CAMBIAR IP)
-  // ===============================
-  const API_URL = "http://192.168.1.10:4000/api"; // ⚠️ CAMBIA ESTO
+  // ==========================================
+  // 🌐 CONFIG
+  // ==========================================
+  const API_URL = "http://192.168.1.10:4000/api"; // CAMBIAR IP SI ES NECESARIO
 
-  // ===============================
-  // 🔐 VALIDAR SESIÓN Y ROL
-  // ===============================
+  // ==========================================
+  // 🔐 TOKEN
+  // ==========================================
+  function obtenerToken() {
+    return (
+      localStorage.getItem("token") ||
+      sessionStorage.getItem("token")
+    );
+  }
+
+  // ==========================================
+  // 🚪 LOGOUT
+  // ==========================================
+  async function cerrarSesion() {
+    try {
+      await fetch(`${API_URL}/auth/logout`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${obtenerToken()}`
+        }
+      });
+    } catch (error) {
+      console.warn("No se pudo cerrar sesión");
+    }
+
+    localStorage.removeItem("token");
+    sessionStorage.clear();
+
+    window.location.href = "/login";
+  }
+
+  // ==========================================
+  // 🔐 VALIDAR LOGIN
+  // ==========================================
+  const token = obtenerToken();
   const rol = sessionStorage.getItem("user_role");
 
-  if (!rol) {
-    window.location.href = "./login.html";
+  if (!token || !rol) {
+    window.location.href = "/login";
     return;
   }
 
-  // (opcional) si quieres solo admin:
-  // if (rol !== "administrador") {
-  //   window.location.href = "./login.html";
-  // }
+  verificarSesion();
 
-  checkSession();
-
-  // ===============================
-  // 📊 GRÁFICO PRINCIPAL
-  // ===============================
-  const chartOptions = {
-    series: [
-      { name: "Ingresos", data: [355, 390, 300, 350, 390, 180, 355, 390] },
-      { name: "Gastos", data: [280, 250, 325, 215, 250, 310, 280, 250] },
-    ],
-    chart: {
-      type: "bar",
-      height: 345,
-      fontFamily: "inherit",
-    },
-    colors: ["#5D87FF", "#49BEFF"],
-    plotOptions: {
-      bar: {
-        columnWidth: "35%",
-        borderRadius: 6,
-      },
-    },
-    xaxis: {
-      categories: ["16/08", "17/08", "18/08", "19/08", "20/08", "21/08", "22/08", "23/08"],
-    },
-    yaxis: {
-      min: 0,
-      max: 400,
-    },
-    dataLabels: { enabled: false },
-  };
-
-  const chartEl = document.querySelector("#chart");
-  if (chartEl) {
-    new ApexCharts(chartEl, chartOptions).render();
-  }
-
-  // ===============================
-  // 🍩 GRÁFICO DONUT
-  // ===============================
-  const breakupOptions = {
-    series: [38, 40, 25],
-    labels: ["2022", "2021", "2020"],
-    chart: {
-      type: "donut",
-      width: 180,
-    },
-    colors: ["#5D87FF", "#ecf2ff", "#F9F9FD"],
-    legend: { show: false },
-  };
-
-  const breakupEl = document.querySelector("#breakup");
-  if (breakupEl) {
-    new ApexCharts(breakupEl, breakupOptions).render();
-  }
-
-  // ===============================
-  // 📈 MINI GRÁFICO
-  // ===============================
-  const earningOptions = {
-    chart: {
-      type: "area",
-      height: 60,
-      sparkline: { enabled: true },
-    },
-    series: [
-      {
-        name: "Ingresos",
-        data: [25, 66, 20, 40, 12, 58, 20],
-      },
-    ],
-    stroke: { curve: "smooth", width: 2 },
-  };
-
-  const earningEl = document.querySelector("#earning");
-  if (earningEl) {
-    new ApexCharts(earningEl, earningOptions).render();
-  }
-
-  // ===============================
-  // 🚪 CERRAR SESIÓN
-  // ===============================
+  // ==========================================
+  // BOTÓN LOGOUT
+  // ==========================================
   const btnCerrar = document.getElementById("btnCerrarSesion");
 
   if (btnCerrar) {
     btnCerrar.addEventListener("click", cerrarSesion);
   }
 
-  async function cerrarSesion() {
-    try {
-      await fetch(`${API_URL}/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
-    } catch (err) {
-      console.warn("Error cerrando sesión");
-    }
+  // ==========================================
+  // CARGAR NOMBRE USUARIO
+  // ==========================================
+  const nombreUsuario = document.getElementById("nombreUsuario");
 
-    sessionStorage.clear();
-    window.location.href = "./login.html";
+  if (nombreUsuario) {
+    nombreUsuario.textContent = "Administrador";
+  }
+
+  // ==========================================
+  // 📊 GRAFICO PRINCIPAL
+  // ==========================================
+  const chartEl = document.querySelector("#chart");
+
+  if (chartEl) {
+    const chart = new ApexCharts(chartEl, {
+      series: [
+        {
+          name: "Ingresos",
+          data: [355, 390, 300, 350, 390, 180, 355]
+        },
+        {
+          name: "Gastos",
+          data: [280, 250, 325, 215, 250, 310, 280]
+        }
+      ],
+      chart: {
+        type: "bar",
+        height: 345,
+        toolbar: {
+          show: false
+        }
+      },
+      colors: ["#5D87FF", "#49BEFF"],
+      plotOptions: {
+        bar: {
+          borderRadius: 6,
+          columnWidth: "35%"
+        }
+      },
+      dataLabels: {
+        enabled: false
+      },
+      xaxis: {
+        categories: [
+          "Lun",
+          "Mar",
+          "Mié",
+          "Jue",
+          "Vie",
+          "Sáb",
+          "Dom"
+        ]
+      }
+    });
+
+    chart.render();
+  }
+
+  // ==========================================
+  // 🍩 DONUT
+  // ==========================================
+  const breakupEl = document.querySelector("#breakup");
+
+  if (breakupEl) {
+    const donut = new ApexCharts(breakupEl, {
+      series: [38, 40, 25],
+      labels: ["Pagados", "Pendientes", "Mora"],
+      chart: {
+        type: "donut",
+        width: 220
+      },
+      legend: {
+        show: true
+      }
+    });
+
+    donut.render();
+  }
+
+  // ==========================================
+  // 📈 MINI CHART
+  // ==========================================
+  const earningEl = document.querySelector("#earning");
+
+  if (earningEl) {
+    const mini = new ApexCharts(earningEl, {
+      chart: {
+        type: "area",
+        height: 60,
+        sparkline: {
+          enabled: true
+        }
+      },
+      series: [
+        {
+          data: [10, 35, 20, 60, 25, 80, 45]
+        }
+      ],
+      stroke: {
+        curve: "smooth",
+        width: 2
+      }
+    });
+
+    mini.render();
   }
 
 });
 
-// ===============================
-// 🔐 VERIFICAR SESIÓN REAL
-// ===============================
-async function checkSession() {
-  const API_URL = "http://192.168.1.10:3000/api";
+// ==========================================
+// 🔐 VERIFICAR TOKEN REAL
+// ==========================================
+async function verificarSesion() {
+
+  const API_URL = "http://192.168.1.10:4000/api";
+
+  const token =
+    localStorage.getItem("token") ||
+    sessionStorage.getItem("token");
 
   try {
-    const res = await fetch(`${API_URL}/auth/check`, {
-      credentials: "include",
-    });
+    const res = await fetch(
+      `${API_URL}/auth/check`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
 
     if (!res.ok) {
-      window.location.href = "./login.html";
+      cerrarTodo();
     }
-  } catch (err) {
-    window.location.href = "./login.html";
+
+  } catch (error) {
+    cerrarTodo();
   }
 }
 
-// ===============================
-// 🔙 EVITAR BOTÓN ATRÁS
-// ===============================
+// ==========================================
+// LIMPIAR TODO
+// ==========================================
+function cerrarTodo() {
+  localStorage.removeItem("token");
+  sessionStorage.clear();
+  window.location.href = "/login";
+}
+
+// ==========================================
+// 🔙 EVITAR CACHE / BOTÓN ATRÁS
+// ==========================================
 window.addEventListener("pageshow", (event) => {
   if (event.persisted) {
     window.location.reload();

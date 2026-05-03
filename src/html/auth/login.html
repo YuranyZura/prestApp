@@ -1,165 +1,471 @@
 <!doctype html>
 <html lang="es">
+
 <head>
   <meta charset="utf-8">
+
+  <!-- Responsive + Android -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>PrestApp - Iniciar Sesión</title>
+
+  <!-- SEO -->
+  <meta name="description" content="Panel de trabajadores PrestApp">
+
+  <title>PrestApp - Trabajadores</title>
 
   <!-- Favicon -->
-  <link rel="shortcut icon" type="image/png" href="/assets/images/logos/favicon.png" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/logos/favicon.png">
 
   <!-- CSS -->
-  <link rel="stylesheet" href="/assets/css/styles.min.css" />
-  <link rel="stylesheet" href="/assets/css/login.css">
+  <link rel="stylesheet" href="/assets/css/styles.min.css">
+  <link rel="stylesheet" href="/assets/css/administradores.css">
+  <link rel="stylesheet" href="/assets/css/icons/tabler-icons/tabler-icons.css">
+
+  <style>
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: #f8f9fa;
+    }
+
+    .table-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .card-box {
+      border: 0;
+      border-radius: 18px;
+      box-shadow: 0 8px 22px rgba(0,0,0,.06);
+    }
+
+    .left-sidebar.show {
+      left: 0;
+    }
+
+    @media(max-width:991px){
+      .left-sidebar{
+        position: fixed;
+        top: 0;
+        left: -280px;
+        width: 260px;
+        height: 100%;
+        z-index: 1050;
+        background: #fff;
+        transition: .3s ease;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <div class="page-wrapper" id="main-wrapper">
-    <div class="login-container">
-      <div class="login-card card">
+
+<div class="page-wrapper" id="main-wrapper">
+
+  <!-- SIDEBAR -->
+  <aside class="left-sidebar border-end bg-white">
+
+    <div class="brand-logo text-center p-3">
+      <img
+        src="/assets/images/logos/prestapp-remove.png"
+        alt="PrestApp"
+        width="160">
+    </div>
+
+    <nav class="sidebar-nav px-2">
+
+      <ul class="nav flex-column">
+
+        <li class="sidebar-item mb-1">
+          <a class="sidebar-link"
+             href="/html/admin/dashboard.html">
+
+            <i class="ti ti-layout-dashboard"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+
+        <li class="sidebar-item mb-1">
+          <a class="sidebar-link active"
+             href="/html/admin/trabajadores.html"
+             aria-current="page">
+
+            <i class="ti ti-users"></i>
+            <span>Trabajadores</span>
+          </a>
+        </li>
+
+        <li class="sidebar-item mt-3">
+          <button
+            id="btnLogout"
+            class="sidebar-link btn btn-link text-start w-100">
+
+            <i class="ti ti-logout"></i>
+            <span>Cerrar sesión</span>
+          </button>
+        </li>
+
+      </ul>
+
+    </nav>
+
+  </aside>
+
+  <!-- CONTENIDO -->
+  <div class="body-wrapper">
+
+    <!-- HEADER -->
+    <header class="app-header border-bottom bg-white">
+      <nav class="navbar navbar-light px-3">
+
+        <button
+          class="btn btn-light d-lg-none"
+          id="btnMenu"
+          aria-label="Abrir menú">
+
+          <i class="ti ti-menu-2"></i>
+        </button>
+
+        <div class="ms-auto d-flex align-items-center gap-2">
+
+          <button class="btn btn-light" aria-label="Notificaciones">
+            <i class="ti ti-bell"></i>
+          </button>
+
+          <img
+            src="/assets/images/profile/user-1.jpg"
+            alt="Usuario"
+            class="rounded-circle"
+            width="36"
+            height="36">
+
+        </div>
+
+      </nav>
+    </header>
+
+    <!-- MAIN -->
+    <main class="container-fluid p-3">
+
+      <!-- CABECERA -->
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+
+        <div>
+          <h1 class="h3 fw-bold mb-1">Trabajadores</h1>
+          <p class="text-muted mb-0">
+            Gestiona el personal registrado
+          </p>
+        </div>
+
+        <button
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#modalTrabajador">
+
+          <i class="ti ti-plus"></i>
+          Nuevo trabajador
+        </button>
+
+      </div>
+
+      <!-- TARJETAS -->
+      <div class="row g-3 mb-4">
+
+        <div class="col-6 col-lg-3">
+          <div class="card card-box p-3 text-center">
+            <h3 id="totalTrabajadores">0</h3>
+            <small class="text-muted">Total</small>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+          <div class="card card-box p-3 text-center">
+            <h3 id="activos">0</h3>
+            <small class="text-muted">Activos</small>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TABLA -->
+      <div class="card card-box">
+
         <div class="card-body">
 
-          <!-- Logo -->
-          <a href="/" class="logo-container" title="Ir al inicio">
-            <img src="/assets/images/logos/prestapp-remove.png" alt="Logo PrestApp" width="180">
-          </a>
+          <div class="mb-3">
+            <label for="buscar" class="form-label fw-semibold">
+              Buscar trabajador
+            </label>
 
-          <p class="text-center text-muted">Tu préstamo seguro</p>
+            <input
+              type="search"
+              id="buscar"
+              class="form-control"
+              placeholder="Nombre, cédula o correo">
+          </div>
 
-          <!-- Formulario -->
-          <form id="formLogin">
-            <div class="mb-3">
-              <label for="correo" class="form-label">Correo electrónico</label>
-              <input type="email" name="correo" id="correo" class="form-control" placeholder="ejemplo@correo.com" required>
-            </div>
+          <div class="table-responsive">
 
-            <div class="mb-4">
-              <label for="contrasena" class="form-label">Contraseña</label>
-              <input type="password" name="contrasena" id="contrasena" class="form-control" placeholder="••••••••" required>
-            </div>
+            <table class="table align-middle">
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="recordar">
-                <label class="form-check-label" for="recordar">
-                  Recordar dispositivo
-                </label>
-              </div>
+              <thead>
+                <tr>
+                  <th>Foto</th>
+                  <th>Nombre</th>
+                  <th>Cédula</th>
+                  <th>Teléfono</th>
+                  <th>Correo</th>
+                  <th class="text-center">Acciones</th>
+                </tr>
+              </thead>
 
-              <a class="text-primary fw-bold" href="#">
-                ¿Olvidaste tu contraseña?
-              </a>
-            </div>
+              <tbody id="tablaTrabajadores">
 
-            <button type="submit" class="btn btn-primary w-100 mb-4">
-              Iniciar sesión
-            </button>
+                <tr>
+                  <td colspan="6" class="text-center py-4">
+                    Cargando trabajadores...
+                  </td>
+                </tr>
 
-            <div class="text-center">
-              <p class="fw-bold mb-0">¿Nuevo en PrestApp?</p>
-              <a class="text-primary fw-bold" href="/html/auth/register.html">
-                Crear cuenta
-              </a>
-            </div>
-          </form>
+              </tbody>
+
+            </table>
+
+          </div>
 
         </div>
+
       </div>
-    </div>
+
+    </main>
+
   </div>
 
-  <!-- Modal Confirmación -->
-  <div class="modal fade" id="modalConfirmarReenvio" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-body">
-          <p>
-            Tu cuenta no está verificada.<br>
-            ¿Reenviar código a <strong id="correoConfirmacion"></strong>?
-          </p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-primary" id="btnConfirmarReenvio">Reenviar código</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Verificación -->
-  <div class="modal fade" id="modalVerificacion" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Verifica tu correo</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
-        </div>
-
-        <div class="modal-body text-center">
-          <p>Ingresa el código enviado a tu correo:</p>
-
-          <div class="d-flex justify-content-center gap-2">
-  <input type="text" maxlength="1" class="form-control text-center codigo-input"
-    inputmode="numeric" pattern="[0-9]*" aria-label="Dígito 1 del código">
-
-  <input type="text" maxlength="1" class="form-control text-center codigo-input"
-    inputmode="numeric" pattern="[0-9]*" aria-label="Dígito 2 del código">
-
-  <input type="text" maxlength="1" class="form-control text-center codigo-input"
-    inputmode="numeric" pattern="[0-9]*" aria-label="Dígito 3 del código">
-
-  <input type="text" maxlength="1" class="form-control text-center codigo-input"
-    inputmode="numeric" pattern="[0-9]*" aria-label="Dígito 4 del código">
-
-  <input type="text" maxlength="1" class="form-control text-center codigo-input"
-    inputmode="numeric" pattern="[0-9]*" aria-label="Dígito 5 del código">
-
-  <input type="text" maxlength="1" class="form-control text-center codigo-input"
-    inputmode="numeric" pattern="[0-9]*" aria-label="Dígito 6 del código">
 </div>
 
-<button type="submit" class="btn btn-primary w-100 mt-4">
-              Verificar
+<!-- MODAL -->
+<div
+  class="modal fade"
+  id="modalTrabajador"
+  tabindex="-1"
+  aria-hidden="true">
+
+  <div class="modal-dialog modal-dialog-centered">
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h2 class="modal-title fs-5">
+          Nuevo Trabajador
+        </h2>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <div class="modal-body">
+
+        <form id="formTrabajador">
+
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" id="nombre" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="cedula" class="form-label">Cédula</label>
+            <input type="text" id="cedula" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="telefono" class="form-label">Teléfono</label>
+            <input type="text" id="telefono" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="correo" class="form-label">Correo</label>
+            <input type="email" id="correo2" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="foto" class="form-label">Foto</label>
+            <input type="file" id="foto" class="form-control">
+          </div>
+
+        </form>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal">
+
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="btnGuardar">
+
+          Guardar
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const btnMenu = document.getElementById("btnMenu");
+  const sidebar = document.querySelector(".left-sidebar");
+
+  if(btnMenu){
+    btnMenu.addEventListener("click", () => {
+      sidebar.classList.toggle("show");
+    });
+  }
+
+  const tabla = document.getElementById("tablaTrabajadores");
+
+  let trabajadores = [
+    {
+      nombre:"Juan Pérez",
+      cedula:"001-1234567-8",
+      telefono:"809-555-1234",
+      correo:"juan@email.com",
+      foto:"https://i.pravatar.cc/80?img=1"
+    },
+    {
+      nombre:"Ana Gómez",
+      cedula:"001-7654321-0",
+      telefono:"829-222-4444",
+      correo:"ana@email.com",
+      foto:"https://i.pravatar.cc/80?img=2"
+    }
+  ];
+
+  function render(lista){
+
+    if(!lista.length){
+      tabla.innerHTML = `
+        <tr>
+          <td colspan="6" class="text-center py-4">
+            Sin trabajadores
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tabla.innerHTML = "";
+
+    lista.forEach((t,index)=>{
+
+      tabla.innerHTML += `
+        <tr>
+          <td>
+            <img src="${t.foto}" class="table-avatar">
+          </td>
+          <td>${t.nombre}</td>
+          <td>${t.cedula}</td>
+          <td>${t.telefono}</td>
+          <td>${t.correo}</td>
+          <td class="text-center">
+
+            <button
+              class="btn btn-sm btn-danger"
+              onclick="eliminarTrabajador(${index})">
+
+              Eliminar
             </button>
-          </form>
-          <p class="mt-3">
-            ¿No recibiste el código?
-            <button id="btnReenviar" class="btn btn-link">Reenviar</button>
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Toasts -->
-  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+          </td>
+        </tr>
+      `;
+    });
 
-    <div id="toastLoginExito" class="toast">
-      <div class="toast-header bg-success text-white">
-        <strong class="me-auto">Éxito</strong>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="cerrar"></button>
-      </div>
-      <div class="toast-body">
-        Inicio de sesión exitoso
-      </div>
-    </div>
+    document.getElementById("totalTrabajadores").textContent = lista.length;
+    document.getElementById("activos").textContent = lista.length;
+  }
 
-    <div id="toastLoginError" class="toast">
-      <div class="toast-header bg-danger text-white">
-        <strong class="me-auto">Error</strong>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="cerrar"></button>
-      </div>
-      <div class="toast-body" id="toastLoginErrorBody"></div>
-    </div>
+  window.eliminarTrabajador = function(index){
+    if(confirm("¿Eliminar trabajador?")){
+      trabajadores.splice(index,1);
+      render(trabajadores);
+    }
+  }
 
-  </div>
+  document.getElementById("btnGuardar").addEventListener("click",()=>{
 
-  <!-- Scripts -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    const nombre = document.getElementById("nombre").value.trim();
+    const cedula = document.getElementById("cedula").value.trim();
+    const telefono = document.getElementById("telefono").value.trim();
+    const correo = document.getElementById("correo2").value.trim();
 
-  <!-- JS CORREGIDO -->
-  <script src="/assets/js/login.js"></script>
+    if(!nombre || !cedula || !telefono || !correo){
+      alert("Complete todos los campos");
+      return;
+    }
+
+    trabajadores.push({
+      nombre,
+      cedula,
+      telefono,
+      correo,
+      foto:"https://i.pravatar.cc/80?u="+correo
+    });
+
+    render(trabajadores);
+
+    document.getElementById("formTrabajador").reset();
+
+    bootstrap.Modal.getInstance(
+      document.getElementById("modalTrabajador")
+    ).hide();
+
+  });
+
+  document.getElementById("buscar").addEventListener("input",(e)=>{
+
+    const txt = e.target.value.toLowerCase();
+
+    const filtrado = trabajadores.filter(t =>
+      t.nombre.toLowerCase().includes(txt) ||
+      t.cedula.toLowerCase().includes(txt) ||
+      t.correo.toLowerCase().includes(txt)
+    );
+
+    render(filtrado);
+  });
+
+  document.getElementById("btnLogout").addEventListener("click",()=>{
+
+    if(confirm("¿Cerrar sesión?")){
+      location.href="/html/auth/login.html";
+    }
+
+  });
+
+  render(trabajadores);
+
+});
+</script>
 
 </body>
 </html>

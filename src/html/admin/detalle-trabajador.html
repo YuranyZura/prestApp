@@ -1,233 +1,507 @@
 <!DOCTYPE html>
-
 <html lang="es">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PrestApp - Detalle Trabajador</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-  <link rel="shortcut icon" href="/assets/images/logos/favicon.png">
+<title>PrestApp | Detalle Trabajador</title>
 
-  <!-- CSS -->
+<link rel="shortcut icon" href="/assets/images/logos/favicon.png">
 
-  <link rel="stylesheet" href="/assets/css/styles.min.css">
-  <link rel="stylesheet" href="/assets/css/administradores.css">
+<link rel="stylesheet" href="/assets/css/styles.min.css">
+<link rel="stylesheet" href="/assets/css/icons/tabler-icons/tabler-icons.css">
 
-  <!-- Iconos -->
+<style>
+body{
+  background:#f5f7fa;
+  overflow-x:hidden;
+}
 
-  <link rel="stylesheet" href="/assets/css/icons/tabler-icons/tabler-icons.css">
+.page-wrapper{
+  display:flex;
+  min-height:100vh;
+}
+
+/* SIDEBAR */
+.left-sidebar{
+  width:260px;
+  background:#ffffff;
+  border-right:1px solid #e5e5e5;
+  transition:.3s;
+}
+
+.brand-logo{
+  padding:20px;
+  text-align:center;
+}
+
+.brand-logo img{
+  max-width:160px;
+}
+
+.sidebar-link{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:14px 18px;
+  color:#374151;
+  text-decoration:none;
+  font-weight:500;
+  transition:.2s;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active{
+  background:#0d6efd;
+  color:#fff;
+}
+
+.body-wrapper{
+  flex:1;
+  padding:25px;
+}
+
+/* CARD */
+.card{
+  border:none;
+  border-radius:16px;
+  box-shadow:0 4px 15px rgba(0,0,0,.05);
+}
+
+.avatar{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  object-fit:cover;
+  border:4px solid #f1f1f1;
+}
+
+.info-label{
+  font-size:13px;
+  color:#6b7280;
+  margin-bottom:2px;
+}
+
+.info-value{
+  font-weight:600;
+  margin-bottom:12px;
+}
+
+.table thead{
+  background:#0d6efd;
+  color:#fff;
+}
+
+.badge-status{
+  font-size:13px;
+}
+
+/* RESPONSIVE */
+@media (max-width:768px){
+
+  .page-wrapper{
+    flex-direction:column;
+  }
+
+  .left-sidebar{
+    width:100%;
+    min-height:0;
+  }
+
+  .body-wrapper{
+    padding:15px;
+  }
+
+}
+</style>
 </head>
 
 <body>
 
-<div class="page-wrapper" id="main-wrapper">
+<div class="page-wrapper">
 
-  <!-- SIDEBAR -->
+<!-- SIDEBAR -->
+<aside class="left-sidebar">
 
-  <aside class="left-sidebar">
-    <div class="brand-logo text-center p-3">
-      <img src="/assets/images/logos/prestapp-remove.png" alt="Logo PrestApp" width="150">
-    </div>
+<div class="brand-logo">
+<img src="/assets/images/logos/prestapp-remove.png" alt="PrestApp">
+</div>
 
-```
-<nav class="sidebar-nav">
-  <ul class="nav flex-column">
+<nav>
 
-    <li class="sidebar-item">
-      <a class="sidebar-link" href="./administradores.html">
-        <i class="ti ti-arrow-left"></i>
-        <span>Volver</span>
-      </a>
-    </li>
+<a href="/dashboard" class="sidebar-link">
+<i class="ti ti-layout-dashboard"></i>
+<span>Dashboard</span>
+</a>
 
-    <li class="sidebar-item">
-      <a class="sidebar-link active" href="#">
-        <i class="ti ti-user"></i>
-        <span>Detalle Trabajador</span>
-      </a>
-    </li>
+<a href="/html/admin/administradores.html" class="sidebar-link active">
+<i class="ti ti-users"></i>
+<span>Trabajadores</span>
+</a>
 
-  </ul>
+<a href="/html/admin/clientes.html" class="sidebar-link">
+<i class="ti ti-user"></i>
+<span>Clientes</span>
+</a>
+
+<a href="/html/admin/prestamos.html" class="sidebar-link">
+<i class="ti ti-cash"></i>
+<span>Préstamos</span>
+</a>
+
 </nav>
-```
 
-  </aside>
+<div class="p-3 mt-4">
+<button
+type="button"
+id="btnLogout"
+class="btn btn-danger w-100">
+Cerrar sesión
+</button>
+</div>
 
-  <!-- CONTENIDO -->
+</aside>
 
-  <div class="body-wrapper">
+<!-- CONTENIDO -->
+<main class="body-wrapper">
 
-```
 <!-- HEADER -->
-<header class="app-header">
-  <nav class="navbar navbar-light px-3">
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-    <button 
-      class="btn btn-light d-md-none"
-      aria-label="Abrir menú"
-      id="btnMenu">
-      <i class="ti ti-menu-2"></i>
-    </button>
-
-    <div class="ms-auto d-flex align-items-center gap-2">
-
-      <button 
-        class="btn btn-light"
-        aria-label="Notificaciones"
-        title="Notificaciones">
-        <i class="ti ti-bell"></i>
-      </button>
-
-      <img 
-        src="/assets/images/profile/user-1.jpg"
-        alt="Usuario"
-        class="rounded-circle"
-        width="35"
-        height="35">
-
-    </div>
-  </nav>
-</header>
-
-<!-- CONTENIDO PRINCIPAL -->
-<div class="container-fluid">
-
-  <!-- BOTÓN VOLVER -->
-  <div class="mb-3">
-    <button 
-      class="btn btn-light d-flex align-items-center gap-1"
-      aria-label="Volver a trabajadores">
-
-      <i class="ti ti-arrow-left"></i>
-      <span>Volver</span>
-    </button>
-  </div>
-
-  <div class="row">
-
-    <!-- INFO PRINCIPAL -->
-    <div class="col-lg-8">
-
-      <!-- DATOS -->
-      <div class="card mb-3">
-        <div class="card-body">
-
-          <h5 class="fw-bold mb-3">
-            <i class="ti ti-user"></i> Información del Trabajador
-          </h5>
-
-          <div class="row">
-            <div class="col-md-4 text-center">
-              <img 
-                id="fotoTrabajador"
-                src="https://via.placeholder.com/120"
-                alt="Foto del trabajador"
-                class="rounded-circle"
-                width="120"
-                height="120">
-            </div>
-
-            <div class="col-md-8">
-
-              <p><strong>Nombre:</strong> <span id="nombreTrabajador">-</span></p>
-              <p><strong>Cédula:</strong> <span id="cedulaTrabajador">-</span></p>
-              <p><strong>Teléfono:</strong> <span id="telefonoTrabajador">-</span></p>
-
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- HISTORIAL -->
-      <div class="card">
-        <div class="card-body">
-
-          <h5 class="fw-bold mb-3">
-            <i class="ti ti-history"></i> Actividad
-          </h5>
-
-          <div class="table-responsive">
-            <table class="table">
-
-              <thead>
-                <tr>
-                  <th>Fecha</th>
-                  <th>Acción</th>
-                  <th>Detalle</th>
-                </tr>
-              </thead>
-
-              <tbody id="tablaActividad">
-                <tr>
-                  <td colspan="3" class="text-center text-muted">
-                    No hay registros
-                  </td>
-                </tr>
-              </tbody>
-
-            </table>
-          </div>
-
-        </div>
-      </div>
-
-    </div>
-
-    <!-- SIDEBAR DERECHO -->
-    <div class="col-lg-4">
-
-      <!-- ESTADO -->
-      <div class="card mb-3">
-        <div class="card-body">
-
-          <h6 class="fw-bold">Estado</h6>
-
-          <span class="badge bg-success" id="estadoTrabajador">
-            Activo
-          </span>
-
-        </div>
-      </div>
-
-      <!-- ACCIONES -->
-      <div class="card">
-        <div class="card-body">
-
-          <h6 class="fw-bold mb-3">Acciones</h6>
-
-          <div class="d-grid gap-2">
-
-            <button class="btn btn-primary">
-              <i class="ti ti-edit"></i> Editar
-            </button>
-
-            <button class="btn btn-danger">
-              <i class="ti ti-trash"></i> Eliminar
-            </button>
-
-          </div>
-
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-
+<div>
+<h2 class="fw-bold mb-0">Detalle Trabajador</h2>
+<p class="text-muted mb-0">
+Información completa del trabajador
+</p>
 </div>
-```
 
-  </div>
+<a
+href="/html/admin/administradores.html"
+class="btn btn-light">
+<i class="ti ti-arrow-left"></i>
+Volver
+</a>
 
 </div>
 
-<!-- JS -->
+<div class="row g-4">
+
+<!-- IZQUIERDA -->
+<div class="col-lg-8">
+
+<!-- PERFIL -->
+<div class="card p-4 mb-4">
+
+<div class="row align-items-center">
+
+<div class="col-md-4 text-center mb-3 mb-md-0">
+<img
+id="fotoTrabajador"
+src="/assets/images/profile/user-1.jpg"
+alt="Foto trabajador"
+class="avatar">
+</div>
+
+<div class="col-md-8">
+
+<h4 id="nombreTrabajador">Cargando...</h4>
+
+<div class="info-label">Cédula</div>
+<div id="cedulaTrabajador" class="info-value">-</div>
+
+<div class="info-label">Teléfono</div>
+<div id="telefonoTrabajador" class="info-value">-</div>
+
+<div class="info-label">Correo</div>
+<div id="correoTrabajador" class="info-value">-</div>
+
+<div class="info-label">Rol</div>
+<div id="rolTrabajador" class="info-value">Trabajador</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ACTIVIDAD -->
+<div class="card p-4">
+
+<h5 class="mb-3">Actividad Reciente</h5>
+
+<div class="table-responsive">
+<table class="table align-middle">
+
+<thead>
+<tr>
+<th>Fecha</th>
+<th>Acción</th>
+<th>Detalle</th>
+</tr>
+</thead>
+
+<tbody id="tablaActividad">
+
+<tr>
+<td colspan="3" class="text-center py-4">
+Sin registros
+</td>
+</tr>
+
+</tbody>
+
+</table>
+</div>
+
+</div>
+
+</div>
+
+<!-- DERECHA -->
+<div class="col-lg-4">
+
+<!-- ESTADO -->
+<div class="card p-4 mb-4">
+
+<h5 class="mb-3">Estado</h5>
+
+<span
+id="estadoTrabajador"
+class="badge bg-success badge-status">
+Activo
+</span>
+
+</div>
+
+<!-- RESUMEN -->
+<div class="card p-4 mb-4">
+
+<h5 class="mb-3">Resumen</h5>
+
+<p>Total clientes: <strong id="clientesAsignados">0</strong></p>
+<p>Préstamos creados: <strong id="prestamosCreados">0</strong></p>
+<p>Cobros realizados: <strong id="cobrosRealizados">0</strong></p>
+<p>Último acceso: <strong id="ultimoAcceso">-</strong></p>
+
+</div>
+
+<!-- ACCIONES -->
+<div class="card p-4">
+
+<h5 class="mb-3">Acciones</h5>
+
+<div class="d-grid gap-2">
+
+<button
+type="button"
+id="btnEditar"
+class="btn btn-primary">
+<i class="ti ti-edit"></i>
+Editar
+</button>
+
+<button
+type="button"
+id="btnReset"
+class="btn btn-warning">
+<i class="ti ti-key"></i>
+Restablecer clave
+</button>
+
+<button
+type="button"
+id="btnEliminar"
+class="btn btn-danger">
+<i class="ti ti-trash"></i>
+Eliminar
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<script src="/assets/js/app.min.js"></script>
+<script>
+// ==========================================
+// CONFIG
+// ==========================================
+const API = "http://localhost:4000/api";
+const token = localStorage.getItem("token");
+
+// ==========================================
+// OBTENER ID
+// ==========================================
+const params = new URLSearchParams(location.search);
+const id = params.get("id");
+
+// ==========================================
+// VALIDAR
+// ==========================================
+if(!token){
+location.href="/login";
+}
+
+// ==========================================
+// CARGAR DETALLE
+// ==========================================
+async function cargarTrabajador(){
+
+try{
+
+const res = await fetch(`${API}/trabajadores/${id}`,{
+headers:{
+Authorization:`Bearer ${token}`
+}
+});
+
+const data = await res.json();
+
+if(!data.success){
+alert("Trabajador no encontrado");
+location.href="/html/admin/administradores.html";
+return;
+}
+
+const t = data.trabajador;
+
+// PERFIL
+document.getElementById("nombreTrabajador").textContent =
+t.nombreCompleto || t.nombre;
+
+document.getElementById("cedulaTrabajador").textContent =
+t.cedula || "-";
+
+document.getElementById("telefonoTrabajador").textContent =
+t.telefono || "-";
+
+document.getElementById("correoTrabajador").textContent =
+t.correo || "-";
+
+document.getElementById("rolTrabajador").textContent =
+t.rol || "Trabajador";
+
+if(t.foto){
+document.getElementById("fotoTrabajador").src =
+`/uploads/${t.foto}`;
+}
+
+// RESUMEN
+document.getElementById("clientesAsignados").textContent =
+t.total_clientes || 0;
+
+document.getElementById("prestamosCreados").textContent =
+t.total_prestamos || 0;
+
+document.getElementById("cobrosRealizados").textContent =
+t.total_cobros || 0;
+
+document.getElementById("ultimoAcceso").textContent =
+t.ultimo_acceso || "-";
+
+// ESTADO
+if(t.estado === "inactivo"){
+document.getElementById("estadoTrabajador").className =
+"badge bg-danger badge-status";
+
+document.getElementById("estadoTrabajador").textContent =
+"Inactivo";
+}
+
+// ACTIVIDAD
+if(data.actividad && data.actividad.length){
+
+document.getElementById("tablaActividad").innerHTML =
+data.actividad.map(a=>`
+<tr>
+<td>${a.fecha}</td>
+<td>${a.accion}</td>
+<td>${a.detalle}</td>
+</tr>
+`).join("");
+
+}
+
+}catch(error){
+
+console.error(error);
+alert("Error cargando trabajador");
+
+}
+
+}
+
+// ==========================================
+// EDITAR
+// ==========================================
+document.getElementById("btnEditar")
+.addEventListener("click",()=>{
+
+alert("Abrir módulo editar trabajador");
+
+});
+
+// ==========================================
+// RESET PASS
+// ==========================================
+document.getElementById("btnReset")
+.addEventListener("click",()=>{
+
+alert("Enviar nueva contraseña");
+
+});
+
+// ==========================================
+// ELIMINAR
+// ==========================================
+document.getElementById("btnEliminar")
+.addEventListener("click",async()=>{
+
+if(!confirm("¿Eliminar trabajador?")) return;
+
+const res = await fetch(`${API}/trabajadores/${id}`,{
+method:"DELETE",
+headers:{
+Authorization:`Bearer ${token}`
+}
+});
+
+const data = await res.json();
+
+if(data.success){
+alert("Trabajador eliminado");
+location.href="/html/admin/administradores.html";
+}else{
+alert(data.message);
+}
+
+});
+
+// ==========================================
+// LOGOUT
+// ==========================================
+document.getElementById("btnLogout")
+.addEventListener("click",()=>{
+
+localStorage.removeItem("token");
+sessionStorage.clear();
+location.href="/login";
+
+});
+
+// ==========================================
+cargarTrabajador();
+// ==========================================
+</script>
 
 </body>
 </html>

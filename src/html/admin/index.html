@@ -1,241 +1,518 @@
 <!DOCTYPE html>
-
 <html lang="es">
 
 <head>
-  <meta charset="utf-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-  <!-- ✅ VIEWPORT CORRECTO (sin errores) -->
+<title>PrestApp | Dashboard</title>
+<meta name="description" content="Panel principal PrestApp">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="shortcut icon" href="/assets/images/logos/favicon.png">
 
-  <!-- ✅ TITLE (IMPORTANTE) -->
+<link rel="stylesheet" href="/assets/css/styles.min.css">
+<link rel="stylesheet" href="/assets/css/icons/tabler-icons/tabler-icons.css">
 
-  <title>PrestApp - Dashboard</title>
+<style>
+body{
+  background:#f5f7fa;
+  overflow-x:hidden;
+}
 
-  <link rel="shortcut icon" href="/assets/images/logos/favicon.png">
+.page-wrapper{
+  display:flex;
+  min-height:100vh;
+}
 
-  <!-- CSS GLOBAL -->
+/* SIDEBAR */
+.left-sidebar{
+  width:260px;
+  background:#ffffff;
+  border-right:1px solid #e5e5e5;
+  transition:.3s;
+}
 
-  <link rel="stylesheet" href="/assets/css/styles.min.css">
-  <link rel="stylesheet" href="/assets/css/administradores.css">
+.brand-logo{
+  padding:20px;
+  text-align:center;
+}
 
-  <!-- ICONOS -->
+.brand-logo img{
+  max-width:160px;
+}
 
-  <link rel="stylesheet" href="/assets/css/icons/tabler-icons/tabler-icons.css">
+.sidebar-link{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:14px 18px;
+  color:#374151;
+  text-decoration:none;
+  font-weight:500;
+  border-radius:10px;
+  margin:4px 10px;
+  transition:.2s;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active{
+  background:#0d6efd;
+  color:#fff;
+}
+
+.body-wrapper{
+  flex:1;
+}
+
+/* HEADER */
+.app-header{
+  background:#fff;
+  border-bottom:1px solid #e5e5e5;
+}
+
+/* CARDS */
+.stat-card{
+  border:none;
+  border-radius:18px;
+  box-shadow:0 4px 14px rgba(0,0,0,.05);
+}
+
+.stat-card h3{
+  font-size:30px;
+  font-weight:700;
+  margin-bottom:5px;
+}
+
+.stat-card p{
+  margin:0;
+  color:#6b7280;
+}
+
+.card{
+  border:none;
+  border-radius:18px;
+  box-shadow:0 4px 14px rgba(0,0,0,.05);
+}
+
+.chart-box{
+  min-height:330px;
+}
+
+.badge-role{
+  font-size:13px;
+}
+
+/* MOBILE */
+@media(max-width:991px){
+
+  .left-sidebar{
+    position:fixed;
+    top:0;
+    left:-280px;
+    height:100%;
+    z-index:1050;
+  }
+
+  .left-sidebar.show{
+    left:0;
+  }
+
+}
+
+@media(max-width:768px){
+
+  .page-wrapper{
+    display:block;
+  }
+
+}
+</style>
 </head>
 
 <body>
 
-<div class="page-wrapper" id="main-wrapper">
+<div class="page-wrapper">
 
-  <!-- SIDEBAR -->
+<!-- SIDEBAR -->
+<aside class="left-sidebar">
 
-  <aside class="left-sidebar">
-    <div class="brand-logo text-center p-3">
-      <img src="/assets/images/logos/prestapp-remove.png" alt="Logo PrestApp" width="150">
-    </div>
+<div class="brand-logo">
+<img src="/assets/images/logos/prestapp-remove.png" alt="PrestApp">
+</div>
 
-```
-<nav class="sidebar-nav">
-  <ul class="nav flex-column">
+<nav id="menuSidebar">
 
-    <li class="sidebar-item">
-      <a class="sidebar-link active" href="./index.html">
-        <i class="ti ti-layout-dashboard"></i>
-        <span>Dashboard</span>
-      </a>
-    </li>
+<a href="/dashboard" class="sidebar-link active">
+<i class="ti ti-layout-dashboard"></i>
+<span>Dashboard</span>
+</a>
 
-    <li class="sidebar-item">
-      <a class="sidebar-link" href="./trabajadores.html">
-        <i class="ti ti-users"></i>
-        <span>Trabajadores</span>
-      </a>
-    </li>
+<a href="/html/admin/clientes.html" class="sidebar-link">
+<i class="ti ti-users"></i>
+<span>Clientes</span>
+</a>
 
-    <li class="sidebar-item">
-      <button 
-        id="btnCerrarSesionSidebar"
-        class="sidebar-link btn btn-link text-start w-100"
-        aria-label="Cerrar sesión">
+<a href="/html/admin/prestamos.html" class="sidebar-link">
+<i class="ti ti-cash"></i>
+<span>Préstamos</span>
+</a>
 
-        <i class="ti ti-logout"></i>
-        <span>Cerrar Sesión</span>
-      </button>
-    </li>
+<a href="/html/admin/pagos.html" class="sidebar-link">
+<i class="ti ti-credit-card"></i>
+<span>Pagos</span>
+</a>
 
-  </ul>
+<a href="/html/admin/administradores.html"
+class="sidebar-link only-admin d-none">
+<i class="ti ti-user-star"></i>
+<span>Usuarios</span>
+</a>
+
 </nav>
-```
 
-  </aside>
+<div class="p-3 mt-4">
+<button
+type="button"
+id="btnLogout"
+class="btn btn-danger w-100">
+Cerrar sesión
+</button>
+</div>
 
-  <!-- CONTENIDO -->
+</aside>
 
-  <div class="body-wrapper">
+<!-- CONTENIDO -->
+<div class="body-wrapper">
 
-```
 <!-- HEADER -->
 <header class="app-header">
-  <nav class="navbar navbar-light px-3">
+<nav class="navbar px-3">
 
-    <button 
-      class="btn btn-light d-md-none"
-      aria-label="Abrir menú"
-      id="headerCollapse">
-      <i class="ti ti-menu-2"></i>
-    </button>
+<button
+type="button"
+class="btn btn-light d-lg-none"
+id="btnMenu"
+aria-label="Abrir menú">
+<i class="ti ti-menu-2"></i>
+</button>
 
-    <div class="ms-auto d-flex align-items-center gap-2">
+<div class="ms-auto d-flex align-items-center gap-3">
 
-      <button 
-        class="btn btn-light"
-        aria-label="Notificaciones"
-        title="Notificaciones">
-        <i class="ti ti-bell"></i>
-      </button>
+<span
+id="badgeRol"
+class="badge bg-primary badge-role">
+Usuario
+</span>
 
-      <img 
-        src="/assets/images/profile/user-1.jpg"
-        alt="Usuario"
-        class="rounded-circle"
-        width="35"
-        height="35">
+<img
+src="/assets/images/profile/user-1.jpg"
+alt="Usuario"
+width="38"
+height="38"
+class="rounded-circle">
 
-    </div>
-  </nav>
+</div>
+
+</nav>
 </header>
 
-<!-- CONTENIDO PRINCIPAL -->
-<div class="container-fluid">
+<!-- MAIN -->
+<main class="container-fluid p-4">
 
-  <!-- HEADER DE PÁGINA -->
-  <div class="mb-4">
-    <h4 class="fw-bold">Dashboard</h4>
-    <p class="text-muted">Resumen general del sistema</p>
-  </div>
-
-  <!-- TARJETAS -->
-  <div class="row g-3 mb-4">
-
-    <div class="col-6 col-lg-3">
-      <div class="card stat-card text-center">
-        <h3>152</h3>
-        <p>Trabajadores</p>
-      </div>
-    </div>
-
-    <div class="col-6 col-lg-3">
-      <div class="card stat-card success text-center">
-        <h3>584</h3>
-        <p>Préstamos</p>
-      </div>
-    </div>
-
-    <div class="col-6 col-lg-3">
-      <div class="card stat-card warning text-center">
-        <h3>$42K</h3>
-        <p>Monto</p>
-      </div>
-    </div>
-
-    <div class="col-6 col-lg-3">
-      <div class="card stat-card danger text-center">
-        <h3>$8K</h3>
-        <p>Hoy</p>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- GRÁFICO -->
-  <div class="card mb-4">
-    <div class="card-body">
-      <h5 class="fw-bold mb-3">
-        <i class="ti ti-chart-line"></i> Resumen
-      </h5>
-
-      <div class="chart-container"></div>
-    </div>
-  </div>
-
-  <!-- CONFIGURACIÓN -->
-  <div class="card mb-4">
-    <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
-
-      <div>
-        <h5 class="fw-bold mb-1">
-          <i class="ti ti-percentage"></i> Tasa de Interés
-        </h5>
-        <p class="text-muted mb-0">
-          Actual: <strong id="tasaInteresDisplay">0%</strong>
-        </p>
-      </div>
-
-      <button 
-        class="btn btn-primary"
-        data-bs-toggle="modal"
-        data-bs-target="#modalConfiguracionInteres">
-        Configurar
-      </button>
-
-    </div>
-  </div>
-
-  <!-- FOOTER -->
-  <div class="text-center py-3 text-muted small">
-    © 2026 PrestApp
-  </div>
-
-</div>
-```
-
-  </div>
+<!-- TITULO -->
+<div class="mb-4">
+<h1 class="fw-bold mb-1">Dashboard</h1>
+<p class="text-muted mb-0">
+Resumen general del sistema PrestApp
+</p>
 </div>
 
-<!-- MODAL -->
+<!-- STATS -->
+<div class="row g-3 mb-4">
 
-<div class="modal fade" id="modalConfiguracionInteres" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-```
-  <div class="modal-header">
-    <h5 class="modal-title">Configurar Interés</h5>
-    <button class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-  </div>
-
-  <div class="modal-body">
-
-    <label class="form-label">Porcentaje (%)</label>
-
-    <input 
-      type="number" 
-      class="form-control" 
-      id="tasaInteres"
-      placeholder="Ej: 5.5">
-
-  </div>
-
-  <div class="modal-footer">
-    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-    <button class="btn btn-primary">Guardar</button>
-  </div>
-
+<div class="col-6 col-lg-3">
+<div class="card stat-card p-3 text-center">
+<h3 id="totalClientes">0</h3>
+<p>Clientes</p>
 </div>
-```
-
-  </div>
 </div>
 
-<!-- JS -->
+<div class="col-6 col-lg-3">
+<div class="card stat-card p-3 text-center">
+<h3 id="totalPrestamos">0</h3>
+<p>Préstamos</p>
+</div>
+</div>
+
+<div class="col-6 col-lg-3">
+<div class="card stat-card p-3 text-center">
+<h3 id="prestamosActivos">0</h3>
+<p>Activos</p>
+</div>
+</div>
+
+<div class="col-6 col-lg-3">
+<div class="card stat-card p-3 text-center">
+<h3 id="montoTotal">$0</h3>
+<p>Monto total</p>
+</div>
+</div>
+
+</div>
+
+<!-- GRAFICA -->
+<div class="card p-4 mb-4">
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+<h5 class="mb-0">Resumen mensual</h5>
+
+<button
+type="button"
+class="btn btn-sm btn-outline-primary"
+id="btnRecargar">
+Actualizar
+</button>
+</div>
+
+<div id="chartResumen" class="chart-box"></div>
+
+</div>
+
+<!-- INFO -->
+<div class="row g-3">
+
+<div class="col-lg-6">
+<div class="card p-4 h-100">
+<h5>Accesos rápidos</h5>
+
+<div class="d-grid gap-2 mt-3">
+
+<a href="/html/admin/clientes.html"
+class="btn btn-primary">
+Clientes
+</a>
+
+<a href="/html/admin/crearPrestamo.html"
+class="btn btn-success">
+Nuevo préstamo
+</a>
+
+<a href="/html/admin/pagos.html"
+class="btn btn-warning">
+Registrar pago
+</a>
+
+</div>
+
+</div>
+</div>
+
+<div class="col-lg-6">
+<div class="card p-4 h-100">
+
+<h5>Información</h5>
+
+<p class="mb-2">
+Rol actual:
+<strong id="textoRol">-</strong>
+</p>
+
+<p class="mb-2">
+Sesión activa:
+<strong>Correcta</strong>
+</p>
+
+<p class="mb-0">
+Fecha:
+<strong id="fechaActual"></strong>
+</p>
+
+</div>
+</div>
+
+</div>
+
+</main>
+
+</div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 <script src="/assets/libs/apexcharts/dist/apexcharts.min.js"></script>
 
-<script src="/assets/js/dashboard.js"></script>
+<script>
+// ==========================================
+// CONFIG
+// ==========================================
+const API = "http://localhost:4000/api";
+const token = localStorage.getItem("token");
+const rol = sessionStorage.getItem("user_role");
+
+// ==========================================
+// VALIDAR LOGIN
+// ==========================================
+if(!token){
+location.href="/login";
+}
+
+// ==========================================
+// FECHA
+// ==========================================
+document.getElementById("fechaActual").textContent =
+new Date().toLocaleDateString("es-CO");
+
+// ==========================================
+// ROLES
+// ==========================================
+function aplicarRol(){
+
+const badge = document.getElementById("badgeRol");
+const texto = document.getElementById("textoRol");
+
+if(rol === "superadmin"){
+badge.textContent = "SUPER ADMIN";
+texto.textContent = "SUPER ADMIN";
+document.querySelectorAll(".only-admin")
+.forEach(e=>e.classList.remove("d-none"));
+}
+
+else if(rol === "administrador"){
+badge.textContent = "ADMINISTRADOR";
+texto.textContent = "ADMINISTRADOR";
+document.querySelectorAll(".only-admin")
+.forEach(e=>e.classList.remove("d-none"));
+}
+
+else{
+badge.textContent = "TRABAJADOR";
+texto.textContent = "TRABAJADOR";
+}
+
+}
+
+// ==========================================
+// CARGAR RESUMEN
+// ==========================================
+async function cargarResumen(){
+
+try{
+
+const res = await fetch(`${API}/dashboard/resumen`,{
+headers:{
+Authorization:`Bearer ${token}`
+}
+});
+
+const data = await res.json();
+
+if(data.success){
+
+document.getElementById("totalClientes").textContent =
+data.totalClientes || 0;
+
+document.getElementById("totalPrestamos").textContent =
+data.totalPrestamos || 0;
+
+document.getElementById("prestamosActivos").textContent =
+data.activos || 0;
+
+document.getElementById("montoTotal").textContent =
+"$" + Number(data.montoTotal || 0).toLocaleString();
+
+crearGrafica(data.grafica || []);
+
+}
+
+}catch(error){
+console.error(error);
+crearGrafica([]);
+}
+
+}
+
+// ==========================================
+// GRAFICA
+// ==========================================
+function crearGrafica(datos){
+
+document.getElementById("chartResumen").innerHTML = "";
+
+const meses = datos.length
+? datos.map(x=>x.mes)
+: ["Ene","Feb","Mar","Abr","May","Jun"];
+
+const valores = datos.length
+? datos.map(x=>x.total)
+: [1200,1800,1500,2200,1700,2600];
+
+const options = {
+series:[{
+name:"Monto",
+data:valores
+}],
+chart:{
+type:"bar",
+height:320,
+toolbar:{show:false}
+},
+plotOptions:{
+bar:{
+borderRadius:8,
+columnWidth:"45%"
+}
+},
+dataLabels:{
+enabled:false
+},
+xaxis:{
+categories:meses
+},
+colors:["#0d6efd"]
+};
+
+new ApexCharts(
+document.querySelector("#chartResumen"),
+options
+).render();
+
+}
+
+// ==========================================
+// LOGOUT
+// ==========================================
+document.getElementById("btnLogout")
+.addEventListener("click",()=>{
+
+if(confirm("¿Cerrar sesión?")){
+localStorage.removeItem("token");
+sessionStorage.clear();
+location.href="/login";
+}
+
+});
+
+// ==========================================
+// MENU MOBILE
+// ==========================================
+document.getElementById("btnMenu")
+.addEventListener("click",()=>{
+
+document.querySelector(".left-sidebar")
+.classList.toggle("show");
+
+});
+
+// ==========================================
+// RECARGAR
+// ==========================================
+document.getElementById("btnRecargar")
+.addEventListener("click",cargarResumen);
+
+// ==========================================
+aplicarRol();
+cargarResumen();
+// ==========================================
+</script>
 
 </body>
 </html>

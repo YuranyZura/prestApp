@@ -3,177 +3,389 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PrestApp - Registro</title>
 
-  <link rel="shortcut icon" type="image/png" href="/assets/images/logos/favicon.png" />
-  <link rel="stylesheet" href="/assets/css/styles.min.css" />
-  <link rel="stylesheet" href="/assets/css/login.css">
+  <!-- Responsive / Android -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <title>PrestApp - Trabajador</title>
+  <meta name="description" content="Panel profesional para trabajadores PrestApp">
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" type="image/png" href="/assets/images/logos/favicon.png">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/styles.min.css">
+  <link rel="stylesheet" href="/assets/css/administradores.css">
+  <link rel="stylesheet" href="/assets/css/icons/tabler-icons/tabler-icons.css">
+
+  <style>
+    body {
+      background: #f6f9fc;
+      overflow-x: hidden;
+    }
+
+    .left-sidebar.show {
+      left: 0;
+    }
+
+    .card-box {
+      border: 0;
+      border-radius: 18px;
+      box-shadow: 0 10px 28px rgba(0,0,0,.06);
+    }
+
+    .stat-number {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .avatar-user {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .mini-badge {
+      padding: .45rem .8rem;
+      border-radius: 30px;
+      font-size: .8rem;
+    }
+
+    @media (max-width:991px) {
+      .left-sidebar {
+        position: fixed;
+        top: 0;
+        left: -280px;
+        width: 260px;
+        height: 100%;
+        z-index: 1050;
+        background: #fff;
+        transition: .3s ease;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-  <div class="page-wrapper" id="main-wrapper">
-    <div class="login-container">
+<div class="page-wrapper" id="main-wrapper">
 
-      <div class="login-card card">
-        <div class="card-body">
+  <!-- SIDEBAR -->
+  <aside class="left-sidebar border-end bg-white">
 
-          <!-- Logo -->
-          <a href="login.html" class="logo-container" title="Ir a iniciar sesión">
-            <img src="/assets/images/logos/prestapp-remove.png" width="180" alt="Logo PrestApp">
+    <div class="brand-logo text-center p-3">
+      <img
+        src="/assets/images/logos/prestapp-remove.png"
+        alt="PrestApp"
+        width="165">
+    </div>
+
+    <nav class="sidebar-nav px-2">
+
+      <ul class="nav flex-column">
+
+        <li class="sidebar-item mb-1">
+          <a class="sidebar-link"
+             href="/html/trabajador/dashboard.html">
+
+            <i class="ti ti-layout-dashboard"></i>
+            <span>Dashboard</span>
           </a>
+        </li>
 
-          <p class="text-center text-muted">Crea tu cuenta en PrestApp</p>
+        <li class="sidebar-item mb-1">
+          <a class="sidebar-link active"
+             href="/html/trabajador/trabajador.html"
+             aria-current="page">
 
-          <!-- Formulario -->
-          <form id="formRegister">
+            <i class="ti ti-users"></i>
+            <span>Clientes</span>
+          </a>
+        </li>
 
-            <div class="mb-3">
-              <label for="nombre" class="form-label">Nombre</label>
-              <input type="text"
-                     id="nombre"
-                     name="nombre"
-                     class="form-control"
-                     placeholder="Ej: Juan"
-                     required>
-            </div>
+        <li class="sidebar-item mb-1">
+          <a class="sidebar-link"
+             href="/html/trabajador/pagos.html">
 
-            <div class="mb-3">
-              <label for="apellido" class="form-label">Apellido</label>
-              <input type="text"
-                     id="apellido"
-                     name="apellido"
-                     class="form-control"
-                     placeholder="Ej: Pérez"
-                     required>
-            </div>
+            <i class="ti ti-cash"></i>
+            <span>Pagos</span>
+          </a>
+        </li>
 
-            <div class="mb-3">
-              <label for="correo" class="form-label">Correo electrónico</label>
-              <input type="email"
-                     id="correo"
-                     name="correo"
-                     class="form-control"
-                     placeholder="ejemplo@correo.com"
-                     required>
-            </div>
+        <li class="sidebar-item mt-3">
+          <button
+            id="btnLogout"
+            class="sidebar-link btn btn-link text-start w-100">
 
-            <div class="mb-4">
-              <label for="contrasena" class="form-label">Contraseña</label>
-              <input type="password"
-                     id="contrasena"
-                     name="contrasena"
-                     class="form-control"
-                     placeholder="Mínimo 8 caracteres"
-                     minlength="8"
-                     required>
-            </div>
+            <i class="ti ti-logout"></i>
+            <span>Cerrar sesión</span>
+          </button>
+        </li>
 
-            <button type="submit"
-                    class="btn btn-primary w-100 mb-4"
-                    title="Registrarse">
-              Registrarse
-            </button>
+      </ul>
 
-            <div class="text-center">
-              <p class="fw-bold mb-0">¿Ya tienes una cuenta?</p>
-              <a href="login.html" class="text-primary fw-bold" title="Ir a iniciar sesión">
-                Iniciar sesión
-              </a>
-            </div>
+    </nav>
 
-          </form>
+  </aside>
 
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- CONTENIDO -->
+  <div class="body-wrapper">
 
-  <!-- Modal Verificación -->
-  <div class="modal fade" id="modalVerificacion" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
+    <!-- HEADER -->
+    <header class="app-header border-bottom bg-white">
+      <nav class="navbar navbar-light px-3">
 
-        <div class="modal-header">
-          <h5 class="modal-title">Verifica tu correo</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" title="Cerrar"></button>
-        </div>
+        <button
+          class="btn btn-light d-lg-none"
+          id="btnMenu"
+          aria-label="Abrir menú">
 
-        <div class="modal-body text-center">
-          <p>Ingresa el código enviado a tu correo:</p>
+          <i class="ti ti-menu-2"></i>
+        </button>
 
-          <form id="formVerificacion">
+        <div class="ms-auto d-flex align-items-center gap-2">
 
-            <div class="codigo-container">
-              <input type="text" maxlength="1" class="codigo-input">
-              <input type="text" maxlength="1" class="codigo-input">
-              <input type="text" maxlength="1" class="codigo-input">
-              <input type="text" maxlength="1" class="codigo-input">
-              <input type="text" maxlength="1" class="codigo-input">
-              <input type="text" maxlength="1" class="codigo-input">
-            </div>
+          <button class="btn btn-light" aria-label="Notificaciones">
+            <i class="ti ti-bell"></i>
+          </button>
 
-            <button type="submit"
-                    class="btn btn-primary w-100 mt-4"
-                    title="Verificar código">
-              Verificar
-            </button>
-
-          </form>
-
-          <p class="mt-3">
-            ¿No recibiste el código?
-            <button id="btnReenviar"
-                    class="btn btn-link"
-                    title="Reenviar código">
-              Reenviar
-            </button>
-          </p>
+          <img
+            src="/assets/images/profile/user-1.jpg"
+            alt="Usuario"
+            class="avatar-user">
 
         </div>
+
+      </nav>
+    </header>
+
+    <!-- MAIN -->
+    <main class="container-fluid p-3">
+
+      <!-- TITULO -->
+      <div class="mb-4">
+
+        <h1 class="h3 fw-bold mb-1">Panel Trabajador</h1>
+
+        <p class="text-muted mb-0">
+          Gestión rápida de clientes, cobros y actividades.
+        </p>
+
       </div>
-    </div>
+
+      <!-- TARJETAS -->
+      <div class="row g-3 mb-4">
+
+        <div class="col-6 col-lg-3">
+          <div class="card card-box p-3 text-center">
+            <div class="stat-number" id="clientesTotal">18</div>
+            <small class="text-muted">Clientes</small>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+          <div class="card card-box p-3 text-center">
+            <div class="stat-number text-success" id="pagosHoy">$4,200</div>
+            <small class="text-muted">Cobrado Hoy</small>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+          <div class="card card-box p-3 text-center">
+            <div class="stat-number text-warning" id="pendientes">7</div>
+            <small class="text-muted">Pendientes</small>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+          <div class="card card-box p-3 text-center">
+            <div class="stat-number text-primary" id="rutas">3</div>
+            <small class="text-muted">Rutas</small>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row g-3">
+
+        <!-- CLIENTES -->
+        <div class="col-lg-8">
+
+          <div class="card card-box">
+
+            <div class="card-body">
+
+              <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+
+                <h2 class="h5 fw-bold mb-0">
+                  Clientes asignados
+                </h2>
+
+                <input
+                  type="search"
+                  id="buscarCliente"
+                  class="form-control buscador-clientes"
+                  placeholder="Buscar cliente"
+                
+              </div>
+
+              <div class="table-responsive">
+
+                <table class="table align-middle">
+
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Teléfono</th>
+                      <th>Estado</th>
+                      <th class="text-center">Acción</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="tablaClientes">
+
+                    <tr>
+                      <td>Juan Pérez</td>
+                      <td>809-555-1234</td>
+                      <td>
+                        <span class="badge bg-success mini-badge">
+                          Al día
+                        </span>
+                      </td>
+                      <td class="text-center">
+                        <button class="btn btn-sm btn-primary">
+                          Cobrar
+                        </button>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>Ana Gómez</td>
+                      <td>829-333-2211</td>
+                      <td>
+                        <span class="badge bg-danger mini-badge">
+                          Mora
+                        </span>
+                      </td>
+                      <td class="text-center">
+                        <button class="btn btn-sm btn-primary">
+                          Cobrar
+                        </button>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>Carlos Ruiz</td>
+                      <td>849-998-1122</td>
+                      <td>
+                        <span class="badge bg-warning text-dark mini-badge">
+                          Pendiente
+                        </span>
+                      </td>
+                      <td class="text-center">
+                        <button class="btn btn-sm btn-primary">
+                          Cobrar
+                        </button>
+                      </td>
+                    </tr>
+
+                  </tbody>
+
+                </table>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- ACTIVIDAD -->
+        <div class="col-lg-4">
+
+          <div class="card card-box">
+
+            <div class="card-body">
+
+              <h2 class="h5 fw-bold mb-3">
+                Actividad reciente
+              </h2>
+
+              <div class="mb-3 pb-3 border-bottom">
+                <strong>Cobro registrado</strong>
+                <div class="small text-muted">
+                  Juan Pérez - $500
+                </div>
+              </div>
+
+              <div class="mb-3 pb-3 border-bottom">
+                <strong>Cliente visitado</strong>
+                <div class="small text-muted">
+                  Ana Gómez
+                </div>
+              </div>
+
+              <div>
+                <strong>Nuevo préstamo</strong>
+                <div class="small text-muted">
+                  Carlos Ruiz - $8,000
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
   </div>
 
-  <!-- Toasts -->
-  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+</div>
 
-    <div id="toastVerificacion" class="toast">
-      <div class="toast-header bg-success text-white">
-        <strong class="me-auto">Correo verificado</strong>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" title="Cerrar"></button>
-      </div>
-      <div class="toast-body">
-        Redirigiendo al login...
-      </div>
-    </div>
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <div id="toastError" class="toast">
-      <div class="toast-header bg-danger text-white">
-        <strong class="me-auto">Error</strong>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" title="Cerrar"></button>
-      </div>
-      <div class="toast-body" id="toastErrorBody"></div>
-    </div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
 
-    <div id="toastReenvio" class="toast">
-      <div class="toast-header bg-info text-white">
-        <strong class="me-auto">Código reenviado</strong>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" title="Cerrar"></button>
-      </div>
-      <div class="toast-body">
-        Se envió un nuevo código a tu correo.
-      </div>
-    </div>
+  const btnMenu = document.getElementById("btnMenu");
+  const sidebar = document.querySelector(".left-sidebar");
 
-  </div>
+  if (btnMenu) {
+    btnMenu.addEventListener("click", () => {
+      sidebar.classList.toggle("show");
+    });
+  }
 
-  <!-- Scripts -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="../assets/js/register.js"></script>
+  document.getElementById("btnLogout").addEventListener("click", () => {
+    if(confirm("¿Cerrar sesión?")){
+      location.href="/html/auth/login.html";
+    }
+  });
+
+  const buscador = document.getElementById("buscarCliente");
+  const tabla = document.getElementById("tablaClientes");
+
+  buscador.addEventListener("keyup", () => {
+
+    const texto = buscador.value.toLowerCase();
+    const filas = tabla.querySelectorAll("tr");
+
+    filas.forEach(fila => {
+      const nombre = fila.children[0].textContent.toLowerCase();
+      fila.style.display = nombre.includes(texto) ? "" : "none";
+    });
+
+  });
+
+});
+</script>
 
 </body>
-
 </html>

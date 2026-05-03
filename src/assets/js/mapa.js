@@ -1,99 +1,175 @@
-// mapa.js - Optimizado para Android WebView
+// mapa.js - PrestApp Profesional Android WebView
 
 let map;
-let marcadorUsuario;
+let markerUsuario;
 let watchId;
+let polylineRuta;
+let puntosRuta = [];
 
-// Inicializar mapa
+const DEFAULT_LOCATION = {
+    lat: 7.12539,
+    lng: -73.1198
+};
+
+// ===============================
+// INICIAR MAPA
+// ===============================
 function initMap() {
-    const defaultLocation = { lat: 7.12539, lng: -73.1198 }; // Puedes cambiar (Colombia ejemplo)
 
     map = new google.maps.Map(document.getElementById("map"), {
-        center: defaultLocation,
-        zoom: 14,
+        center: DEFAULT_LOCATION,
+        zoom: 16,
         mapTypeControl: false,
         streetViewControl: false,
         fullscreenControl: false,
+        zoomControl: true
     });
 
-    // Marcador inicial
-    marcadorUsuario = new google.maps.Marker({
-        position: defaultLocation,
+    markerUsuario = new google.maps.Marker({
+        position: DEFAULT_LOCATION,
         map: map,
-        title: "Ubicación actual",
+        title: "Mi ubicación",
         icon: {
             url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
         }
     });
 
-    obtenerUbicacion();
+    polylineRuta = new google.maps.Polyline({
+        path: [],
+        geodesic: true,
+        strokeColor: "#0d6efd",
+        strokeOpacity: 1.0,
+        strokeWeight: 5
+    });
+
+    polylineRuta.setMap(map);
+
+    iniciarGPS();
 }
 
-// Obtener ubicación en tiempo real
-function obtenerUbicacion() {
+// ===============================
+// INICIAR GPS
+// ===============================
+function iniciarGPS() {
+
     if (!navigator.geolocation) {
-        alert("Tu dispositivo no soporta geolocalización");
+        mostrarMensaje("Tu dispositivo no soporta GPS");
         return;
     }
 
     watchId = navigator.geolocation.watchPosition(
-        (position) => {
-            const nuevaPos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-
-            actualizarUbicacion(nuevaPos);
-        },
-        (error) => {
-            console.error("Error de ubicación:", error);
-            manejarErrorUbicacion(error);
-        },
+        exitoGPS,
+        errorGPS,
         {
             enableHighAccuracy: true,
-            maximumAge: 0,
-            timeout: 10000
+            timeout: 15000,
+            maximumAge: 0
         }
     );
 }
 
-// Actualizar marcador y mapa
-function actualizarUbicacion(posicion) {
-    if (!map || !marcadorUsuario) return;
+// ===============================
+// GPS EXITOSO
+// ===============================
+function exitoGPS(position) {
 
-    marcadorUsuario.setPosition(posicion);
-    map.panTo(posicion);
+    const nuevaPos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+    };
+
+    actualizarMapa(nuevaPos);
+
+    enviarServidor(nuevaPos);
 }
 
-// Manejo de errores
-function manejarErrorUbicacion(error) {
+// ===============================
+// ACTUALIZAR MAPA
+// ===============================
+function actualizarMapa(pos) {
+
+    markerUsuario.setPosition(pos);
+
+    map.setCenter(pos);
+
+    puntosRuta.push(pos);
+
+    polylineRuta.setPath(puntosRuta);
+}
+
+// ===============================
+// ERROR GPS
+// ===============================
+function errorGPS(error) {
+
     switch (error.code) {
+
         case error.PERMISSION_DENIED:
-            alert("Permiso de ubicación denegado");
+            mostrarMensaje("Permiso GPS denegado");
             break;
+
         case error.POSITION_UNAVAILABLE:
-            alert("Ubicación no disponible");
+            mostrarMensaje("Ubicación no disponible");
             break;
+
         case error.TIMEOUT:
-            alert("Tiempo de espera agotado");
+            mostrarMensaje("Tiempo agotado");
             break;
+
         default:
-            alert("Error desconocido");
+            mostrarMensaje("Error GPS");
     }
 }
 
-// Detener seguimiento (opcional)
-function detenerUbicacion() {
+// ===============================
+// ENVIAR AL BACKEND
+// ===============================
+function enviarServidor(pos) {
+
+    fetch("https://tuservidor.com/api/ubicacion", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            latitud: pos.lat,
+            longitud: pos.lng,
+            trabajador_id: 1
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        console.log("Ubicación enviada");
+    })
+    .catch(err => {
+        console.error("Sin internet", err);
+    });
+}
+
+// ===============================
+// MENSAJE
+// ===============================
+function mostrarMensaje(msg) {
+    alert(msg);
+}
+
+// ===============================
+// DETENER GPS
+// ===============================
+function detenerGPS() {
     if (watchId) {
         navigator.geolocation.clearWatch(watchId);
     }
 }
 
-// Esperar a que cargue todo
-window.addEventListener("load", () => {
+// ===============================
+// AL CARGAR
+// ===============================
+window.onload = () => {
+
     if (typeof google !== "undefined") {
         initMap();
     } else {
-        console.error("Google Maps no cargó");
+        mostrarMensaje("Google Maps no cargó");
     }
-});
+};

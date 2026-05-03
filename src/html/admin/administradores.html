@@ -1,168 +1,476 @@
 <!DOCTYPE html>
-
-<html lang = "es" > 
+<html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PrestApp - Administradores</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-  <!-- Favicon -->
+<title>PrestApp | Super Administrador</title>
 
-  <link rel="shortcut icon" type="image/png" href="/assets/images/logos/favicon.png" />
+<link rel="shortcut icon" href="/assets/images/logos/favicon.png">
 
-  <!-- CSS -->
+<link rel="stylesheet" href="/assets/css/styles.min.css">
+<link rel="stylesheet" href="/assets/css/variables.css">
+<link rel="stylesheet" href="/assets/css/icons/tabler-icons/tabler-icons.css">
 
-  <link rel="stylesheet" href="/assets/css/styles.min.css" />
-  <link rel="stylesheet" href="/assets/css/variables.css" />
-  <link rel="stylesheet" href="/assets/css/icons/tabler-icons/tabler-icons.css" />
-  <link rel="stylesheet" href="/assets/css/administradores.css" />
+<style>
+body{
+  background:#f5f7fa;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+}
+
+.wrapper{
+  display:flex;
+  min-height:100vh;
+}
+
+.sidebar{
+  width:270px;
+  background:#111827;
+  color:#fff;
+  padding:20px;
+}
+
+.logo{
+  text-align:center;
+  margin-bottom:30px;
+}
+
+.logo img{
+  width:170px;
+}
+
+.menu button{
+  width:100%;
+  border:none;
+  background:none;
+  color:#d1d5db;
+  padding:14px 16px;
+  text-align:left;
+  border-radius:10px;
+  margin-bottom:8px;
+  font-weight:600;
+  transition:.25s;
+}
+
+.menu button:hover{
+  background:#1f2937;
+  color:#fff;
+}
+
+.menu button.active{
+  background:#0d6efd;
+  color:#fff;
+}
+
+.menu i{
+  margin-right:8px;
+}
+
+.content{
+  flex:1;
+  padding:30px;
+}
+
+.card{
+  border:none;
+  border-radius:16px;
+  box-shadow:0 4px 14px rgba(0,0,0,.06);
+}
+
+.stat{
+  font-size:28px;
+  font-weight:700;
+}
+
+.table thead{
+  background:#f8f9fa;
+}
+
+.badge{
+  padding:7px 10px;
+  font-size:12px;
+}
+
+@media(max-width:768px){
+
+.wrapper{
+  flex-direction:column;
+}
+
+.sidebar{
+  width:100%;
+}
+
+.content{
+  padding:15px;
+}
+
+}
+</style>
 </head>
 
 <body>
 
-  <div class="page-wrapper" id="main-wrapper">
+<div class="wrapper">
 
-```
 <!-- SIDEBAR -->
-<aside class="left-sidebar">
-  <div class="brand-logo text-center p-3">
-    <img src="/assets/images/logos/prestapp-remove.png" width="150" alt="PrestApp">
-  </div>
+<aside class="sidebar">
 
-  <nav class="sidebar-nav">
-    <ul class="nav flex-column" id="sidebarnav">
+<div class="logo">
+<img src="/assets/images/logos/prestapp-remove.png" alt="PrestApp">
+</div>
 
-      <li class="nav-small-cap text-center mb-2">
-        <strong>ADMINISTRACIÓN</strong>
-      </li>
+<div class="menu">
 
-      <li class="sidebar-item">
-        <button class="sidebar-link active" data-bs-target="#pagos">
-          <i class="ti ti-credit-card"></i> Pagos
-        </button>
-      </li>
+<button type="button" class="tab-btn active" data-tab="dashboard">
+<i class="ti ti-layout-dashboard"></i>
+Dashboard
+</button>
 
-      <li class="sidebar-item">
-        <button class="sidebar-link" data-bs-target="#suscripciones">
-          <i class="ti ti-receipt"></i> Suscripciones
-        </button>
-      </li>
+<button type="button" class="tab-btn" data-tab="empresas">
+<i class="ti ti-building-store"></i>
+Empresas
+</button>
 
-      <li class="sidebar-item">
-        <button class="sidebar-link" data-bs-target="#empresas">
-          <i class="ti ti-building"></i> Empresas
-        </button>
-      </li>
+<button type="button" class="tab-btn" data-tab="suscripciones">
+<i class="ti ti-credit-card"></i>
+Suscripciones
+</button>
 
-      <li class="sidebar-item">
-        <button class="sidebar-link" data-bs-target="#usuarios">
-          <i class="ti ti-users"></i> Usuarios
-        </button>
-      </li>
+<button type="button" class="tab-btn" data-tab="usuarios">
+<i class="ti ti-users"></i>
+Usuarios
+</button>
 
-    </ul>
-  </nav>
-</aside>
+<button type="button" class="tab-btn" data-tab="reportes">
+<i class="ti ti-chart-bar"></i>
+Reportes
+</button>
 
-<!-- CONTENIDO -->
-<div class="body-wrapper p-3">
-
-  <h4 class="mb-3">Panel de Administración</h4>
-
-  <!-- CONTENIDO DE TABS -->
-  <div id="adminTabContent">
-
-    <!-- PAGOS -->
-    <div class="tab-pane active" id="pagos">
-      <div class="card p-3 mb-3">
-        <label for="buscarPagos" class="form-label">Buscar pagos</label>
-        <input id="buscarPagos" type="text" class="form-control"
-          placeholder="Buscar por empresa o referencia">
-      </div>
-
-      <div class="card p-3">
-        <div class="table-responsive">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Referencia</th>
-                <th>Empresa</th>
-                <th>Monto</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>REF-001</td>
-                <td>Empresa XYZ</td>
-                <td>$200</td>
-                <td><span class="badge bg-success">Pagado</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- SUSCRIPCIONES -->
-    <div class="tab-pane d-none" id="suscripciones">
-      <div class="card p-3">
-        <h5>Suscripciones</h5>
-        <p>Contenido de suscripciones aquí</p>
-      </div>
-    </div>
-
-    <!-- EMPRESAS -->
-    <div class="tab-pane d-none" id="empresas">
-      <div class="card p-3">
-        <h5>Empresas</h5>
-        <p>Contenido de empresas aquí</p>
-      </div>
-    </div>
-
-    <!-- USUARIOS -->
-    <div class="tab-pane d-none" id="usuarios">
-      <div class="card p-3">
-        <h5>Usuarios</h5>
-        <p>Contenido de usuarios aquí</p>
-      </div>
-    </div>
-
-  </div>
+<button type="button" class="text-danger mt-4" id="logoutBtn">
+<i class="ti ti-logout"></i>
+Cerrar sesión
+</button>
 
 </div>
-```
 
-  </div>
+</aside>
 
-  <!-- JS -->
+<!-- CONTENT -->
+<main class="content">
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- DASHBOARD -->
+<section class="tab-section" id="dashboard">
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
+<h3 class="fw-bold mb-4">Super Administrador</h3>
 
-      console.log("Vista Administradores lista para Android");
+<div class="row g-3 mb-4">
 
-      const botones = document.querySelectorAll(".sidebar-link");
-      const tabs = document.querySelectorAll(".tab-pane");
+<div class="col-md-3">
+<div class="card p-3">
+<div class="text-muted">Empresas</div>
+<div class="stat">18</div>
+</div>
+</div>
 
-      botones.forEach(btn => {
-        btn.addEventListener("click", () => {
+<div class="col-md-3">
+<div class="card p-3">
+<div class="text-muted">Usuarios</div>
+<div class="stat">126</div>
+</div>
+</div>
 
-          botones.forEach(b => b.classList.remove("active"));
-          btn.classList.add("active");
+<div class="col-md-3">
+<div class="card p-3">
+<div class="text-muted">Ingresos</div>
+<div class="stat">$2.450</div>
+</div>
+</div>
 
-          tabs.forEach(tab => tab.classList.add("d-none"));
+<div class="col-md-3">
+<div class="card p-3">
+<div class="text-muted">Activas</div>
+<div class="stat">16</div>
+</div>
+</div>
 
-          const target = document.querySelector(btn.dataset.bsTarget);
-          if (target) target.classList.remove("d-none");
+</div>
 
-        });
-      });
+<div class="card p-4">
+<h5>Bienvenido</h5>
+<p class="mb-0">
+Control total del sistema PrestApp.
+</p>
+</div>
 
-    });
-  </script>
+</section>
+
+<!-- EMPRESAS -->
+<section class="tab-section d-none" id="empresas">
+
+<div class="d-flex justify-content-between mb-3">
+<h4>Empresas</h4>
+
+<button type="button"
+class="btn btn-primary"
+data-bs-toggle="modal"
+data-bs-target="#modalEmpresa">
+Nueva Empresa
+</button>
+</div>
+
+<div class="card p-3">
+
+<div class="table-responsive">
+
+<table class="table align-middle">
+
+<thead>
+<tr>
+<th>ID</th>
+<th>Empresa</th>
+<th>Plan</th>
+<th>Estado</th>
+<th>Acción</th>
+</tr>
+</thead>
+
+<tbody id="tablaEmpresas">
+
+<tr>
+<td>1</td>
+<td>Finanzas Plus</td>
+<td>Premium</td>
+<td><span class="badge bg-success">Activa</span></td>
+<td><button class="btn btn-sm btn-outline-primary">Ver</button></td>
+</tr>
+
+<tr>
+<td>2</td>
+<td>Créditos Ya</td>
+<td>Básico</td>
+<td><span class="badge bg-warning text-dark">Pendiente</span></td>
+<td><button class="btn btn-sm btn-outline-primary">Ver</button></td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- SUSCRIPCIONES -->
+<section class="tab-section d-none" id="suscripciones">
+
+<div class="card p-4">
+<h4>Suscripciones</h4>
+<p>Control de pagos mensuales y renovaciones.</p>
+</div>
+
+</section>
+
+<!-- USUARIOS -->
+<section class="tab-section d-none" id="usuarios">
+
+<div class="card p-4">
+<h4>Usuarios</h4>
+<p>Administradores y trabajadores registrados.</p>
+</div>
+
+</section>
+
+<!-- REPORTES -->
+<section class="tab-section d-none" id="reportes">
+
+<div class="card p-4">
+<h4>Reportes</h4>
+<p>Ganancias, empresas activas y crecimiento.</p>
+</div>
+
+</section>
+
+</main>
+
+</div>
+
+<!-- MODAL EMPRESA -->
+<div class="modal fade" id="modalEmpresa" tabindex="-1">
+
+<div class="modal-dialog">
+<div class="modal-content">
+
+<div class="modal-header">
+<h5 class="modal-title">Nueva Empresa</h5>
+
+<button
+type="button"
+class="btn-close"
+data-bs-dismiss="modal"
+aria-label="Cerrar">
+</button>
+</div>
+
+<div class="modal-body">
+
+<form id="formEmpresa">
+
+<div class="mb-3">
+<label for="nombreEmpresa" class="form-label">
+Nombre empresa
+</label>
+
+<input
+type="text"
+id="nombreEmpresa"
+class="form-control"
+required>
+</div>
+
+<div class="mb-3">
+<label for="correoEmpresa" class="form-label">
+Correo
+</label>
+
+<input
+type="email"
+id="correoEmpresa"
+class="form-control"
+required>
+</div>
+
+<div class="mb-3">
+<label for="planEmpresa" class="form-label">
+Plan
+</label>
+
+<select
+id="planEmpresa"
+class="form-select"
+required>
+
+<option value="">Seleccionar</option>
+<option>Básico</option>
+<option>Premium</option>
+
+</select>
+</div>
+
+<button
+type="submit"
+class="btn btn-primary w-100">
+Guardar Empresa
+</button>
+
+</form>
+
+</div>
+
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", async ()=>{
+
+// ======================
+// VALIDAR LOGIN
+// ======================
+try{
+
+const res = await fetch("/api/auth/check",{
+credentials:"include"
+});
+
+if(!res.ok){
+location.href="/login";
+return;
+}
+
+const data = await res.json();
+
+if(data.usuario.id_rol !== 1){
+location.href="/login";
+return;
+}
+
+}catch(error){
+location.href="/login";
+return;
+}
+
+// ======================
+// TABS
+// ======================
+const btns =
+document.querySelectorAll(".tab-btn");
+
+const sections =
+document.querySelectorAll(".tab-section");
+
+btns.forEach(btn=>{
+
+btn.addEventListener("click",()=>{
+
+btns.forEach(b=>
+b.classList.remove("active")
+);
+
+btn.classList.add("active");
+
+sections.forEach(sec=>
+sec.classList.add("d-none")
+);
+
+document
+.getElementById(btn.dataset.tab)
+.classList.remove("d-none");
+
+});
+
+});
+
+// ======================
+// LOGOUT
+// ======================
+document
+.getElementById("logoutBtn")
+.addEventListener("click", async ()=>{
+
+await fetch("/api/auth/logout",{
+method:"POST",
+credentials:"include"
+});
+
+localStorage.clear();
+sessionStorage.clear();
+
+location.href="/login";
+
+});
+
+// ======================
+// FORM NUEVA EMPRESA
+// ======================
+document
+.getElementById("formEmpresa")
+.addEventListener("submit", async (e)=>{
+
+e.preventDefault();
+
+alert("Empresa creada correctamente");
+
+// Aquí luego conectamos API real
+
+});
+
+});
+</script>
 
 </body>
 </html>
