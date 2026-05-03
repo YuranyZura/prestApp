@@ -65,8 +65,11 @@ app.use("/api/pagos", pagosRoutes);
 app.use("/api/rutas", rutasRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 // VIEWS
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../src/html/auth/login.html"));
+
+app.use(express.static(path.join(__dirname,'../src')));
+
+app.get('/', (req,res)=>{
+   res.redirect('/html/auth/register.html');
 });
 
 const PORT = process.env.PORT || 4000;
