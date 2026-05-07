@@ -2,506 +2,690 @@
 <html lang="es">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
 
-<title>PrestApp | Detalle Trabajador</title>
+  <title>PrestApp | Detalle Trabajador</title>
 
-<link rel="shortcut icon" href="/assets/images/logos/favicon.png">
+  <link
+    rel="shortcut icon"
+    href="/assets/images/logos/favicon.png"
+  >
 
-<link rel="stylesheet" href="/assets/css/styles.min.css">
-<link rel="stylesheet" href="/assets/css/icons/tabler-icons/tabler-icons.css">
+  <link
+    rel="stylesheet"
+    href="/assets/css/styles.min.css"
+  >
 
-<style>
-body{
-  background:#f5f7fa;
-  overflow-x:hidden;
-}
+  <link
+    rel="stylesheet"
+    href="/assets/css/icons/tabler-icons/tabler-icons.css"
+  >
 
-.page-wrapper{
-  display:flex;
-  min-height:100vh;
-}
+  <link
+    rel="stylesheet"
+    href="/assets/css/layout/template.css"
+  >
 
-/* SIDEBAR */
-.left-sidebar{
-  width:260px;
-  background:#ffffff;
-  border-right:1px solid #e5e5e5;
-  transition:.3s;
-}
+  <link
+    rel="stylesheet"
+    href="/assets/css/pages/administradores.css"
+  >
 
-.brand-logo{
-  padding:20px;
-  text-align:center;
-}
-
-.brand-logo img{
-  max-width:160px;
-}
-
-.sidebar-link{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:14px 18px;
-  color:#374151;
-  text-decoration:none;
-  font-weight:500;
-  transition:.2s;
-}
-
-.sidebar-link:hover,
-.sidebar-link.active{
-  background:#0d6efd;
-  color:#fff;
-}
-
-.body-wrapper{
-  flex:1;
-  padding:25px;
-}
-
-/* CARD */
-.card{
-  border:none;
-  border-radius:16px;
-  box-shadow:0 4px 15px rgba(0,0,0,.05);
-}
-
-.avatar{
-  width:120px;
-  height:120px;
-  border-radius:50%;
-  object-fit:cover;
-  border:4px solid #f1f1f1;
-}
-
-.info-label{
-  font-size:13px;
-  color:#6b7280;
-  margin-bottom:2px;
-}
-
-.info-value{
-  font-weight:600;
-  margin-bottom:12px;
-}
-
-.table thead{
-  background:#0d6efd;
-  color:#fff;
-}
-
-.badge-status{
-  font-size:13px;
-}
-
-/* RESPONSIVE */
-@media (max-width:768px){
-
-  .page-wrapper{
-    flex-direction:column;
-  }
-
-  .left-sidebar{
-    width:100%;
-    min-height:0;
-  }
-
-  .body-wrapper{
-    padding:15px;
-  }
-
-}
-</style>
+  
 </head>
 
 <body>
 
-<div class="page-wrapper">
+  <!-- MOBILE HEADER -->
+  <div class="header-mobile">
+
+    <button
+      type="button"
+      id="toggleSidebar"
+      class="btn btn-light"
+      title="Abrir menú"
+      aria-label="Abrir menú lateral"
+    >
+      <i class="ti ti-menu-2"></i>
+    </button>
+
+    <strong>PrestApp</strong>
+
+    <div></div>
+
+  </div>
+
+  <div class="page-wrapper">
+
+    <!-- SIDEBAR -->
+    <aside
+      class="left-sidebar"
+      id="sidebar"
+    >
+
+      <div class="brand-logo">
+
+        <img
+          src="/assets/images/logos/prestapp-remove.png"
+          alt="Logo PrestApp"
+          class="logo-img"
+        >
+
+      </div>
+
+      <nav>
+
+        <a
+          href="/dashboard"
+          class="sidebar-link"
+        >
+          <i class="ti ti-layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+
+        <a
+          href="/html/admin/administradores.html"
+          class="sidebar-link active"
+        >
+          <i class="ti ti-users"></i>
+          <span>Trabajadores</span>
+        </a>
+
+        <a
+          href="/html/admin/clientes.html"
+          class="sidebar-link"
+        >
+          <i class="ti ti-user"></i>
+          <span>Clientes</span>
+        </a>
+
+        <a
+          href="/html/admin/prestamos.html"
+          class="sidebar-link"
+        >
+          <i class="ti ti-cash"></i>
+          <span>Préstamos</span>
+        </a>
+
+      </nav>
+
+      <div class="p-3 mt-4">
+
+        <button
+          type="button"
+          id="btnLogout"
+          class="btn btn-danger w-100"
+          title="Cerrar sesión"
+          aria-label="Cerrar sesión"
+        >
+          <i class="ti ti-logout"></i>
+          Cerrar sesión
+        </button>
+
+      </div>
+
+    </aside>
+
+    <!-- CONTENIDO -->
+    <main class="body-wrapper">
+
+      <!-- HEADER -->
+      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+
+        <div>
+
+          <h2 class="fw-bold mb-1">
+            Detalle Trabajador
+          </h2>
 
-<!-- SIDEBAR -->
-<aside class="left-sidebar">
+          <p class="text-muted mb-0">
+            Información completa del trabajador
+          </p>
 
-<div class="brand-logo">
-<img src="/assets/images/logos/prestapp-remove.png" alt="PrestApp">
-</div>
+        </div>
 
-<nav>
+        <a
+          href="/html/admin/administradores.html"
+          class="btn btn-light"
+          title="Volver"
+          aria-label="Volver"
+        >
+          <i class="ti ti-arrow-left"></i>
+          Volver
+        </a>
 
-<a href="/dashboard" class="sidebar-link">
-<i class="ti ti-layout-dashboard"></i>
-<span>Dashboard</span>
-</a>
+      </div>
 
-<a href="/html/admin/administradores.html" class="sidebar-link active">
-<i class="ti ti-users"></i>
-<span>Trabajadores</span>
-</a>
+      <div class="row g-4">
 
-<a href="/html/admin/clientes.html" class="sidebar-link">
-<i class="ti ti-user"></i>
-<span>Clientes</span>
-</a>
+        <!-- IZQUIERDA -->
+        <div class="col-lg-8">
 
-<a href="/html/admin/prestamos.html" class="sidebar-link">
-<i class="ti ti-cash"></i>
-<span>Préstamos</span>
-</a>
+          <!-- PERFIL -->
+          <div class="card p-4 mb-4">
 
-</nav>
+            <div class="row align-items-center">
 
-<div class="p-3 mt-4">
-<button
-type="button"
-id="btnLogout"
-class="btn btn-danger w-100">
-Cerrar sesión
-</button>
-</div>
+              <div class="col-md-4 text-center mb-3 mb-md-0">
 
-</aside>
+                <img
+                  id="fotoTrabajador"
+                  src="/assets/images/profile/user-1.jpg"
+                  alt="Foto trabajador"
+                  class="avatar"
+                >
 
-<!-- CONTENIDO -->
-<main class="body-wrapper">
+              </div>
 
-<!-- HEADER -->
-<div class="d-flex justify-content-between align-items-center mb-4">
+              <div class="col-md-8">
 
-<div>
-<h2 class="fw-bold mb-0">Detalle Trabajador</h2>
-<p class="text-muted mb-0">
-Información completa del trabajador
-</p>
-</div>
+                <h4 id="nombreTrabajador">
+                  Cargando...
+                </h4>
 
-<a
-href="/html/admin/administradores.html"
-class="btn btn-light">
-<i class="ti ti-arrow-left"></i>
-Volver
-</a>
+                <div class="info-label">
+                  Cédula
+                </div>
 
-</div>
+                <div
+                  id="cedulaTrabajador"
+                  class="info-value"
+                >
+                  -
+                </div>
 
-<div class="row g-4">
+                <div class="info-label">
+                  Teléfono
+                </div>
 
-<!-- IZQUIERDA -->
-<div class="col-lg-8">
+                <div
+                  id="telefonoTrabajador"
+                  class="info-value"
+                >
+                  -
+                </div>
 
-<!-- PERFIL -->
-<div class="card p-4 mb-4">
+                <div class="info-label">
+                  Correo
+                </div>
 
-<div class="row align-items-center">
+                <div
+                  id="correoTrabajador"
+                  class="info-value"
+                >
+                  -
+                </div>
 
-<div class="col-md-4 text-center mb-3 mb-md-0">
-<img
-id="fotoTrabajador"
-src="/assets/images/profile/user-1.jpg"
-alt="Foto trabajador"
-class="avatar">
-</div>
+                <div class="info-label">
+                  Rol
+                </div>
 
-<div class="col-md-8">
+                <div
+                  id="rolTrabajador"
+                  class="info-value"
+                >
+                  Trabajador
+                </div>
 
-<h4 id="nombreTrabajador">Cargando...</h4>
+              </div>
 
-<div class="info-label">Cédula</div>
-<div id="cedulaTrabajador" class="info-value">-</div>
+            </div>
 
-<div class="info-label">Teléfono</div>
-<div id="telefonoTrabajador" class="info-value">-</div>
+          </div>
 
-<div class="info-label">Correo</div>
-<div id="correoTrabajador" class="info-value">-</div>
+          <!-- ACTIVIDAD -->
+          <div class="card p-4">
 
-<div class="info-label">Rol</div>
-<div id="rolTrabajador" class="info-value">Trabajador</div>
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
 
-</div>
+              <h5 class="mb-0">
+                Actividad Reciente
+              </h5>
 
-</div>
+              <span class="badge bg-primary">
+                Últimos movimientos
+              </span>
 
-</div>
+            </div>
 
-<!-- ACTIVIDAD -->
-<div class="card p-4">
+            <div class="table-responsive">
 
-<h5 class="mb-3">Actividad Reciente</h5>
+              <table class="table align-middle">
 
-<div class="table-responsive">
-<table class="table align-middle">
+                <thead>
 
-<thead>
-<tr>
-<th>Fecha</th>
-<th>Acción</th>
-<th>Detalle</th>
-</tr>
-</thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Acción</th>
+                    <th>Detalle</th>
+                  </tr>
 
-<tbody id="tablaActividad">
+                </thead>
 
-<tr>
-<td colspan="3" class="text-center py-4">
-Sin registros
-</td>
-</tr>
+                <tbody id="tablaActividad">
 
-</tbody>
+                  <tr>
 
-</table>
-</div>
+                    <td
+                      colspan="3"
+                      class="text-center py-4"
+                    >
+                      Sin registros
+                    </td>
 
-</div>
+                  </tr>
 
-</div>
+                </tbody>
 
-<!-- DERECHA -->
-<div class="col-lg-4">
+              </table>
 
-<!-- ESTADO -->
-<div class="card p-4 mb-4">
+            </div>
 
-<h5 class="mb-3">Estado</h5>
+          </div>
+
+        </div>
 
-<span
-id="estadoTrabajador"
-class="badge bg-success badge-status">
-Activo
-</span>
+        <!-- DERECHA -->
+        <div class="col-lg-4">
 
-</div>
+          <!-- ESTADO -->
+          <div class="card p-4 mb-4">
 
-<!-- RESUMEN -->
-<div class="card p-4 mb-4">
+            <h5 class="mb-3">
+              Estado
+            </h5>
 
-<h5 class="mb-3">Resumen</h5>
+            <span
+              id="estadoTrabajador"
+              class="badge bg-success badge-status"
+            >
+              Activo
+            </span>
 
-<p>Total clientes: <strong id="clientesAsignados">0</strong></p>
-<p>Préstamos creados: <strong id="prestamosCreados">0</strong></p>
-<p>Cobros realizados: <strong id="cobrosRealizados">0</strong></p>
-<p>Último acceso: <strong id="ultimoAcceso">-</strong></p>
+          </div>
 
-</div>
+          <!-- RESUMEN -->
+          <div class="card p-4 mb-4">
 
-<!-- ACCIONES -->
-<div class="card p-4">
+            <h5 class="mb-3">
+              Resumen
+            </h5>
 
-<h5 class="mb-3">Acciones</h5>
+            <p>
+              Total clientes:
+              <strong id="clientesAsignados">
+                0
+              </strong>
+            </p>
 
-<div class="d-grid gap-2">
+            <p>
+              Préstamos creados:
+              <strong id="prestamosCreados">
+                0
+              </strong>
+            </p>
 
-<button
-type="button"
-id="btnEditar"
-class="btn btn-primary">
-<i class="ti ti-edit"></i>
-Editar
-</button>
+            <p>
+              Cobros realizados:
+              <strong id="cobrosRealizados">
+                0
+              </strong>
+            </p>
 
-<button
-type="button"
-id="btnReset"
-class="btn btn-warning">
-<i class="ti ti-key"></i>
-Restablecer clave
-</button>
+            <p>
+              Último acceso:
+              <strong id="ultimoAcceso">
+                -
+              </strong>
+            </p>
 
-<button
-type="button"
-id="btnEliminar"
-class="btn btn-danger">
-<i class="ti ti-trash"></i>
-Eliminar
-</button>
+          </div>
 
-</div>
+          <!-- ACCIONES -->
+          <div class="card p-4">
 
-</div>
+            <h5 class="mb-3">
+              Acciones
+            </h5>
 
-</div>
+            <div class="d-grid gap-2">
 
-</div>
+              <button
+                type="button"
+                id="btnEditar"
+                class="btn btn-primary"
+                title="Editar trabajador"
+                aria-label="Editar trabajador"
+              >
+                <i class="ti ti-edit"></i>
+                Editar
+              </button>
 
-</main>
+              <button
+                type="button"
+                id="btnReset"
+                class="btn btn-warning"
+                title="Restablecer contraseña"
+                aria-label="Restablecer contraseña"
+              >
+                <i class="ti ti-key"></i>
+                Restablecer clave
+              </button>
 
-</div>
+              <button
+                type="button"
+                id="btnEliminar"
+                class="btn btn-danger"
+                title="Eliminar trabajador"
+                aria-label="Eliminar trabajador"
+              >
+                <i class="ti ti-trash"></i>
+                Eliminar
+              </button>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+            </div>
 
-<script>
-// ==========================================
-// CONFIG
-// ==========================================
-const API = "http://localhost:4000/api";
-const token = localStorage.getItem("token");
+          </div>
 
-// ==========================================
-// OBTENER ID
-// ==========================================
-const params = new URLSearchParams(location.search);
-const id = params.get("id");
+        </div>
 
-// ==========================================
-// VALIDAR
-// ==========================================
-if(!token){
-location.href="/login";
-}
+      </div>
 
-// ==========================================
-// CARGAR DETALLE
-// ==========================================
-async function cargarTrabajador(){
+    </main>
 
-try{
+  </div>
 
-const res = await fetch(`${API}/trabajadores/${id}`,{
-headers:{
-Authorization:`Bearer ${token}`
-}
-});
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-const data = await res.json();
+  <script>
+    // ==========================================
+    // CONFIG
+    // ==========================================
+    const API = "/api";
 
-if(!data.success){
-alert("Trabajador no encontrado");
-location.href="/html/admin/administradores.html";
-return;
-}
+    // ==========================================
+    // OBTENER ID
+    // ==========================================
+    const params = new URLSearchParams(location.search);
+    const id = params.get("id");
 
-const t = data.trabajador;
+    // ==========================================
+    // INIT
+    // ==========================================
+    document.addEventListener("DOMContentLoaded", async ()=>{
 
-// PERFIL
-document.getElementById("nombreTrabajador").textContent =
-t.nombreCompleto || t.nombre;
+      validarSesion();
+      sidebarResponsive();
+      cargarTrabajador();
 
-document.getElementById("cedulaTrabajador").textContent =
-t.cedula || "-";
+    });
 
-document.getElementById("telefonoTrabajador").textContent =
-t.telefono || "-";
+    // ==========================================
+    // VALIDAR SESION
+    // ==========================================
+    async function validarSesion(){
 
-document.getElementById("correoTrabajador").textContent =
-t.correo || "-";
+      try{
 
-document.getElementById("rolTrabajador").textContent =
-t.rol || "Trabajador";
+        const res = await fetch("/api/auth/check",{
+          credentials:"include"
+        });
 
-if(t.foto){
-document.getElementById("fotoTrabajador").src =
-`/uploads/${t.foto}`;
-}
+        if(!res.ok){
+          location.href="/login";
+          return;
+        }
 
-// RESUMEN
-document.getElementById("clientesAsignados").textContent =
-t.total_clientes || 0;
+        const data = await res.json();
 
-document.getElementById("prestamosCreados").textContent =
-t.total_prestamos || 0;
+        if(!data.success){
+          location.href="/login";
+        }
 
-document.getElementById("cobrosRealizados").textContent =
-t.total_cobros || 0;
+      }catch(error){
 
-document.getElementById("ultimoAcceso").textContent =
-t.ultimo_acceso || "-";
+        console.error(error);
+        location.href="/login";
 
-// ESTADO
-if(t.estado === "inactivo"){
-document.getElementById("estadoTrabajador").className =
-"badge bg-danger badge-status";
+      }
 
-document.getElementById("estadoTrabajador").textContent =
-"Inactivo";
-}
+    }
 
-// ACTIVIDAD
-if(data.actividad && data.actividad.length){
+    // ==========================================
+    // SIDEBAR MOBILE
+    // ==========================================
+    function sidebarResponsive(){
 
-document.getElementById("tablaActividad").innerHTML =
-data.actividad.map(a=>`
-<tr>
-<td>${a.fecha}</td>
-<td>${a.accion}</td>
-<td>${a.detalle}</td>
-</tr>
-`).join("");
+      const toggle =
+      document.getElementById("toggleSidebar");
 
-}
+      const sidebar =
+      document.getElementById("sidebar");
 
-}catch(error){
+      if(window.innerWidth <= 768){
+        sidebar.classList.add("sidebar-mobile-hidden");
+      }
 
-console.error(error);
-alert("Error cargando trabajador");
+      toggle?.addEventListener("click",()=>{
 
-}
+        sidebar.classList.toggle(
+          "sidebar-mobile-hidden"
+        );
 
-}
+      });
 
-// ==========================================
-// EDITAR
-// ==========================================
-document.getElementById("btnEditar")
-.addEventListener("click",()=>{
+    }
 
-alert("Abrir módulo editar trabajador");
+    // ==========================================
+    // CARGAR DETALLE
+    // ==========================================
+    async function cargarTrabajador(){
 
-});
+      if(!id){
+        location.href="/html/admin/administradores.html";
+        return;
+      }
 
-// ==========================================
-// RESET PASS
-// ==========================================
-document.getElementById("btnReset")
-.addEventListener("click",()=>{
+      try{
 
-alert("Enviar nueva contraseña");
+        const res = await fetch(`${API}/trabajadores/${id}`,{
+          credentials:"include"
+        });
 
-});
+        const data = await res.json();
 
-// ==========================================
-// ELIMINAR
-// ==========================================
-document.getElementById("btnEliminar")
-.addEventListener("click",async()=>{
+        if(!data.success){
 
-if(!confirm("¿Eliminar trabajador?")) return;
+          alert("Trabajador no encontrado");
 
-const res = await fetch(`${API}/trabajadores/${id}`,{
-method:"DELETE",
-headers:{
-Authorization:`Bearer ${token}`
-}
-});
+          location.href =
+          "/html/admin/administradores.html";
 
-const data = await res.json();
+          return;
 
-if(data.success){
-alert("Trabajador eliminado");
-location.href="/html/admin/administradores.html";
-}else{
-alert(data.message);
-}
+        }
 
-});
+        const t = data.trabajador;
 
-// ==========================================
-// LOGOUT
-// ==========================================
-document.getElementById("btnLogout")
-.addEventListener("click",()=>{
+        // PERFIL
+        document.getElementById("nombreTrabajador")
+        .textContent =
+        t.nombreCompleto || t.nombre || "-";
 
-localStorage.removeItem("token");
-sessionStorage.clear();
-location.href="/login";
+        document.getElementById("cedulaTrabajador")
+        .textContent =
+        t.cedula || "-";
 
-});
+        document.getElementById("telefonoTrabajador")
+        .textContent =
+        t.telefono || "-";
 
-// ==========================================
-cargarTrabajador();
-// ==========================================
-</script>
+        document.getElementById("correoTrabajador")
+        .textContent =
+        t.correo || "-";
+
+        document.getElementById("rolTrabajador")
+        .textContent =
+        t.rol || "Trabajador";
+
+        if(t.foto){
+
+          document.getElementById("fotoTrabajador").src =
+          `/uploads/${t.foto}`;
+
+        }
+
+        // RESUMEN
+        document.getElementById("clientesAsignados")
+        .textContent =
+        t.total_clientes || 0;
+
+        document.getElementById("prestamosCreados")
+        .textContent =
+        t.total_prestamos || 0;
+
+        document.getElementById("cobrosRealizados")
+        .textContent =
+        t.total_cobros || 0;
+
+        document.getElementById("ultimoAcceso")
+        .textContent =
+        t.ultimo_acceso || "-";
+
+        // ESTADO
+        if(t.estado === "inactivo"){
+
+          document.getElementById("estadoTrabajador")
+          .className =
+          "badge bg-danger badge-status";
+
+          document.getElementById("estadoTrabajador")
+          .textContent =
+          "Inactivo";
+
+        }
+
+        // ACTIVIDAD
+        if(data.actividad && data.actividad.length){
+
+          document.getElementById("tablaActividad")
+          .innerHTML =
+          data.actividad.map(a=>`
+
+            <tr>
+
+              <td>${a.fecha || "-"}</td>
+
+              <td>${a.accion || "-"}</td>
+
+              <td>${a.detalle || "-"}</td>
+
+            </tr>
+
+          `).join("");
+
+        }
+
+      }catch(error){
+
+        console.error(error);
+        alert("Error cargando trabajador");
+
+      }
+
+    }
+
+    // ==========================================
+    // EDITAR
+    // ==========================================
+    document.getElementById("btnEditar")
+    .addEventListener("click",()=>{
+
+      alert("Módulo editar trabajador próximamente");
+
+    });
+
+    // ==========================================
+    // RESET PASS
+    // ==========================================
+    document.getElementById("btnReset")
+    .addEventListener("click",()=>{
+
+      alert("Enviar nueva contraseña");
+
+    });
+
+    // ==========================================
+    // ELIMINAR
+    // ==========================================
+    document.getElementById("btnEliminar")
+    .addEventListener("click", async ()=>{
+
+      if(!confirm("¿Eliminar trabajador?")){
+        return;
+      }
+
+      try{
+
+        const res = await fetch(`${API}/trabajadores/${id}`,{
+          method:"DELETE",
+          credentials:"include"
+        });
+
+        const data = await res.json();
+
+        if(data.success){
+
+          alert("Trabajador eliminado");
+
+          location.href =
+          "/html/admin/administradores.html";
+
+        }else{
+
+          alert(data.message || "Error eliminando");
+
+        }
+
+      }catch(error){
+
+        console.error(error);
+        alert("Error del servidor");
+
+      }
+
+    });
+
+    // ==========================================
+    // LOGOUT
+    // ==========================================
+    document.getElementById("btnLogout")
+    .addEventListener("click", async ()=>{
+
+      try{
+
+        await fetch("/api/auth/logout",{
+          method:"POST",
+          credentials:"include"
+        });
+
+      }catch(error){
+
+        console.error(error);
+
+      }
+
+      localStorage.clear();
+      sessionStorage.clear();
+
+      location.href = "/login";
+
+    });
+  </script>
 
 </body>
 </html>

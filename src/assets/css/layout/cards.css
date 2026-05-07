@@ -1,0 +1,404 @@
+/* =========================================================
+   PRESTAPP - CARDS LAYOUT
+   Archivo:
+   /assets/css/layout/cards.css
+========================================================= */
+
+/* =========================
+   VARIABLES
+========================= */
+:root{
+  --card-radius:18px;
+  --card-bg:#ffffff;
+
+  --card-shadow:
+    0 4px 18px rgba(0,0,0,.05);
+
+  --card-shadow-hover:
+    0 10px 30px rgba(0,0,0,.08);
+
+  --card-border:#eef2f7;
+
+  --transition:.25s ease;
+
+  --text-muted:#6b7280;
+
+  --primary:#0d6efd;
+  --success:#198754;
+  --warning:#ffc107;
+  --danger:#dc3545;
+}
+
+/* =========================
+   CARD BASE
+========================= */
+.card,
+.card-box,
+.card-pro{
+  background:var(--card-bg);
+
+  border:none;
+
+  border-radius:var(--card-radius);
+
+  box-shadow:var(--card-shadow);
+
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
+
+  overflow:hidden;
+}
+
+/* HOVER */
+.card:hover,
+.card-box:hover,
+.card-pro:hover{
+  transform:translateY(-2px);
+
+  box-shadow:var(--card-shadow-hover);
+}
+
+/* =========================
+   CARD HEADER
+========================= */
+.card-header-custom{
+  padding:18px 22px;
+
+  border-bottom:1px solid var(--card-border);
+
+  background:#fff;
+}
+
+.card-title{
+  font-size:18px;
+  font-weight:700;
+  margin:0;
+}
+
+.card-subtitle{
+  font-size:14px;
+  color:var(--text-muted);
+  margin-top:4px;
+}
+
+/* =========================
+   CARD BODY
+========================= */
+.card-body-custom{
+  padding:22px;
+}
+
+/* =========================
+   CARD FOOTER
+========================= */
+.card-footer-custom{
+  padding:18px 22px;
+
+  border-top:1px solid var(--card-border);
+
+  background:#fff;
+}
+
+/* =========================
+   STATS CARD
+========================= */
+.stat-card{
+  position:relative;
+  overflow:hidden;
+}
+
+.stat-card::before{
+  content:"";
+
+  position:absolute;
+
+  top:0;
+  left:0;
+
+  width:5px;
+  height:100%;
+
+  background:var(--primary);
+}
+
+.stat-label{
+  font-size:14px;
+  color:var(--text-muted);
+  margin-bottom:6px;
+}
+
+.stat-value{
+  font-size:32px;
+  font-weight:700;
+  line-height:1;
+}
+
+.stat-icon{
+  width:52px;
+  height:52px;
+
+  border-radius:14px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:24px;
+
+  background:rgba(13,110,253,.1);
+
+  color:var(--primary);
+}
+
+/* =========================
+   COLORS
+========================= */
+.border-primary-left::before{
+  background:var(--primary);
+}
+
+.border-success-left::before{
+  background:var(--success);
+}
+
+.border-warning-left::before{
+  background:var(--warning);
+}
+
+.border-danger-left::before{
+  background:var(--danger);
+}
+
+/* =========================
+   SUMMARY BOX
+========================= */
+.summary-box{
+  padding:18px;
+
+  border-radius:16px;
+
+  background:#f8fafc;
+
+  border:1px solid #eef2f7;
+}
+
+.summary-title{
+  font-size:14px;
+  color:var(--text-muted);
+  margin-bottom:6px;
+}
+
+.summary-value{
+  font-size:28px;
+  font-weight:700;
+}
+
+/* =========================
+   PROFILE CARD
+========================= */
+.profile-card{
+  text-align:center;
+}
+
+.profile-avatar{
+  width:110px;
+  height:110px;
+
+  border-radius:50%;
+
+  object-fit:cover;
+
+  border:4px solid #f3f4f6;
+
+  margin-bottom:16px;
+}
+
+.profile-name{
+  font-size:22px;
+  font-weight:700;
+}
+
+.profile-role{
+  color:var(--text-muted);
+  font-size:14px;
+}
+
+/* =========================
+   INFO LIST
+========================= */
+.info-group{
+  margin-bottom:16px;
+}
+
+.info-label{
+  font-size:13px;
+  color:var(--text-muted);
+  margin-bottom:4px;
+}
+
+.info-value{
+  font-weight:600;
+  word-break:break-word;
+}
+
+/* =========================
+   ACTION CARD
+========================= */
+.action-card .btn{
+  border-radius:12px;
+  font-weight:600;
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+.empty-state{
+  padding:50px 20px;
+  text-align:center;
+}
+
+.empty-state i{
+  font-size:54px;
+  color:#cbd5e1;
+  margin-bottom:12px;
+}
+
+.empty-state-title{
+  font-size:18px;
+  font-weight:700;
+}
+
+.empty-state-text{
+  color:var(--text-muted);
+  margin-top:6px;
+}
+
+/* =========================
+   SKELETON LOADING
+========================= */
+.skeleton{
+  position:relative;
+
+  overflow:hidden;
+
+  background:#e5e7eb;
+
+  border-radius:10px;
+}
+
+.skeleton::after{
+  content:"";
+
+  position:absolute;
+
+  inset:0;
+
+  transform:translateX(-100%);
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.7),
+      transparent
+    );
+
+  animation:skeleton-loading 1.4s infinite;
+}
+
+.skeleton-title{
+  width:220px;
+  height:30px;
+}
+
+.skeleton-text{
+  width:100%;
+  height:14px;
+  margin-bottom:10px;
+}
+
+.skeleton-avatar{
+  width:100px;
+  height:100px;
+  border-radius:50%;
+}
+
+/* =========================
+   ANIMATION
+========================= */
+@keyframes skeleton-loading{
+
+  100%{
+    transform:translateX(100%);
+  }
+
+}
+
+/* =========================
+   FADE IN
+========================= */
+.fade-in{
+  animation:fadeIn .3s ease;
+}
+
+@keyframes fadeIn{
+
+  from{
+    opacity:0;
+    transform:translateY(10px);
+  }
+
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width:768px){
+
+  .card-body-custom,
+  .card-header-custom,
+  .card-footer-custom{
+    padding:18px;
+  }
+
+  .stat-value{
+    font-size:26px;
+  }
+
+  .summary-value{
+    font-size:24px;
+  }
+
+  .profile-avatar{
+    width:90px;
+    height:90px;
+  }
+
+}
+
+/* =========================
+   DARK MODE READY
+========================= */
+[data-theme="dark"] .card,
+[data-theme="dark"] .card-box,
+[data-theme="dark"] .card-pro{
+  background:#111827;
+  color:#f9fafb;
+}
+
+[data-theme="dark"] .summary-box{
+  background:#1f2937;
+  border-color:#374151;
+}
+
+[data-theme="dark"] .info-label,
+[data-theme="dark"] .card-subtitle,
+[data-theme="dark"] .summary-title{
+  color:#9ca3af;
+}

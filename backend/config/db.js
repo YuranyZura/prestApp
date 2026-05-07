@@ -3,13 +3,17 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// 🔒 Validación básica de variables de entorno
-if (!process.env.DB_HOST || !process.env.DB_USER || !process.env.DB_NAME) {
-  console.error("❌ Faltan variables de entorno de la base de datos");
-  process.exit(1);
-}
+// 🔒 Validación completa de variables
+const requiredEnv = ["DB_HOST", "DB_USER", "DB_NAME"];
 
-// 🔗 Pool de conexiones
+requiredEnv.forEach((env) => {
+  if (!process.env[env]) {
+    console.error(`❌ Falta la variable de entorno: ${env}`);
+    process.exit(1);
+  }
+});
+
+// 🔗 Pool de conexiones optimizado
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT || 3306,
@@ -22,30 +26,43 @@ const pool = mysql.createPool({
   queueLimit: 0,
 
   connectTimeout: 10000,
+
+  // 🔥 IMPORTANTE (evita caídas por conexiones muertas)
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0,
 });
 
-// 🔥 HELPER DE QUERIES (ESTÁNDAR EN TODO EL PROYECTO)
+// 🔥 HELPER DE QUERIES (MEJORADO)
 export const query = async (sql, params = []) => {
   try {
     const [rows] = await pool.execute(sql, params);
     return rows;
   } catch (error) {
-    console.error("❌ Error en query:", error.message);
-    throw error;
+    console.error("❌ Error en query:", {
+      message: error.message,
+      code: error.code,
+      sql: sql,
+    });
+
+    throw new Error("Error en base de datos");
   }
 };
 
-// 🔍 Verificar conexión al iniciar (solo en desarrollo)
+// 🔍 Test de conexión mejorado
 async function verificarConexion() {
   try {
     const connection = await pool.getConnection();
-    console.log("✅ Conectado a MySQL correctamente");
+    console.log("✅ MySQL conectado correctamente");
     connection.release();
   } catch (error) {
     console.error("❌ Error conectando a MySQL:", error.message);
+
+    // 🔥 Opcional: cerrar app si no hay DB
+    process.exit(1);
   }
 }
 
+// Solo en desarrollo
 if (process.env.NODE_ENV !== "production") {
   verificarConexion();
 }

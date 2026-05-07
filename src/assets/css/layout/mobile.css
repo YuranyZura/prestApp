@@ -1,0 +1,425 @@
+/* =========================================================
+   PRESTAPP - MOBILE RESPONSIVE
+   Archivo:
+   /assets/css/layout/mobiles.css
+========================================================= */
+
+/* =========================
+   GLOBAL MOBILE FIXES
+========================= */
+html,
+body{
+  overflow-x:hidden;
+}
+
+img{
+  max-width:100%;
+  height:auto;
+}
+
+/* =========================
+   MOBILE HEADER
+========================= */
+.mobile-header{
+  display:none;
+}
+
+.mobile-brand{
+  font-size:18px;
+  font-weight:700;
+}
+
+.mobile-toggle{
+  width:42px;
+  height:42px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:none;
+
+  border-radius:12px;
+
+  background:#ffffff;
+
+  transition:.2s;
+}
+
+.mobile-toggle:hover{
+  background:#f3f4f6;
+}
+
+/* =========================
+   RESPONSIVE CONTAINER
+========================= */
+.responsive-container{
+  width:100%;
+  padding-inline:15px;
+  margin-inline:auto;
+}
+
+/* =========================
+   RESPONSIVE TABLE
+========================= */
+.table-responsive{
+  width:100%;
+  overflow-x:auto;
+
+  -webkit-overflow-scrolling:touch;
+}
+
+.table{
+  min-width:700px;
+}
+
+/* =========================
+   RESPONSIVE CARDS
+========================= */
+.card,
+.card-box,
+.card-pro{
+  border-radius:16px;
+}
+
+/* =========================
+   RESPONSIVE BUTTONS
+========================= */
+.btn{
+  min-height:44px;
+}
+
+.btn-icon-mobile{
+  width:44px;
+  height:44px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0;
+}
+
+/* =========================
+   RESPONSIVE INPUTS
+========================= */
+.form-control,
+.form-select{
+  min-height:48px;
+  border-radius:12px;
+}
+
+textarea.form-control{
+  min-height:120px;
+}
+
+/* =========================
+   RESPONSIVE TYPOGRAPHY
+========================= */
+.page-title{
+  font-size:32px;
+  font-weight:700;
+}
+
+.page-subtitle{
+  font-size:15px;
+  color:#6b7280;
+}
+
+/* =========================
+   RESPONSIVE GRID
+========================= */
+.grid-mobile{
+  display:grid;
+  gap:16px;
+}
+
+/* =========================
+   RESPONSIVE AVATAR
+========================= */
+.avatar{
+  width:100px;
+  height:100px;
+
+  object-fit:cover;
+  border-radius:50%;
+}
+
+/* =========================
+   RESPONSIVE STATS
+========================= */
+.stat-value{
+  font-size:32px;
+  font-weight:700;
+}
+
+.stat-label{
+  font-size:14px;
+  color:#6b7280;
+}
+
+/* =========================
+   RESPONSIVE EMPTY STATES
+========================= */
+.empty-state{
+  padding:40px 20px;
+  text-align:center;
+}
+
+.empty-state i{
+  font-size:52px;
+  color:#cbd5e1;
+}
+
+.empty-state-title{
+  margin-top:14px;
+  font-size:18px;
+  font-weight:700;
+}
+
+.empty-state-text{
+  margin-top:6px;
+  color:#6b7280;
+}
+
+/* =========================
+   RESPONSIVE MODALS
+========================= */
+.modal-content{
+  border:none;
+  border-radius:18px;
+}
+
+.modal-header,
+.modal-body,
+.modal-footer{
+  padding:20px;
+}
+
+/* =========================
+   RESPONSIVE UTILITIES
+========================= */
+.mobile-full{
+  width:100%;
+}
+
+.mobile-center{
+  text-align:center;
+}
+
+.mobile-hidden{
+  display:none;
+}
+
+/* =========================
+   MOBILE <= 992px
+========================= */
+@media (max-width:992px){
+
+  .mobile-header{
+    display:flex;
+
+    align-items:center;
+    justify-content:space-between;
+
+    position:sticky;
+    top:0;
+
+    z-index:1000;
+
+    background:#ffffff;
+
+    padding:14px 16px;
+
+    border-bottom:1px solid #e5e7eb;
+  }
+
+  .page-wrapper{
+    flex-direction:column;
+  }
+
+  .body-wrapper{
+    width:100%;
+    padding:20px;
+  }
+
+  .sidebar-mobile-hidden{
+    transform:translateX(-100%);
+  }
+
+  .desktop-only{
+    display:none !important;
+  }
+
+  .mobile-hidden{
+    display:none !important;
+  }
+
+}
+
+/* =========================
+   TABLET <= 768px
+========================= */
+@media (max-width:768px){
+
+  .body-wrapper{
+    padding:16px;
+  }
+
+  .page-title{
+    font-size:26px;
+  }
+
+  .page-subtitle{
+    font-size:14px;
+  }
+
+  .avatar{
+    width:85px;
+    height:85px;
+  }
+
+  .stat-value{
+    font-size:26px;
+  }
+
+  .table{
+    min-width:600px;
+  }
+
+  .card,
+  .card-box,
+  .card-pro{
+    border-radius:14px;
+  }
+
+  .modal-dialog{
+    margin:12px;
+  }
+
+  .responsive-stack{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  .responsive-stack .btn{
+    width:100%;
+  }
+
+}
+
+/* =========================
+   MOBILE <= 576px
+========================= */
+@media (max-width:576px){
+
+  .body-wrapper{
+    padding:14px;
+  }
+
+  .page-title{
+    font-size:22px;
+  }
+
+  .table{
+    min-width:520px;
+  }
+
+  .avatar{
+    width:75px;
+    height:75px;
+  }
+
+  .stat-value{
+    font-size:22px;
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer{
+    padding:16px;
+  }
+
+  .btn{
+    font-size:14px;
+  }
+
+  .form-control,
+  .form-select{
+    font-size:14px;
+  }
+
+}
+
+/* =========================
+   VERY SMALL DEVICES
+========================= */
+@media (max-width:380px){
+
+  .page-title{
+    font-size:20px;
+  }
+
+  .body-wrapper{
+    padding:12px;
+  }
+
+  .mobile-brand{
+    font-size:16px;
+  }
+
+}
+
+/* =========================
+   LANDSCAPE MOBILE
+========================= */
+@media (max-height:500px) and (orientation:landscape){
+
+  .mobile-header{
+    padding:10px 14px;
+  }
+
+  .body-wrapper{
+    padding:14px;
+  }
+
+}
+
+/* =========================
+   SAFE AREA IOS
+========================= */
+@supports(padding:max(0px)){
+
+  .mobile-header{
+    padding-top:max(14px, env(safe-area-inset-top));
+  }
+
+  .body-wrapper{
+    padding-bottom:max(16px, env(safe-area-inset-bottom));
+  }
+
+}
+
+/* =========================
+   TOUCH IMPROVEMENTS
+========================= */
+button,
+a,
+input,
+select,
+textarea{
+  touch-action:manipulation;
+}
+
+/* =========================
+   SMOOTH TRANSITIONS
+========================= */
+.card,
+.btn,
+.form-control,
+.form-select,
+.sidebar-link{
+  transition:
+    all .25s ease;
+}

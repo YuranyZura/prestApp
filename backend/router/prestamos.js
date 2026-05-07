@@ -1,21 +1,17 @@
-// ==========================================
-// backend/router/prestamos.js
-// PRESTAPP - PRÉSTAMOS PRO
-// ==========================================
-
 import { Router } from "express";
-import pool from "../config/db.js";
+import pool, { query } from "../config/db.js";
+
 import { verificarToken } from "../middleware/auth.js";
+import { soloAdmin, soloTrabajador } from "../middleware/roles.js";
 
 const router = Router();
 
 // ==========================================
 // CREAR PRÉSTAMO
-// POST /api/prestamos
 // ==========================================
-router.post("/", verificarToken, async (req, res) => {
+router.post("/", verificarToken, soloAdmin, async (req, res) => {
   try {
-    const {
+    let {
       id_clientes,
       monto,
       interes,
@@ -23,296 +19,228 @@ router.post("/", verificarToken, async (req, res) => {
       fecha_inicio
     } = req.body;
 
-    if (
-      !id_clientes ||
-      !monto ||
-      !interes ||
-      !numero_cuotas
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Campos incompletos"
-      });
+    if (!id_clientes || !monto || !interes || !numero_cuotas) {
+      return res.status(400).json({ message: "Campos requeridos" });
     }
 
-    const montoNum = parseFloat(monto);
-    const interesNum = parseFloat(interes);
-    const cuotasNum = parseInt(numero_cuotas);
+    monto = Number(monto);
+    interes = Number(interes);
+    numero_cuotas = Number(numero_cuotas);
 
-    const total_pagar =
-      montoNum + (montoNum * interesNum / 100);
+    if (monto <= 0 || numero_cuotas <= 0) {
+      return res.status(400).json({ message: "Valores inválidos" });
+    }
 
-    const cuota_diaria =
-      total_pagar / cuotasNum;
+    const total = monto + (monto * interes / 100);
+    const cuota = total / numero_cuotas;
 
-    const saldo = total_pagar;
-
-    const fechaInicio =
-      fecha_inicio || new Date();
-
+    const fechaInicio = fecha_inicio || new Date();
     const fechaFinal = new Date(fechaInicio);
-    fechaFinal.setDate(
-      fechaFinal.getDate() + cuotasNum
-    );
+    fechaFinal.setDate(fechaFinal.getDate() + numero_cuotas);
 
-    const [result] = await pool.query(`
+    const result = await query(`
       INSERT INTO prestamos
-      (
-        id_clientes,
-        monto,
-        interes,
-        total_pagar,
-        cuota_diaria,
-        numero_cuotas,
-        saldo,
-        estado,
-        fecha_inicio,
-        fecha_final
-      )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (id_clientes, monto, interes, total_pagar, cuota_diaria, numero_cuotas, saldo, estado, fecha_inicio, fecha_final)
+      VALUES (?, ?, ?, ?, ?, ?, ?, 'activo', ?, ?)
     `, [
       id_clientes,
-      montoNum,
-      interesNum,
-      total_pagar,
-      cuota_diaria,
-      cuotasNum,
-      saldo,
-      "activo",
+      monto,
+      interes,
+      total,
+      cuota,
+      numero_cuotas,
+      total,
       fechaInicio,
       fechaFinal
     ]);
 
     res.json({
       success: true,
-      message: "Préstamo creado",
-      id_prestamo: result.insertId
+      id: result.insertId
     });
 
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Error creando préstamo"
-    });
+  } catch (err) {
+    res.status(500).json({ success: false });
   }
 });
 
 // ==========================================
-// LISTAR TODOS
-// GET /api/prestamos
+// LISTAR
 // ==========================================
 router.get("/", verificarToken, async (req, res) => {
   try {
-    const [rows] = await pool.query(`
-      SELECT
-        p.*,
-        CONCAT(c.nombre,' ',IFNULL(c.apellido,'')) cliente
+    const rows = await query(`
+      SELECT p.*, CONCAT(c.nombre,' ',c.apellido) cliente
       FROM prestamos p
-      INNER JOIN clientes c
-      ON c.id_clientes = p.id_clientes
+      JOIN clientes c ON c.id_clientes = p.id_clientes
       ORDER BY p.id_prestamos DESC
     `);
 
-    res.json({
-      success: true,
-      prestamos: rows
-    });
+    res.json({ success: true, data: rows });
 
-  } catch (error) {
-    res.status(500).json({
-      success: false
-    });
+  } catch {
+    res.status(500).json({ success: false });
   }
 });
 
 // ==========================================
-// PRÉSTAMOS POR CLIENTE
-// GET /api/prestamos/cliente/:id
+// PAGAR (🔥 CRÍTICO)
 // ==========================================
-router.get(
-  "/cliente/:id",
-  verificarToken,
-  async (req, res) => {
-    try {
-      const { id } = req.params;
+router.post("/pagar", verificarToken, soloTrabajador, async (req, res) => {
 
-      const [rows] = await pool.query(`
-        SELECT *
-        FROM prestamos
-        WHERE id_clientes = ?
-        ORDER BY id_prestamos DESC
-      `, [id]);
+  const conn = await pool.getConnection();
 
-      res.json({
-        success: true,
-        prestamos: rows
-      });
+  try {
+    const { id_prestamos, monto } = req.body;
 
-    } catch (error) {
-      res.status(500).json({
-        success: false
-      });
+    if (!id_prestamos || !monto) {
+      return res.status(400).json({ message: "Datos requeridos" });
     }
-  }
-);
 
-// ==========================================
-// PAGAR CUOTA
-// POST /api/prestamos/pagar
-// ==========================================
-router.post(
-  "/pagar",
-  verificarToken,
-  async (req, res) => {
-    try {
-      const {
-        id_prestamos,
-        monto
-      } = req.body;
+    const montoPago = Number(monto);
 
-      if (!id_prestamos || !monto) {
-        return res.status(400).json({
-          success: false
-        });
-      }
+    if (montoPago <= 0) {
+      return res.status(400).json({ message: "Monto inválido" });
+    }
 
-      const montoPago =
-        parseFloat(monto);
+    await conn.beginTransaction();
 
-      // guardar pago
-      await pool.query(`
-        INSERT INTO pagos
-        (
-          id_prestamos,
-          monto_pagos,
-          fecha_pago
-        )
-        VALUES (?, ?, NOW())
-      `, [
-        id_prestamos,
-        montoPago
-      ]);
+    const [prestamo] = await conn.query(
+      "SELECT saldo, estado FROM prestamos WHERE id_prestamos = ? FOR UPDATE",
+      [id_prestamos]
+    );
 
-      // descontar saldo
-      await pool.query(`
+    if (!prestamo.length) {
+      await conn.rollback();
+      return res.status(404).json({ message: "Préstamo no existe" });
+    }
+
+    if (prestamo[0].estado === "pagado") {
+      await conn.rollback();
+      return res.status(400).json({ message: "Ya está pagado" });
+    }
+
+    if (montoPago > prestamo[0].saldo) {
+      await conn.rollback();
+      return res.status(400).json({ message: "Pago excede saldo" });
+    }
+
+    // insertar pago
+    await conn.query(`
+      INSERT INTO pagos (id_prestamos, monto_pagos, fecha_pago)
+      VALUES (?, ?, NOW())
+    `, [id_prestamos, montoPago]);
+
+    // actualizar saldo
+    await conn.query(`
+      UPDATE prestamos
+      SET saldo = saldo - ?
+      WHERE id_prestamos = ?
+    `, [montoPago, id_prestamos]);
+
+    // verificar saldo final
+    const [updated] = await conn.query(
+      "SELECT saldo FROM prestamos WHERE id_prestamos = ?",
+      [id_prestamos]
+    );
+
+    if (updated[0].saldo <= 0) {
+      await conn.query(`
         UPDATE prestamos
-        SET saldo = saldo - ?
-        WHERE id_prestamos = ?
-      `, [
-        montoPago,
-        id_prestamos
-      ]);
-
-      // revisar si quedó pagado
-      const [rows] =
-        await pool.query(`
-        SELECT saldo
-        FROM prestamos
+        SET estado = 'pagado', saldo = 0
         WHERE id_prestamos = ?
       `, [id_prestamos]);
-
-      if (
-        rows.length &&
-        rows[0].saldo <= 0
-      ) {
-        await pool.query(`
-          UPDATE prestamos
-          SET estado='pagado',
-              saldo=0
-          WHERE id_prestamos = ?
-        `, [id_prestamos]);
-      }
-
-      res.json({
-        success: true,
-        message: "Pago aplicado"
-      });
-
-    } catch (error) {
-      console.error(error);
-
-      res.status(500).json({
-        success: false
-      });
     }
+
+    await conn.commit();
+
+    res.json({
+      success: true,
+      message: "Pago aplicado"
+    });
+
+  } catch (err) {
+
+    await conn.rollback();
+
+    console.error("❌ pago:", err.message);
+
+    res.status(500).json({ success: false });
+
+  } finally {
+    conn.release();
   }
-);
+});
 
 // ==========================================
-// DETALLE PRÉSTAMO
-// GET /api/prestamos/:id
+// DETALLE
 // ==========================================
-router.get(
-  "/:id",
-  verificarToken,
-  async (req, res) => {
-    try {
-      const { id } = req.params;
+router.get("/:id", verificarToken, async (req, res) => {
 
-      const [rows] = await pool.query(`
-        SELECT
-          p.*,
-          CONCAT(c.nombre,' ',IFNULL(c.apellido,'')) cliente
-        FROM prestamos p
-        INNER JOIN clientes c
-        ON c.id_clientes = p.id_clientes
-        WHERE p.id_prestamos = ?
-        LIMIT 1
-      `, [id]);
+  try {
 
-      if (!rows.length) {
-        return res.status(404).json({
-          success: false
-        });
-      }
+    const { id } = req.params;
 
-      res.json({
-        success: true,
-        prestamo: rows[0]
-      });
+    const rows = await query(`
+      SELECT p.*, CONCAT(c.nombre,' ',c.apellido) cliente
+      FROM prestamos p
+      JOIN clientes c ON c.id_clientes = p.id_clientes
+      WHERE p.id_prestamos = ?
+    `, [id]);
 
-    } catch (error) {
-      res.status(500).json({
-        success: false
-      });
+    if (!rows.length) {
+      return res.status(404).json({ success: false });
     }
+
+    res.json({
+      success: true,
+      data: rows[0]
+    });
+
+  } catch {
+    res.status(500).json({ success: false });
   }
-);
+});
 
 // ==========================================
-// ELIMINAR PRÉSTAMO
-// DELETE /api/prestamos/:id
+// ELIMINAR (🔥 CON TRANSACCIÓN)
 // ==========================================
-router.delete(
-  "/:id",
-  verificarToken,
-  async (req, res) => {
-    try {
-      const { id } = req.params;
+router.delete("/:id", verificarToken, soloAdmin, async (req, res) => {
 
-      await pool.query(`
-        DELETE FROM pagos
-        WHERE id_prestamos = ?
-      `, [id]);
+  const conn = await pool.getConnection();
 
-      await pool.query(`
-        DELETE FROM prestamos
-        WHERE id_prestamos = ?
-      `, [id]);
+  try {
 
-      res.json({
-        success: true,
-        message: "Préstamo eliminado"
-      });
+    const { id } = req.params;
 
-    } catch (error) {
-      res.status(500).json({
-        success: false
-      });
-    }
+    await conn.beginTransaction();
+
+    await conn.query(
+      "DELETE FROM pagos WHERE id_prestamos = ?",
+      [id]
+    );
+
+    await conn.query(
+      "DELETE FROM prestamos WHERE id_prestamos = ?",
+      [id]
+    );
+
+    await conn.commit();
+
+    res.json({
+      success: true,
+      message: "Eliminado"
+    });
+
+  } catch (err) {
+
+    await conn.rollback();
+
+    res.status(500).json({ success: false });
+
+  } finally {
+    conn.release();
   }
-);
+});
 
 export default router;

@@ -1,13 +1,19 @@
-// Endpoints para la gestión de administradores
 import { Router } from "express";
-import pool from "../config/db.js";
+import bcrypt from "bcrypt";
+
+import { query } from "../config/db.js";
+import { verificarToken } from "../middleware/auth.js";
+import { soloAdmin } from "../middleware/roles.js";
 
 const router = Router();
+
+// 🔒 TODAS las rutas protegidas
+router.use(verificarToken, soloAdmin);
 
 // 📍 GET TODOS
 router.get("/", async (req, res) => {
   try {
-    const [rows] = await pool.query(`
+    const rows = await query(`
       SELECT id_usuarios, nombre, apellido, correo, rol, verificado, fecha_creacion 
       FROM usuarios 
       WHERE rol = 'administrador' 
@@ -17,7 +23,6 @@ router.get("/", async (req, res) => {
     res.json({ success: true, data: rows });
 
   } catch (err) {
-    console.error("Error GET administradores:", err.message);
     res.status(500).json({ success: false, message: "Error del servidor" });
   }
 });
@@ -26,25 +31,24 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
 
-  if (isNaN(id)) {
+  if (!Number.isInteger(Number(id))) {
     return res.status(400).json({ success: false, message: "ID inválido" });
   }
 
   try {
-    const [rows] = await pool.query(`
+    const rows = await query(`
       SELECT id_usuarios, nombre, apellido, correo, rol, verificado, fecha_creacion 
       FROM usuarios 
       WHERE id_usuarios = ? AND rol = 'administrador'
     `, [id]);
 
     if (rows.length === 0) {
-      return res.status(404).json({ success: false, message: "Administrador no encontrado" });
+      return res.status(404).json({ success: false, message: "No encontrado" });
     }
 
     res.json({ success: true, data: rows[0] });
 
-  } catch (err) {
-    console.error("Error GET por ID:", err.message);
+  } catch {
     res.status(500).json({ success: false, message: "Error del servidor" });
   }
 });
@@ -57,8 +61,12 @@ router.post("/", async (req, res) => {
     return res.status(400).json({ success: false, message: "Faltan datos" });
   }
 
+  if (contrasena.length < 6) {
+    return res.status(400).json({ success: false, message: "Contraseña muy corta" });
+  }
+
   try {
-    const [existing] = await pool.query(
+    const existing = await query(
       "SELECT id_usuarios FROM usuarios WHERE correo = ?",
       [correo]
     );
@@ -67,10 +75,13 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ success: false, message: "Correo ya existe" });
     }
 
-    const [result] = await pool.query(`
+    // 🔐 HASH PASSWORD
+    const hash = await bcrypt.hash(contrasena, 10);
+
+    const result = await query(`
       INSERT INTO usuarios (nombre, apellido, correo, contrasena, rol, verificado) 
       VALUES (?, ?, ?, ?, 'administrador', 1)
-    `, [nombre, apellido, correo, contrasena]);
+    `, [nombre, apellido, correo, hash]);
 
     res.json({
       success: true,
@@ -79,7 +90,6 @@ router.post("/", async (req, res) => {
     });
 
   } catch (err) {
-    console.error("Error POST:", err.message);
     res.status(500).json({ success: false, message: "Error del servidor" });
   }
 });
@@ -89,7 +99,7 @@ router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { nombre, apellido, correo } = req.body;
 
-  if (isNaN(id)) {
+  if (!Number.isInteger(Number(id))) {
     return res.status(400).json({ success: false, message: "ID inválido" });
   }
 
@@ -98,7 +108,7 @@ router.put("/:id", async (req, res) => {
   }
 
   try {
-    const [result] = await pool.query(`
+    const result = await query(`
       UPDATE usuarios 
       SET nombre = ?, apellido = ?, correo = ? 
       WHERE id_usuarios = ? AND rol = 'administrador'
@@ -110,8 +120,7 @@ router.put("/:id", async (req, res) => {
 
     res.json({ success: true, message: "Actualizado correctamente" });
 
-  } catch (err) {
-    console.error("Error PUT:", err.message);
+  } catch {
     res.status(500).json({ success: false, message: "Error del servidor" });
   }
 });
@@ -120,12 +129,12 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
-  if (isNaN(id)) {
+  if (!Number.isInteger(Number(id))) {
     return res.status(400).json({ success: false, message: "ID inválido" });
   }
 
   try {
-    const [result] = await pool.query(
+    const result = await query(
       "DELETE FROM usuarios WHERE id_usuarios = ? AND rol = 'administrador'",
       [id]
     );
@@ -136,8 +145,7 @@ router.delete("/:id", async (req, res) => {
 
     res.json({ success: true, message: "Eliminado correctamente" });
 
-  } catch (err) {
-    console.error("Error DELETE:", err.message);
+  } catch {
     res.status(500).json({ success: false, message: "Error del servidor" });
   }
 });

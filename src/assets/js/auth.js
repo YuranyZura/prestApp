@@ -2,17 +2,20 @@ async function login(email, password) {
   try {
     const data = await apiFetch("/auth/login", {
       method: "POST",
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({
+  correo: email,
+  contrasena: password
+})
     });
 
     if (data && data.success) {
       mostrarNotificacion("Inicio de sesión exitoso", "success");
 
       // Redirigir según rol (opcional)
-      if (data.usuario?.rol === "admin") {
+      if (data.user?.rol === "super_admin"){
         window.location.href = "/admin/dashboard.html";
       } else {
-        window.location.href = "/html/Rol2_trabajador.html";
+        window.location.href = "/html/trabajador/Rol2_trabajador.html";
       }
     }
 

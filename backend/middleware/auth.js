@@ -3,7 +3,14 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Verifica token
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error("❌ JWT_SECRET no definido");
+  process.exit(1);
+}
+
+// 🔐 VERIFICAR TOKEN
 export function verificarToken(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
@@ -15,45 +22,63 @@ export function verificarToken(req, res, next) {
       });
     }
 
-    if (!authHeader.startsWith("Bearer ")) {
+    // 🔥 Validar formato Bearer
+    const parts = authHeader.split(" ");
+
+    if (parts.length !== 2 || parts[0] !== "Bearer") {
       return res.status(401).json({
         success: false,
-        message: "Formato inválido"
+        message: "Formato de token inválido"
       });
     }
 
-    const token = authHeader.split(" ")[1];
+    const token = parts[1];
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
 
     req.usuario = decoded;
 
     next();
 
   } catch (error) {
+
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({
+        success: false,
+        message: "Token expirado"
+      });
+    }
+
     return res.status(403).json({
       success: false,
-      message: "Token inválido o expirado"
+      message: "Token inválido"
     });
   }
 }
 
-// Solo admin
-export function soloAdmin(req, res, next) {
-  if (req.usuario?.rol === "admin") return next();
+// 🔐 GENERADOR DE ROLES DINÁMICO
+const verificarRol = (...rolesPermitidos) => {
+  return (req, res, next) => {
 
-  return res.status(403).json({
-    success: false,
-    message: "Acceso solo administrador"
-  });
-}
+    if (!req.usuario) {
+      return res.status(401).json({
+        success: false,
+        message: "Usuario no autenticado"
+      });
+    }
 
-// Solo cobrador
-export function soloCobrador(req, res, next) {
-  if (req.usuario?.rol === "cobrador") return next();
+    if (rolesPermitidos.includes(req.usuario.rol)) {
+      return next();
+    }
 
-  return res.status(403).json({
-    success: false,
-    message: "Acceso solo cobrador"
-  });
-}
+    return res.status(403).json({
+      success: false,
+      message: "No tienes permisos"
+    });
+  };
+};
+
+// 🎯 ROLES
+export const soloSuperAdmin = verificarRol("super_admin");
+export const soloAdmin = verificarRol("administrador", "super_admin");
+export const soloTrabajador = verificarRol("trabajador");

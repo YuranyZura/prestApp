@@ -1,4 +1,0 @@
-export const obtenerClientes = async (req, res) => {
-  const data = await clienteService.getClientes();
-  res.json(data);
-};

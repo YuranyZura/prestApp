@@ -1,0 +1,98 @@
+/* ======================================
+   RESET CSS MODERNO
+   Basado en mejores prácticas actuales
+====================================== */
+
+/* Box sizing universal */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Eliminar márgenes por defecto */
+* {
+  margin: 0;
+}
+
+/* Mejorar renderizado del texto */
+html:focus-within {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  text-rendering: optimizeSpeed;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Quitar estilos por defecto de listas */
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+}
+
+/* Links sin estilos raros */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Imágenes y medios responsivos */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Inputs y botones consistentes */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Evita overflow en textos largos */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+/* Tablas limpias */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* Quitar estilo default en botones */
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Desactivar animaciones si el usuario lo prefiere */
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

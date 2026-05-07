@@ -1,3 +1,8 @@
+<!-- ========================================= -->
+<!-- PRESTAPP LOGIN FULL PROFESIONAL -->
+<!-- /html/auth/login.html -->
+<!-- ========================================= -->
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -23,7 +28,7 @@ body{
 .login-box{
     background:#fff;
     width:100%;
-    max-width:420px;
+    max-width:430px;
     padding:40px;
     border-radius:18px;
     box-shadow:0 15px 40px rgba(0,0,0,.15);
@@ -35,14 +40,13 @@ body{
 }
 
 .logo img{
-    width:160px;
+    width:170px;
 }
 
 h1{
     text-align:center;
-    font-size:28px;
+    font-size:30px;
     margin-bottom:10px;
-    color:#111;
 }
 
 p{
@@ -53,7 +57,7 @@ p{
 
 .form-control{
     width:100%;
-    padding:12px 15px;
+    padding:13px 15px;
     border:1px solid #ddd;
     border-radius:10px;
     margin-bottom:15px;
@@ -70,11 +74,10 @@ p{
     border:none;
     background:#0d6efd;
     color:#fff;
-    padding:12px;
+    padding:13px;
     border-radius:10px;
     font-size:16px;
     cursor:pointer;
-    transition:.3s;
 }
 
 .btn-login:hover{
@@ -93,10 +96,24 @@ p{
     color:#0d6efd;
 }
 
+.msg{
+    text-align:center;
+    margin-bottom:15px;
+    font-size:14px;
+    font-weight:bold;
+}
+
+.success{
+    color:green;
+}
+
+.error{
+    color:red;
+}
+
 .footer{
     margin-top:20px;
     text-align:center;
-    font-size:14px;
 }
 </style>
 </head>
@@ -105,55 +122,129 @@ p{
 
 <div class="login-box">
 
-    <div class="logo">
-        <img src="/assets/images/logos/prestapp-remove.png" alt="PrestApp">
-    </div>
+<div class="logo">
+<img src="/assets/images/logos/prestapp-remove.png">
+</div>
 
-    <h1>Bienvenido</h1>
-    <p>Ingresa para continuar</p>
+<h1>Bienvenido</h1>
+<p>Ingresa para continuar</p>
 
-    <form id="formLogin">
+<div id="mensaje" class="msg"></div>
 
-        <input 
-            type="email"
-            id="correo"
-            class="form-control"
-            placeholder="Correo electrónico"
-            required>
+<form id="formLogin">
 
-        <input 
-            type="password"
-            id="contrasena"
-            class="form-control"
-            placeholder="Contraseña"
-            required>
+<input
+type="email"
+id="correo"
+class="form-control"
+placeholder="Correo electrónico"
+autocomplete="off"
+required>
 
-        <label style="font-size:14px;">
-            <input type="checkbox" id="recordarme">
-            Recordarme
-        </label>
+<input
+type="password"
+id="contrasena"
+class="form-control"
+placeholder="Contraseña"
+required>
 
-        <br><br>
+<label style="font-size:14px;">
+<input type="checkbox" id="recordarme">
+Recordarme
+</label>
 
-        <button type="submit" class="btn-login">
-            <i class="ti ti-login"></i>
-            Iniciar sesión
-        </button>
+<br><br>
 
-    </form>
+<button type="submit" class="btn-login">
+<i class="ti ti-login"></i>
+Iniciar sesión
+</button>
 
-    <div class="extra">
-        <a href="register.html">Crear cuenta</a>
-        <a href="#">¿Olvidaste contraseña?</a>
-    </div>
+</form>
 
-    <div class="footer">
-        © 2025 PrestApp
-    </div>
+<div class="extra">
+<a href="register.html">Crear cuenta</a>
+<a href="#">¿Olvidaste contraseña?</a>
+</div>
+
+<div class="footer">
+© 2026 PrestApp
+</div>
 
 </div>
 
-<script type="module" src="/js/login.js"></script>
+<script type="module">
+
+import { API_URL } from "/js/config.js";
+
+const form = document.getElementById("formLogin");
+const msg = document.getElementById("mensaje");
+
+function mostrar(texto,tipo="error"){
+    msg.className = "msg " + tipo;
+    msg.innerText = texto;
+}
+
+form.addEventListener("submit", async(e)=>{
+
+    e.preventDefault();
+
+    const correo = document.getElementById("correo").value.trim();
+    const contrasena = document.getElementById("contrasena").value.trim();
+
+    if(!correo || !contrasena){
+        mostrar("Complete todos los campos");
+        return;
+    }
+
+    try{
+
+        const res = await fetch(`${API_URL}/auth/login`,{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                correo,
+                contrasena
+            })
+        });
+
+        const data = await res.json();
+
+        if(data.success){
+
+            mostrar("Acceso correcto","success");
+
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("usuario", JSON.stringify(data.user));
+
+            setTimeout(()=>{
+
+                if(data.user.rol === "super_admin"){
+                    location.href="/html/admin/administradores.html";
+                }
+                else if(data.user.rol === "administrador"){
+                    location.href="/html/admin/dashboard.html";
+                }
+                else{
+                    location.href="/html/trabajador/Rol2_trabajador.html";
+                }
+
+            },1000);
+
+        }else{
+            mostrar(data.message || "Credenciales inválidas");
+        }
+
+    }catch(error){
+        console.log(error);
+        mostrar("No se pudo conectar con el servidor");
+    }
+
+});
+
+</script>
 
 </body>
 </html>

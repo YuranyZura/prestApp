@@ -1,0 +1,365 @@
+/* =========================================================
+   PRESTAPP - TABLES LAYOUT
+   Archivo:
+   /assets/css/layout/tables.css
+========================================================= */
+
+/* =========================
+   VARIABLES
+========================= */
+:root{
+  --table-border:#e5e7eb;
+  --table-head:#0d6efd;
+  --table-head-text:#ffffff;
+
+  --table-row-hover:#f8fafc;
+
+  --table-text:#374151;
+  --table-muted:#6b7280;
+
+  --table-radius:18px;
+
+  --transition:.25s ease;
+}
+
+/* =========================
+   TABLE WRAPPER
+========================= */
+.table-responsive{
+  width:100%;
+  overflow-x:auto;
+
+  border-radius:var(--table-radius);
+
+  -webkit-overflow-scrolling:touch;
+}
+
+/* =========================
+   TABLE BASE
+========================= */
+.table{
+  width:100%;
+  margin-bottom:0;
+
+  border-collapse:separate;
+  border-spacing:0;
+
+  color:var(--table-text);
+
+  vertical-align:middle;
+}
+
+/* =========================
+   TABLE HEAD
+========================= */
+.table thead{
+  background:var(--table-head);
+  color:var(--table-head-text);
+}
+
+.table thead th{
+  border:none;
+
+  padding:16px 18px;
+
+  font-size:14px;
+  font-weight:700;
+
+  white-space:nowrap;
+
+  vertical-align:middle;
+}
+
+/* RADIUS */
+.table thead th:first-child{
+  border-top-left-radius:16px;
+}
+
+.table thead th:last-child{
+  border-top-right-radius:16px;
+}
+
+/* =========================
+   TABLE BODY
+========================= */
+.table tbody tr{
+  transition:background var(--transition);
+}
+
+.table tbody tr:hover{
+  background:var(--table-row-hover);
+}
+
+.table tbody td{
+  padding:16px 18px;
+
+  border-bottom:1px solid var(--table-border);
+
+  vertical-align:middle;
+
+  font-size:14px;
+}
+
+/* =========================
+   LAST ROW
+========================= */
+.table tbody tr:last-child td:first-child{
+  border-bottom-left-radius:16px;
+}
+
+.table tbody tr:last-child td:last-child{
+  border-bottom-right-radius:16px;
+}
+
+/* =========================
+   TABLE STRIPED
+========================= */
+.table-striped tbody tr:nth-of-type(odd){
+  background:#fcfcfd;
+}
+
+/* =========================
+   TABLE BORDERLESS
+========================= */
+.table-borderless td,
+.table-borderless th{
+  border:none !important;
+}
+
+/* =========================
+   TABLE COMPACT
+========================= */
+.table-sm thead th,
+.table-sm tbody td{
+  padding:10px 14px;
+}
+
+/* =========================
+   TABLE CENTER
+========================= */
+.table-center th,
+.table-center td{
+  text-align:center;
+}
+
+/* =========================
+   STATUS BADGES
+========================= */
+.badge-status{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:7px 12px;
+
+  border-radius:999px;
+
+  font-size:12px;
+  font-weight:700;
+}
+
+.badge-active{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.badge-warning{
+  background:#fef3c7;
+  color:#92400e;
+}
+
+.badge-danger{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.badge-info{
+  background:#dbeafe;
+  color:#1d4ed8;
+}
+
+/* =========================
+   TABLE ACTIONS
+========================= */
+.table-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.table-actions .btn{
+  border-radius:10px;
+}
+
+/* =========================
+   TABLE AVATAR
+========================= */
+.table-avatar{
+  width:42px;
+  height:42px;
+
+  border-radius:50%;
+
+  object-fit:cover;
+}
+
+/* =========================
+   EMPTY TABLE
+========================= */
+.table-empty{
+  padding:50px 20px !important;
+  text-align:center;
+  color:var(--table-muted);
+}
+
+.table-empty i{
+  display:block;
+
+  font-size:48px;
+
+  margin-bottom:12px;
+
+  color:#cbd5e1;
+}
+
+/* =========================
+   TABLE LOADING
+========================= */
+.table-loading{
+  text-align:center;
+  padding:40px 20px !important;
+}
+
+.table-loading .spinner-border{
+  width:2.5rem;
+  height:2.5rem;
+}
+
+/* =========================
+   TABLE SEARCH BAR
+========================= */
+.table-search{
+  position:relative;
+}
+
+.table-search input{
+  padding-left:42px;
+  border-radius:14px;
+}
+
+.table-search i{
+  position:absolute;
+
+  top:50%;
+  left:14px;
+
+  transform:translateY(-50%);
+
+  color:#9ca3af;
+}
+
+/* =========================
+   TABLE PAGINATION
+========================= */
+.table-pagination{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  gap:12px;
+
+  padding-top:18px;
+}
+
+.table-pagination .pagination{
+  margin-bottom:0;
+}
+
+/* =========================
+   TABLE HOVER EFFECT
+========================= */
+.table-hover tbody tr{
+  cursor:pointer;
+}
+
+/* =========================
+   RESPONSIVE <= 768px
+========================= */
+@media (max-width:768px){
+
+  .table{
+    min-width:700px;
+  }
+
+  .table thead th,
+  .table tbody td{
+    padding:14px;
+    font-size:13px;
+  }
+
+  .table-actions{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .table-actions .btn{
+    width:100%;
+  }
+
+}
+
+/* =========================
+   RESPONSIVE <= 576px
+========================= */
+@media (max-width:576px){
+
+  .table{
+    min-width:620px;
+  }
+
+  .table thead th,
+  .table tbody td{
+    padding:12px;
+  }
+
+}
+
+/* =========================
+   DARK MODE READY
+========================= */
+[data-theme="dark"] .table{
+  color:#f9fafb;
+}
+
+[data-theme="dark"] .table thead{
+  background:#1f2937;
+}
+
+[data-theme="dark"] .table tbody tr:hover{
+  background:#111827;
+}
+
+[data-theme="dark"] .table tbody td{
+  border-color:#374151;
+}
+
+[data-theme="dark"] .table-empty{
+  color:#9ca3af;
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+.table-responsive::-webkit-scrollbar{
+  height:8px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb{
+  background:#cbd5e1;
+  border-radius:20px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover{
+  background:#94a3b8;
+}

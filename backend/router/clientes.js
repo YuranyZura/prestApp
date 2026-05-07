@@ -1,106 +1,62 @@
-// ==========================================
-// backend/router/clientes.js
-// PRESTAPP - CLIENTES PRO (CORREGIDO)
-// JWT + MULTER + GEOLOCALIZACIÓN
-// ==========================================
-
 import { Router } from "express";
+import { query } from "../config/db.js";
 import pool from "../config/db.js";
+
 import fetch from "node-fetch";
 import multer from "multer";
 import path from "path";
-import { fileURLToPath } from "url";
+
 import { verificarToken } from "../middleware/auth.js";
+import { soloAdmin, soloTrabajador } from "../middleware/roles.js";
+import { deleteFile } from "../config/uploads.js";
 
 const router = Router();
 
 // ==========================================
-// __dirname ES MODULES
-// ==========================================
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// ==========================================
-// MULTER CONFIG
+// MULTER (IMÁGENES)
 // ==========================================
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../../uploads"));
-  },
+  destination: "uploads/",
   filename: (req, file, cb) => {
-    const unique =
-      Date.now() + "-" + Math.round(Math.random() * 1e9);
-
-    cb(
-      null,
-      "cliente-" +
-        unique +
-        path.extname(file.originalname)
-    );
+    const unique = Date.now() + "-" + Math.random();
+    cb(null, "cliente-" + unique + path.extname(file.originalname));
   }
 });
 
 const upload = multer({
   storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024
-  },
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter(req, file, cb) {
-    const allowed =
-      /jpeg|jpg|png|gif/;
+    const allowed = /jpeg|jpg|png/;
+    const ext = allowed.test(path.extname(file.originalname).toLowerCase());
+    const mime = allowed.test(file.mimetype);
 
-    const ext = allowed.test(
-      path.extname(file.originalname).toLowerCase()
-    );
-
-    const mime = allowed.test(
-      file.mimetype
-    );
-
-    if (ext && mime) {
-      cb(null, true);
-    } else {
-      cb(
-        new Error(
-          "Solo imágenes permitidas"
-        )
-      );
-    }
+    if (ext && mime) cb(null, true);
+    else cb(new Error("Solo imágenes válidas"));
   }
 });
 
 // ==========================================
-// GEOLOCALIZAR DIRECCIÓN
+// GEOLOCALIZAR (CON TIMEOUT)
 // ==========================================
 async function geolocalizar(direccion) {
   try {
-    const url =
-      `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(direccion)}`;
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), 5000);
+
+    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(direccion)}`;
 
     const resp = await fetch(url, {
+      signal: controller.signal,
       headers: {
-        "User-Agent":
-          "PrestApp/1.0",
-        "Accept-Language":
-          "es"
+        "User-Agent": "PrestApp",
+        "Accept-Language": "es"
       }
     });
 
-    if (!resp.ok) {
-      return {
-        latitud: null,
-        longitud: null
-      };
-    }
-
     const data = await resp.json();
 
-    if (!data.length) {
-      return {
-        latitud: null,
-        longitud: null
-      };
-    }
+    if (!data.length) return { latitud: null, longitud: null };
 
     return {
       latitud: parseFloat(data[0].lat),
@@ -108,439 +64,249 @@ async function geolocalizar(direccion) {
     };
 
   } catch {
-    return {
-      latitud: null,
-      longitud: null
-    };
+    return { latitud: null, longitud: null };
   }
 }
 
 // ==========================================
-// LISTAR CLIENTES
-// GET /api/clientes
+// VALIDAR ID
 // ==========================================
-router.get(
-  "/",
-  verificarToken,
-  async (req, res) => {
-    try {
-      const [rows] =
-        await pool.query(`
-        SELECT
-          id_clientes,
-          nombre,
-          apellido,
-          cedula,
-          telefono,
-          direccion,
-          foto,
-          latitud,
-          longitud,
-          CONCAT(nombre,' ',IFNULL(apellido,'')) nombreCompleto
-        FROM clientes
-        ORDER BY nombre ASC
-      `);
+function validarId(id) {
+  return Number.isInteger(Number(id));
+}
 
-      res.json({
-        success: true,
-        clientes: rows
-      });
+// ==========================================
+// GET CLIENTES
+// ==========================================
+router.get("/", verificarToken, async (req, res) => {
+  try {
+    const rows = await query(`
+      SELECT id_clientes, nombre, apellido, cedula, telefono, direccion, foto, latitud, longitud
+      FROM clientes
+      ORDER BY nombre ASC
+    `);
 
-    } catch (error) {
-      console.error(error);
+    const clientes = rows.map(c => ({
+      ...c,
+      foto: c.foto
+        ? `${req.protocol}://${req.get("host")}/uploads/${c.foto}`
+        : null
+    }));
 
-      res.status(500).json({
-        success: false,
-        message:
-          "Error listando clientes"
-      });
-    }
+    res.json({ success: true, clientes });
+
+  } catch {
+    res.status(500).json({ success: false });
   }
-);
+});
 
 // ==========================================
 // CREAR CLIENTE
-// POST /api/clientes
 // ==========================================
-router.post(
-  "/",
-  verificarToken,
-  async (req, res) => {
-    try {
-      const {
-        nombreCompleto,
-        cedula,
-        telefono,
-        direccion,
-        ciudad,
-        fechaNacimiento
-      } = req.body;
+router.post("/", verificarToken, soloTrabajador, async (req, res) => {
+  try {
+    const { nombreCompleto, cedula, telefono, direccion } = req.body;
 
-      if (
-        !nombreCompleto ||
-        !cedula ||
-        !telefono ||
-        !direccion
-      ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Campos incompletos"
-        });
-      }
-
-      const partes =
-        nombreCompleto
-          .trim()
-          .split(/\s+/);
-
-      const nombre = partes[0];
-      const apellido =
-        partes.slice(1).join(" ");
-
-      const dirFinal = ciudad
-        ? `${direccion}, ${ciudad}`
-        : direccion;
-
-      const [existe] =
-        await pool.query(
-          `
-        SELECT id_clientes
-        FROM clientes
-        WHERE cedula = ?
-        LIMIT 1
-      `,
-          [cedula]
-        );
-
-      if (existe.length) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Ya existe esa cédula"
-        });
-      }
-
-      const geo =
-        await geolocalizar(
-          dirFinal
-        );
-
-      const [result] =
-        await pool.query(
-          `
-        INSERT INTO clientes
-        (
-          nombre,
-          apellido,
-          cedula,
-          telefono,
-          direccion,
-          fecha_nacimiento,
-          latitud,
-          longitud
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      `,
-          [
-            nombre,
-            apellido,
-            cedula,
-            telefono,
-            dirFinal,
-            fechaNacimiento ||
-              null,
-            geo.latitud,
-            geo.longitud
-          ]
-        );
-
-      res.json({
-        success: true,
-        message:
-          "Cliente creado",
-        id:
-          result.insertId
-      });
-
-    } catch (error) {
-      console.error(error);
-
-      res.status(500).json({
-        success: false,
-        message:
-          "Error creando cliente"
-      });
+    if (!nombreCompleto || !cedula || !telefono || !direccion) {
+      return res.status(400).json({ success: false, message: "Campos requeridos" });
     }
-  }
-);
 
-// ==========================================
-// DETALLE CLIENTE
-// GET /api/clientes/:id
-// ==========================================
-router.get(
-  "/:id",
-  verificarToken,
-  async (req, res) => {
-    try {
-      const { id } =
-        req.params;
-
-      const [rows] =
-        await pool.query(
-          `
-        SELECT *,
-        CONCAT(nombre,' ',IFNULL(apellido,'')) nombreCompleto
-        FROM clientes
-        WHERE id_clientes = ?
-        LIMIT 1
-      `,
-          [id]
-        );
-
-      if (!rows.length) {
-        return res.status(404).json({
-          success: false,
-          message:
-            "Cliente no encontrado"
-        });
-      }
-
-      res.json({
-        success: true,
-        cliente:
-          rows[0]
-      });
-
-    } catch (error) {
-      res.status(500).json({
-        success: false
-      });
+    if (!/^\d+$/.test(cedula)) {
+      return res.status(400).json({ message: "Cédula inválida" });
     }
+
+    const partes = nombreCompleto.split(" ");
+    const nombre = partes[0];
+    const apellido = partes.slice(1).join(" ");
+
+    const existe = await query(
+      "SELECT id_clientes FROM clientes WHERE cedula = ?",
+      [cedula]
+    );
+
+    if (existe.length) {
+      return res.status(400).json({ message: "Cédula ya existe" });
+    }
+
+    const geo = await geolocalizar(direccion);
+
+    const result = await query(`
+      INSERT INTO clientes
+      (nombre, apellido, cedula, telefono, direccion, latitud, longitud)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `, [nombre, apellido, cedula, telefono, direccion, geo.latitud, geo.longitud]);
+
+    res.json({
+      success: true,
+      message: "Cliente creado",
+      id: result.insertId
+    });
+
+  } catch {
+    res.status(500).json({ success: false });
   }
-);
+});
 
 // ==========================================
-// ACTUALIZAR CLIENTE
-// PUT /api/clientes/:id
+// DETALLE
+// ==========================================
+router.get("/:id", verificarToken, async (req, res) => {
+
+  const { id } = req.params;
+
+  if (!validarId(id)) {
+    return res.status(400).json({ message: "ID inválido" });
+  }
+
+  try {
+    const rows = await query(
+      "SELECT * FROM clientes WHERE id_clientes = ?",
+      [id]
+    );
+
+    if (!rows.length) {
+      return res.status(404).json({ message: "No encontrado" });
+    }
+
+    const cliente = rows[0];
+
+    if (cliente.foto) {
+      cliente.foto = `${req.protocol}://${req.get("host")}/uploads/${cliente.foto}`;
+    }
+
+    res.json({ success: true, cliente });
+
+  } catch {
+    res.status(500).json({ success: false });
+  }
+});
+
+// ==========================================
+// ACTUALIZAR
 // ==========================================
 router.put(
   "/:id",
   verificarToken,
+  soloTrabajador,
   upload.single("foto"),
   async (req, res) => {
-    try {
-      const { id } =
-        req.params;
 
-      const {
-        nombreCompleto,
-        cedula,
-        telefono,
-        direccion,
-        ciudad
-      } = req.body;
+    const { id } = req.params;
+
+    if (!validarId(id)) {
+      return res.status(400).json({ message: "ID inválido" });
+    }
+
+    try {
 
       const sets = [];
       const values = [];
 
-      if (nombreCompleto) {
-        const partes =
-          nombreCompleto
-            .trim()
-            .split(/\s+/);
-
-        sets.push(
-          "nombre=?",
-          "apellido=?"
-        );
-
-        values.push(
-          partes[0],
-          partes
-            .slice(1)
-            .join(" ")
-        );
+      if (req.body.nombreCompleto) {
+        const partes = req.body.nombreCompleto.split(" ");
+        sets.push("nombre=?", "apellido=?");
+        values.push(partes[0], partes.slice(1).join(" "));
       }
 
-      if (cedula) {
-        sets.push(
-          "cedula=?"
-        );
-        values.push(
-          cedula
-        );
+      if (req.body.telefono) {
+        sets.push("telefono=?");
+        values.push(req.body.telefono);
       }
 
-      if (telefono) {
-        sets.push(
-          "telefono=?"
-        );
-        values.push(
-          telefono
-        );
-      }
-
-      if (direccion) {
-        const dir =
-          ciudad
-            ? `${direccion}, ${ciudad}`
-            : direccion;
-
-        const geo =
-          await geolocalizar(
-            dir
-          );
-
-        sets.push(
-          "direccion=?",
-          "latitud=?",
-          "longitud=?"
-        );
-
-        values.push(
-          dir,
-          geo.latitud,
-          geo.longitud
-        );
+      if (req.body.direccion) {
+        const geo = await geolocalizar(req.body.direccion);
+        sets.push("direccion=?", "latitud=?", "longitud=?");
+        values.push(req.body.direccion, geo.latitud, geo.longitud);
       }
 
       if (req.file) {
-        sets.push(
-          "foto=?"
-        );
-        values.push(
-          req.file
-            .filename
-        );
-      }
 
-      if (!sets.length) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Nada para actualizar"
-        });
-      }
-
-      await pool.query(
-        `
-        UPDATE clientes
-        SET ${sets.join(",")}
-        WHERE id_clientes = ?
-      `,
-        [...values, id]
-      );
-
-      res.json({
-        success: true,
-        message:
-          "Cliente actualizado"
-      });
-
-    } catch (error) {
-      console.error(error);
-
-      res.status(500).json({
-        success: false
-      });
-    }
-  }
-);
-
-// ==========================================
-// ELIMINAR CLIENTE
-// DELETE /api/clientes/:id
-// ==========================================
-router.delete(
-  "/:id",
-  verificarToken,
-  async (req, res) => {
-    try {
-      const { id } =
-        req.params;
-
-      await pool.query(
-        `
-        DELETE pagos
-        FROM pagos
-        INNER JOIN prestamos
-        ON pagos.id_prestamos =
-        prestamos.id_prestamos
-        WHERE prestamos.id_clientes = ?
-      `,
-        [id]
-      );
-
-      await pool.query(
-        `
-        DELETE FROM prestamos
-        WHERE id_clientes = ?
-      `,
-        [id]
-      );
-
-      await pool.query(
-        `
-        DELETE FROM clientes
-        WHERE id_clientes = ?
-      `,
-        [id]
-      );
-
-      res.json({
-        success: true,
-        message:
-          "Cliente eliminado"
-      });
-
-    } catch (error) {
-      console.error(error);
-
-      res.status(500).json({
-        success: false
-      });
-    }
-  }
-);
-
-// ==========================================
-// RESUMEN CUOTAS
-// GET /api/clientes/:id/cuotas
-// ==========================================
-router.get(
-  "/:id/cuotas",
-  verificarToken,
-  async (req, res) => {
-    try {
-      const { id } =
-        req.params;
-
-      const [rows] =
-        await pool.query(
-          `
-        SELECT
-          COUNT(*) totalPrestamos,
-          IFNULL(SUM(total_pagar),0) totalPrestado
-        FROM prestamos
-        WHERE id_clientes = ?
-      `,
+        const old = await query(
+          "SELECT foto FROM clientes WHERE id_clientes = ?",
           [id]
         );
 
-      res.json({
-        success: true,
-        resumen:
-          rows[0]
-      });
+        if (old[0]?.foto) {
+          deleteFile(old[0].foto);
+        }
 
-    } catch (error) {
-      res.status(500).json({
-        success: false
-      });
+        sets.push("foto=?");
+        values.push(req.file.filename);
+      }
+
+      if (!sets.length) {
+        return res.status(400).json({ message: "Nada para actualizar" });
+      }
+
+      await query(
+        `UPDATE clientes SET ${sets.join(",")} WHERE id_clientes = ?`,
+        [...values, id]
+      );
+
+      res.json({ success: true, message: "Actualizado" });
+
+    } catch {
+      res.status(500).json({ success: false });
     }
   }
 );
+
+// ==========================================
+// ELIMINAR (CON TRANSACCIÓN)
+// ==========================================
+router.delete("/:id", verificarToken, soloAdmin, async (req, res) => {
+
+  const { id } = req.params;
+
+  if (!validarId(id)) {
+    return res.status(400).json({ message: "ID inválido" });
+  }
+
+  const conn = await pool.getConnection();
+
+  try {
+
+    await conn.beginTransaction();
+
+    const [cliente] = await conn.query(
+      "SELECT foto FROM clientes WHERE id_clientes = ?",
+      [id]
+    );
+
+    if (cliente[0]?.foto) {
+      deleteFile(cliente[0].foto);
+    }
+
+    await conn.query(`
+      DELETE pagos FROM pagos
+      INNER JOIN prestamos
+      ON pagos.id_prestamos = prestamos.id_prestamos
+      WHERE prestamos.id_clientes = ?
+    `, [id]);
+
+    await conn.query(
+      "DELETE FROM prestamos WHERE id_clientes = ?",
+      [id]
+    );
+
+    await conn.query(
+      "DELETE FROM clientes WHERE id_clientes = ?",
+      [id]
+    );
+
+    await conn.commit();
+
+    res.json({ success: true, message: "Eliminado correctamente" });
+
+  } catch (err) {
+
+    await conn.rollback();
+
+    res.status(500).json({ success: false });
+
+  } finally {
+    conn.release();
+  }
+});
 
 export default router;

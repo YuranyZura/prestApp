@@ -3,7 +3,7 @@ import nodemailer from "nodemailer";
 
 dotenv.config();
 
-// 🔒 Validación de variables
+// 🔒 Variables
 const EMAIL_USER = process.env.EMAIL_USER;
 const EMAIL_PASS = process.env.EMAIL_PASS;
 
@@ -11,10 +11,10 @@ if (!EMAIL_USER || !EMAIL_PASS) {
   console.warn("⚠️ Email no configurado. Los correos no se enviarán.");
 }
 
-// 🔥 Crear transporter SOLO si hay credenciales
+// 🔥 Transporter optimizado
 const transporter = EMAIL_USER && EMAIL_PASS
   ? nodemailer.createTransport({
-      service: "gmail", // más simple y estable
+      service: "gmail",
       auth: {
         user: EMAIL_USER,
         pass: EMAIL_PASS,
@@ -22,7 +22,7 @@ const transporter = EMAIL_USER && EMAIL_PASS
     })
   : null;
 
-// 🔍 Verificar conexión (solo en desarrollo)
+// 🔍 Verificación (solo dev)
 async function verificarMailer() {
   if (!transporter) return;
 
@@ -38,46 +38,60 @@ if (process.env.NODE_ENV !== "production") {
   verificarMailer();
 }
 
-// 🎨 Generador de HTML
+// 🎨 HTML reutilizable (mejorado responsive)
 function generarHTML(codigo) {
   return `
-    <div style="font-family: Arial, sans-serif; padding:20px;">
-      <h2 style="color:#333;">PrestApp</h2>
+    <div style="font-family: Arial; padding:20px; max-width:500px; margin:auto;">
+      <h2 style="color:#0d6efd;">PrestApp</h2>
       <p>Tu código de verificación es:</p>
-      <h1 style="letter-spacing:3px;">${codigo}</h1>
-      <p>Este código expira en 10 minutos.</p>
+      <div style="
+        font-size:28px;
+        font-weight:bold;
+        letter-spacing:5px;
+        background:#f4f4f4;
+        padding:15px;
+        text-align:center;
+        border-radius:10px;
+      ">
+        ${codigo}
+      </div>
+      <p style="margin-top:20px;">Este código expira en 10 minutos.</p>
     </div>
   `;
 }
 
-// 📧 Función genérica (REUTILIZABLE)
+// 📧 Envío genérico (mejor manejo de errores)
 export async function enviarCorreo({ to, subject, html }) {
   if (!transporter) {
-    console.warn("⚠️ Intento de envío de correo sin configuración");
+    console.warn("⚠️ Intento de envío sin configuración de correo");
     return false;
   }
 
   try {
-    await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: `"PrestApp" <${EMAIL_USER}>`,
       to,
       subject,
       html,
     });
 
-    console.log("✅ Correo enviado");
+    console.log("📧 Correo enviado:", info.messageId);
     return true;
+
   } catch (error) {
-    console.error("❌ Error al enviar correo:", error.message);
+    console.error("❌ Error al enviar correo:", {
+      message: error.message,
+      code: error.code,
+    });
     return false;
   }
 }
 
-// 📧 Caso específico: código de verificación
+// 📧 Caso específico
 export async function enviarCodigoVerificacion(correo, codigo) {
-  return await enviarCorreo({
+  return enviarCorreo({
     to: correo,
-    subject: "Código de verificación",
+    subject: "Código de verificación - PrestApp",
     html: generarHTML(codigo),
   });
 }

@@ -1,58 +1,38 @@
-// ==========================================
-// backend/router/dashboard.js
-// DASHBOARD MYSQL REAL - PRESTAPP
-// ==========================================
-
-import express from "express";
-import db from "../config/db.js";
+import { Router } from "express";
+import { query } from "../config/db.js";
 import { verificarToken } from "../middleware/auth.js";
+import { soloAdmin, soloTrabajador } from "../middleware/roles.js";
 
-const router = express.Router();
+const router = Router();
 
 // ==========================================
 // 🔐 RESUMEN PRINCIPAL
-// GET /api/dashboard/resumen
 // ==========================================
 router.get("/resumen", verificarToken, async (req, res) => {
   try {
-    // ======================================
-    // TOTAL CLIENTES
-    // ======================================
-    const [clientes] = await db.query(`
-      SELECT COUNT(*) AS total
-      FROM clientes
+
+    const clientes = await query(`
+      SELECT COUNT(*) AS total FROM clientes
     `);
 
-    // ======================================
-    // PRÉSTAMOS ACTIVOS
-    // ======================================
-    const [prestamos] = await db.query(`
+    const prestamos = await query(`
       SELECT COUNT(*) AS total
       FROM prestamos
       WHERE estado = 'activo'
     `);
 
-    // ======================================
-    // CLIENTES EN MORA
-    // ======================================
-    const [mora] = await db.query(`
+    const mora = await query(`
       SELECT COUNT(*) AS total
       FROM prestamos
       WHERE estado = 'mora'
     `);
 
-    // ======================================
-    // RECAUDADO HOY
-    // ======================================
-    const [pagosHoy] = await db.query(`
+    const pagosHoy = await query(`
       SELECT IFNULL(SUM(monto),0) AS total
       FROM pagos
       WHERE DATE(fecha_pago)=CURDATE()
     `);
 
-    // ======================================
-    // RESPUESTA
-    // ======================================
     res.json({
       success: true,
       data: {
@@ -64,7 +44,7 @@ router.get("/resumen", verificarToken, async (req, res) => {
     });
 
   } catch (error) {
-    console.error("❌ Error resumen dashboard:", error);
+    console.error("❌ dashboard resumen:", error.message);
 
     res.status(500).json({
       success: false,
@@ -75,19 +55,22 @@ router.get("/resumen", verificarToken, async (req, res) => {
 
 // ==========================================
 // 📋 ÚLTIMOS PAGOS
-// GET /api/dashboard/ultimos-pagos
 // ==========================================
 router.get("/ultimos-pagos", verificarToken, async (req, res) => {
   try {
-    const [rows] = await db.query(`
+
+    const rows = await query(`
       SELECT 
-        p.id,
+        p.id_pagos,
         c.nombre,
+        c.apellido,
         p.monto,
         p.fecha_pago
       FROM pagos p
+      INNER JOIN prestamos pr
+        ON pr.id_prestamos = p.id_prestamos
       INNER JOIN clientes c
-        ON c.id = p.cliente_id
+        ON c.id_clientes = pr.id_clientes
       ORDER BY p.fecha_pago DESC
       LIMIT 10
     `);
@@ -98,7 +81,7 @@ router.get("/ultimos-pagos", verificarToken, async (req, res) => {
     });
 
   } catch (error) {
-    console.error("❌ Error últimos pagos:", error);
+    console.error("❌ ultimos pagos:", error.message);
 
     res.status(500).json({
       success: false,
@@ -109,20 +92,20 @@ router.get("/ultimos-pagos", verificarToken, async (req, res) => {
 
 // ==========================================
 // ⚠️ CLIENTES EN MORA
-// GET /api/dashboard/morosos
 // ==========================================
-router.get("/morosos", verificarToken, async (req, res) => {
+router.get("/morosos", verificarToken, soloTrabajador, async (req, res) => {
   try {
-    const [rows] = await db.query(`
+
+    const rows = await query(`
       SELECT
-        c.id,
+        c.id_clientes,
         c.nombre,
         c.telefono,
         p.saldo,
         p.cuotas_vencidas
       FROM prestamos p
       INNER JOIN clientes c
-        ON c.id = p.cliente_id
+        ON c.id_clientes = p.id_clientes
       WHERE p.estado = 'mora'
       ORDER BY p.cuotas_vencidas DESC
       LIMIT 10
@@ -134,7 +117,7 @@ router.get("/morosos", verificarToken, async (req, res) => {
     });
 
   } catch (error) {
-    console.error("❌ Error morosos:", error);
+    console.error("❌ morosos:", error.message);
 
     res.status(500).json({
       success: false,
@@ -145,14 +128,14 @@ router.get("/morosos", verificarToken, async (req, res) => {
 
 // ==========================================
 // 📈 INGRESOS SEMANA
-// GET /api/dashboard/ingresos-semana
 // ==========================================
 router.get("/ingresos-semana", verificarToken, async (req, res) => {
   try {
-    const [rows] = await db.query(`
+
+    const rows = await query(`
       SELECT
-        DATE(fecha_pago) fecha,
-        SUM(monto) total
+        DATE(fecha_pago) AS fecha,
+        SUM(monto) AS total
       FROM pagos
       WHERE fecha_pago >= CURDATE() - INTERVAL 7 DAY
       GROUP BY DATE(fecha_pago)
@@ -165,7 +148,7 @@ router.get("/ingresos-semana", verificarToken, async (req, res) => {
     });
 
   } catch (error) {
-    console.error("❌ Error ingresos semana:", error);
+    console.error("❌ ingresos semana:", error.message);
 
     res.status(500).json({
       success: false,

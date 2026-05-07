@@ -1,143 +1,286 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8" />
+<meta name="viewport"
+content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
 <title>PrestApp | Detalle Cliente</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/icons/tabler-icons/tabler-icons.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<!-- Bootstrap -->
+<link
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+rel="stylesheet"
+/>
+
+<!-- Icons -->
+<link
+rel="stylesheet"
+href="/assets/css/icons/tabler-icons/tabler-icons.css"
+/>
+
+<!-- Leaflet -->
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
+/>
+
+<!-- CSS GLOBAL -->
+<link rel="stylesheet" href="/assets/css/base/reset.css" />
+<link rel="stylesheet" href="/assets/css/base/variables.css" />
+<link rel="stylesheet" href="/assets/css/base/global.css" />
+<link rel="stylesheet" href="/assets/css/layout/template.css" />
 
 <style>
-body{
-  background:#f5f7fa;
-}
 
-.sidebar{
-  min-height:100vh;
-  background:#111827;
-}
+/* =========================================
+   PAGE
+========================================= */
 
-.sidebar h4{
-  color:#fff;
-  font-weight:700;
-}
-
-.sidebar a,
-.sidebar button{
-  width:100%;
-  display:block;
-  border:none;
-  background:none;
-  color:#fff;
-  text-decoration:none;
-  text-align:left;
-  padding:12px 15px;
-  border-radius:10px;
-  margin-bottom:8px;
-  transition:.2s;
-}
-
-.sidebar a:hover,
-.sidebar button:hover{
-  background:#1f2937;
-}
-
-.sidebar .active{
-  background:#0d6efd;
+.page-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:15px;
+margin-bottom:25px;
+flex-wrap:wrap;
 }
 
 .card-box{
-  border:none;
-  border-radius:18px;
-  box-shadow:0 5px 18px rgba(0,0,0,.06);
+background:#fff;
+border-radius:20px;
+padding:24px;
+box-shadow:0 4px 14px rgba(0,0,0,.05);
+border:1px solid #eef2f7;
 }
 
 .foto-cliente{
-  width:120px;
-  height:120px;
-  object-fit:cover;
-  border-radius:50%;
-  border:4px solid #eef1f5;
+width:130px;
+height:130px;
+border-radius:50%;
+object-fit:cover;
+border:4px solid #eef3ff;
+box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+.info-item{
+margin-bottom:18px;
+}
+
+.info-label{
+font-size:13px;
+font-weight:600;
+color:#6b7280;
+margin-bottom:4px;
+}
+
+.info-value{
+font-size:15px;
+font-weight:500;
+color:#111827;
+word-break:break-word;
 }
 
 #mapaCliente{
-  width:100%;
-  height:350px;
-  border-radius:14px;
+width:100%;
+height:360px;
+border-radius:16px;
+overflow:hidden;
 }
 
-.stat{
-  font-size:24px;
-  font-weight:700;
+.stat-box{
+background:#f8fafc;
+border-radius:16px;
+padding:18px;
+margin-bottom:14px;
+border:1px solid #eef2f7;
 }
 
-@media (max-width:768px){
+.stat-number{
+font-size:28px;
+font-weight:700;
+line-height:1;
+margin-top:6px;
+}
 
-.sidebar{
-  min-height:0;
-  height:auto;
+.table thead{
+background:#f8fafc;
+}
+
+.table td,
+.table th{
+vertical-align:middle;
+}
+
+.btn-action{
+border-radius:12px;
+font-weight:600;
+padding:12px;
+}
+
+.empty-state{
+padding:40px 20px;
+text-align:center;
+color:#6b7280;
+}
+
+.empty-state i{
+font-size:50px;
+margin-bottom:10px;
+opacity:.5;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+
+.page-header{
+align-items:flex-start;
+}
+
+.card-box{
+padding:18px;
 }
 
 #mapaCliente{
-  height:280px;
+height:280px;
+}
+
+.foto-cliente{
+width:100px;
+height:100px;
 }
 
 }
+
 </style>
 </head>
 
 <body>
 
-<div class="container-fluid">
-<div class="row">
+<div class="app-container">
 
 <!-- SIDEBAR -->
-<aside class="col-lg-2 sidebar p-3">
+<aside class="app-sidebar" id="sidebar">
 
-<h4 class="mb-4">PrestApp</h4>
+<div class="sidebar-content">
 
-<a href="/dashboard">Dashboard</a>
-<a href="/dashboard/clientes" class="active">Clientes</a>
-<a href="/dashboard/prestamos">Préstamos</a>
-<a href="/dashboard/pagos">Pagos</a>
-<a href="/dashboard/trabajadores" id="menuTrabajadores">Trabajadores</a>
+<div class="text-center mb-4">
 
-<hr class="text-secondary">
+<img
+  src="/assets/images/logos/prestapp-remove.png"
+  alt="PrestApp"
+  class="logo-img"
+/>
+
+</div>
+
+<span class="nav-title">
+MENÚ
+</span>
+
+<a href="/dashboard"
+class="nav-link-sidebar">
+<i class="ti ti-home"></i>
+Dashboard
+</a>
+
+<a href="/dashboard/clientes"
+class="nav-link-sidebar active">
+<i class="ti ti-users"></i>
+Clientes
+</a>
+
+<a href="/dashboard/prestamos"
+class="nav-link-sidebar">
+<i class="ti ti-cash"></i>
+Préstamos
+</a>
+
+<a href="/dashboard/pagos"
+class="nav-link-sidebar">
+<i class="ti ti-receipt"></i>
+Pagos
+</a>
+
+<a href="/dashboard/trabajadores"
+class="nav-link-sidebar"
+id="menuTrabajadores">
+<i class="ti ti-briefcase"></i>
+Trabajadores
+</a>
+
+<hr />
 
 <button
 type="button"
 id="btnLogout"
-class="btn btn-danger mt-2">
+class="btn btn-danger w-100 mt-3">
 
+<i class="ti ti-logout"></i>
 Cerrar sesión
 
 </button>
 
+</div>
+
 </aside>
 
-<!-- CONTENT -->
-<main class="col-lg-10 p-4">
+<!-- MAIN -->
+<main class="app-main">
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<!-- HEADER -->
+<header class="app-header">
+
+<div class="d-flex align-items-center gap-2">
+
+<button
+  class="btn btn-light d-lg-none"
+  id="toggleSidebar"
+  type="button"
+  aria-label="Abrir menú"
+  title="Abrir menú">
+
+  <i class="ti ti-menu-2"></i>
+
+</button>
+
+<h5 class="mb-0 fw-bold">
+Detalle Cliente
+</h5>
+
+</div>
+
+<div>
 
 <button
 type="button"
 id="btnVolver"
-class="btn btn-light">
+class="btn btn-outline-primary">
 
 <i class="ti ti-arrow-left"></i>
 Volver
 
 </button>
 
-<h3 class="fw-bold mb-0">
-Detalle Cliente
-</h3>
+</div>
 
-<div></div>
+</header>
+
+<!-- CONTENT -->
+<div class="app-content">
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+
+<div>
+<h2 class="fw-bold mb-1">
+Información del Cliente
+</h2>
+
+<p class="text-muted mb-0">
+Detalle completo, préstamos y ubicación
+</p>
+</div>
 
 </div>
 
@@ -147,68 +290,124 @@ Detalle Cliente
 <div class="col-lg-8">
 
 <!-- INFO -->
-<div class="card card-box p-4 mb-4">
+<div class="card-box mb-4">
 
-<h5 class="mb-4">
-<i class="ti ti-user"></i>
-Información General
-</h5>
+<div class="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start">
 
-<div class="text-center mb-4">
+<div class="text-center">
 
 <img
 id="fotoCliente"
 src="/uploads/user.png"
-alt="Foto cliente"
-class="foto-cliente">
+alt="Cliente"
+class="foto-cliente"
+/>
 
 </div>
 
-<div class="row g-3">
+<div class="flex-grow-1">
+
+<div class="row">
 
 <div class="col-md-6">
-<strong>Nombre:</strong><br>
-<span id="nombreCliente">-</span>
+
+<div class="info-item">
+<div class="info-label">
+Nombre completo
+</div>
+
+<div
+id="nombreCliente"
+class="info-value">
+-
+</div>
+</div>
+
 </div>
 
 <div class="col-md-6">
-<strong>Cédula:</strong><br>
-<span id="cedulaCliente">-</span>
+
+<div class="info-item">
+<div class="info-label">
+Cédula
+</div>
+
+<div
+id="cedulaCliente"
+class="info-value">
+-
+</div>
+</div>
+
 </div>
 
 <div class="col-md-6">
-<strong>Teléfono:</strong><br>
-<span id="telefonoCliente">-</span>
+
+<div class="info-item">
+<div class="info-label">
+Teléfono
+</div>
+
+<div
+id="telefonoCliente"
+class="info-value">
+-
+</div>
+</div>
+
 </div>
 
 <div class="col-md-6">
-<strong>Dirección:</strong><br>
-<span id="direccionCliente">-</span>
+
+<div class="info-item">
+<div class="info-label">
+Dirección
+</div>
+
+<div
+id="direccionCliente"
+class="info-value">
+-
+</div>
 </div>
 
 </div>
 
 </div>
 
-<!-- MAPA -->
-<div class="card card-box p-4 mb-4">
+</div>
 
-<h5 class="mb-3">
+</div>
+
+</div>
+
+<!-- MAP -->
+<div class="card-box mb-4">
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+<h5 class="fw-bold mb-0">
 <i class="ti ti-map-pin"></i>
-Ubicación
+Ubicación Cliente
 </h5>
+
+</div>
 
 <div id="mapaCliente"></div>
 
 </div>
 
 <!-- PRESTAMOS -->
-<div class="card card-box p-4">
+<div class="card-box">
 
-<h5 class="mb-3">
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+<h5 class="fw-bold mb-0">
 <i class="ti ti-cash"></i>
 Préstamos
 </h5>
+
+</div>
 
 <div class="table-responsive">
 
@@ -217,7 +416,7 @@ Préstamos
 <thead>
 <tr>
 <th>Monto</th>
-<th>Fecha</th>
+<th>Fecha inicio</th>
 <th>Estado</th>
 </tr>
 </thead>
@@ -225,8 +424,18 @@ Préstamos
 <tbody id="tablaPrestamos">
 
 <tr>
-<td colspan="3" class="text-center py-3">
-Sin datos
+<td colspan="3">
+
+<div class="empty-state">
+
+<i class="ti ti-loader"></i>
+
+<p class="mb-0">
+Cargando préstamos...
+</p>
+
+</div>
+
 </td>
 </tr>
 
@@ -244,37 +453,77 @@ Sin datos
 <div class="col-lg-4">
 
 <!-- RESUMEN -->
-<div class="card card-box p-4 mb-4">
+<div class="card-box mb-4">
 
-<h5 class="mb-3">
+<h5 class="fw-bold mb-4">
 Resumen
 </h5>
 
-<div class="mb-3">
-Pagadas<br>
-<div id="cuotasPagadas" class="stat text-success">0</div>
+<div class="stat-box">
+
+<div class="small text-muted">
+Cuotas pagadas
 </div>
 
-<div class="mb-3">
-Pendientes<br>
-<div id="cuotasPendientes" class="stat text-warning">0</div>
+<div
+id="cuotasPagadas"
+class="stat-number text-success">
+
+0
+
 </div>
 
-<div>
-Mora<br>
-<div id="cuotasMora" class="stat text-danger">0</div>
+</div>
+
+<div class="stat-box">
+
+<div class="small text-muted">
+Cuotas pendientes
+</div>
+
+<div
+id="cuotasPendientes"
+class="stat-number text-warning">
+
+0
+
+</div>
+
+</div>
+
+<div class="stat-box mb-0">
+
+<div class="small text-muted">
+Cuotas en mora
+</div>
+
+<div
+id="cuotasMora"
+class="stat-number text-danger">
+
+0
+
+</div>
+
 </div>
 
 </div>
 
 <!-- ACTIONS -->
-<div class="card card-box p-4">
+<div class="card-box">
+
+<h5 class="fw-bold mb-4">
+Acciones rápidas
+</h5>
+
+<div class="d-grid gap-2">
 
 <button
 type="button"
 id="btnRegistrarPago"
-class="btn btn-primary w-100 mb-2">
+class="btn btn-primary btn-action">
 
+<i class="ti ti-receipt"></i>
 Registrar Pago
 
 </button>
@@ -282,8 +531,9 @@ Registrar Pago
 <button
 type="button"
 id="btnNuevoPrestamo"
-class="btn btn-success w-100 mb-2">
+class="btn btn-success btn-action">
 
+<i class="ti ti-cash"></i>
 Nuevo Préstamo
 
 </button>
@@ -291,8 +541,9 @@ Nuevo Préstamo
 <button
 type="button"
 id="btnEditar"
-class="btn btn-warning w-100 mb-2">
+class="btn btn-warning btn-action">
 
+<i class="ti ti-edit"></i>
 Editar Cliente
 
 </button>
@@ -300,8 +551,9 @@ Editar Cliente
 <button
 type="button"
 id="btnEliminar"
-class="btn btn-danger w-100">
+class="btn btn-danger btn-action">
 
+<i class="ti ti-trash"></i>
 Eliminar Cliente
 
 </button>
@@ -312,23 +564,89 @@ Eliminar Cliente
 
 </div>
 
+</div>
+
+</div>
+
 </main>
 
 </div>
-</div>
 
+<!-- JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
 <script>
+
 const API = "/api";
+
 let mapa;
 let marker;
 
 // =====================================
 // INIT
 // =====================================
+
 document.addEventListener("DOMContentLoaded", async ()=>{
+
+initSidebar();
+
+const auth = await validarSesion();
+
+if(!auth) return;
+
+if(auth.usuario.id_rol === 3){
+
+document
+.getElementById("menuTrabajadores")
+.style.display = "none";
+
+}
+
+const id =
+new URLSearchParams(location.search).get("id");
+
+if(!id){
+
+location.href = "/dashboard/clientes";
+return;
+
+}
+
+initMap();
+
+await cargarCliente(id);
+
+eventos(id);
+
+});
+
+// =====================================
+// SIDEBAR MOBILE
+// =====================================
+
+function initSidebar(){
+
+const toggle =
+document.getElementById("toggleSidebar");
+
+const sidebar =
+document.getElementById("sidebar");
+
+toggle?.addEventListener("click",()=>{
+
+sidebar.classList.toggle("show");
+
+});
+
+}
+
+// =====================================
+// VALIDAR SESION
+// =====================================
+
+async function validarSesion(){
 
 try{
 
@@ -337,55 +655,49 @@ credentials:"include"
 });
 
 if(!res.ok){
-location.href="/login";
-return;
+
+location.href = "/login";
+return null;
+
 }
 
-const auth = await res.json();
-
-if(auth.usuario.id_rol === 3){
-document.getElementById("menuTrabajadores").style.display="none";
-}
+return await res.json();
 
 }catch(error){
-location.href="/login";
-return;
+
+location.href = "/login";
+return null;
+
 }
 
-const id = new URLSearchParams(location.search).get("id");
-
-if(!id){
-location.href="/dashboard/clientes";
-return;
 }
-
-initMap();
-cargarCliente(id);
-eventos(id);
-
-});
 
 // =====================================
 // MAPA
 // =====================================
+
 function initMap(){
 
-mapa = L.map("mapaCliente").setView([10.9878,-74.7889],13);
+mapa = L.map("mapaCliente")
+.setView([10.9878,-74.7889],13);
 
 L.tileLayer(
 "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
 {
-attribution:"© OpenStreetMap"
+attribution:"© OpenStreetMap contributors"
 }
 ).addTo(mapa);
 
-marker = L.marker([10.9878,-74.7889]).addTo(mapa);
+marker =
+L.marker([10.9878,-74.7889])
+.addTo(mapa);
 
 }
 
 // =====================================
 // CARGAR CLIENTE
 // =====================================
+
 async function cargarCliente(id){
 
 try{
@@ -397,48 +709,56 @@ credentials:"include"
 const data = await res.json();
 
 if(!data.success){
+
 alert("Cliente no encontrado");
+
 location.href="/dashboard/clientes";
+
 return;
+
 }
 
 const c = data.cliente;
 
-document.getElementById("nombreCliente").textContent =
-c.nombreCompleto || "-";
+// INFO
+document.getElementById("nombreCliente")
+.textContent = c.nombreCompleto || "-";
 
-document.getElementById("cedulaCliente").textContent =
-c.cedula || "-";
+document.getElementById("cedulaCliente")
+.textContent = c.cedula || "-";
 
-document.getElementById("telefonoCliente").textContent =
-c.telefono || "-";
+document.getElementById("telefonoCliente")
+.textContent = c.telefono || "-";
 
-document.getElementById("direccionCliente").textContent =
-c.direccion || "-";
+document.getElementById("direccionCliente")
+.textContent = c.direccion || "-";
 
 document.getElementById("fotoCliente").src =
-"/uploads/" + (c.foto || "user.png");
+`/uploads/${c.foto || "user.png"}`;
 
-// mapa real
+// MAPA
 if(c.latitud && c.longitud){
 
 const lat = parseFloat(c.latitud);
 const lng = parseFloat(c.longitud);
 
 mapa.setView([lat,lng],15);
+
 marker.setLatLng([lat,lng]);
 
 }
 
-// resumen cuotas
-cargarResumen(id);
+// RESUMEN
+await cargarResumen(id);
 
-// prestamos
+// PRESTAMOS
 renderPrestamos(data.prestamos || []);
 
 }catch(error){
 
 console.error(error);
+
+alert("Error cargando cliente");
 
 }
 
@@ -447,11 +767,13 @@ console.error(error);
 // =====================================
 // RESUMEN
 // =====================================
+
 async function cargarResumen(id){
 
 try{
 
-const res = await fetch(`${API}/clientes/${id}/cuotas`,{
+const res =
+await fetch(`${API}/clientes/${id}/cuotas`,{
 credentials:"include"
 });
 
@@ -461,24 +783,27 @@ if(!data.success) return;
 
 const r = data.resumen;
 
-document.getElementById("cuotasPagadas").textContent =
-r.cuotasPagadas;
+document.getElementById("cuotasPagadas")
+.textContent = r.cuotasPagadas || 0;
 
-document.getElementById("cuotasPendientes").textContent =
-r.cuotasPendientes;
+document.getElementById("cuotasPendientes")
+.textContent = r.cuotasPendientes || 0;
 
-document.getElementById("cuotasMora").textContent =
-r.cuotasMora;
+document.getElementById("cuotasMora")
+.textContent = r.cuotasMora || 0;
 
 }catch(error){
+
 console.error(error);
+
 }
 
 }
 
 // =====================================
-// TABLA PRESTAMOS
+// PRESTAMOS
 // =====================================
+
 function renderPrestamos(lista){
 
 const tbody =
@@ -486,31 +811,51 @@ document.getElementById("tablaPrestamos");
 
 if(!lista.length){
 
-tbody.innerHTML=`
+tbody.innerHTML = `
 <tr>
-<td colspan="3" class="text-center">
-Sin préstamos
+<td colspan="3">
+
+<div class="empty-state">
+
+<i class="ti ti-folder-open"></i>
+
+<p class="mb-0">
+Este cliente no tiene préstamos
+</p>
+
+</div>
+
 </td>
 </tr>
 `;
 
 return;
+
 }
 
 tbody.innerHTML = lista.map(p=>`
 
 <tr>
 
-<td>$${Number(p.monto).toLocaleString()}</td>
-
 <td>
-${new Date(p.fecha_inicio).toLocaleDateString()}
+<strong>
+$${Number(p.monto).toLocaleString()}
+</strong>
 </td>
 
 <td>
+${new Date(p.fecha_inicio)
+.toLocaleDateString()}
+</td>
+
+<td>
+
 <span class="badge bg-primary">
+
 ${p.estado_formateado || p.estado}
+
 </span>
+
 </td>
 
 </tr>
@@ -522,34 +867,56 @@ ${p.estado_formateado || p.estado}
 // =====================================
 // EVENTOS
 // =====================================
+
 function eventos(id){
 
+// VOLVER
 document.getElementById("btnVolver")
 .addEventListener("click",()=>{
-location.href="/dashboard/clientes";
+
+location.href = "/dashboard/clientes";
+
 });
 
+// PAGOS
 document.getElementById("btnRegistrarPago")
 .addEventListener("click",()=>{
-location.href=`/dashboard/pagos?id=${id}`;
+
+location.href =
+`/dashboard/pagos?id=${id}`;
+
 });
 
+// NUEVO PRESTAMO
 document.getElementById("btnNuevoPrestamo")
 .addEventListener("click",()=>{
-location.href=`/dashboard/crear-prestamo?id=${id}`;
+
+location.href =
+`/dashboard/crear-prestamo?id=${id}`;
+
 });
 
+// EDITAR
 document.getElementById("btnEditar")
 .addEventListener("click",()=>{
+
 alert("Módulo editar próximamente");
+
 });
 
+// ELIMINAR
 document.getElementById("btnEliminar")
 .addEventListener("click", async ()=>{
 
-if(!confirm("¿Eliminar cliente?")) return;
+const confirmar =
+confirm("¿Eliminar cliente?");
 
-const res = await fetch(`${API}/clientes/${id}`,{
+if(!confirmar) return;
+
+try{
+
+const res =
+await fetch(`${API}/clientes/${id}`,{
 method:"DELETE",
 credentials:"include"
 });
@@ -557,21 +924,40 @@ credentials:"include"
 const data = await res.json();
 
 if(data.success){
+
 alert("Cliente eliminado");
-location.href="/dashboard/clientes";
+
+location.href =
+"/dashboard/clientes";
+
 }else{
+
 alert(data.message);
+
+}
+
+}catch(error){
+
+alert("Error eliminando cliente");
+
 }
 
 });
 
+// LOGOUT
 document.getElementById("btnLogout")
 .addEventListener("click", async ()=>{
+
+try{
 
 await fetch("/api/auth/logout",{
 method:"POST",
 credentials:"include"
 });
+
+}catch(error){
+console.error(error);
+}
 
 localStorage.clear();
 sessionStorage.clear();
@@ -581,6 +967,7 @@ location.href="/login";
 });
 
 }
+
 </script>
 
 </body>

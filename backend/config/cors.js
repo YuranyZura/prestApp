@@ -5,20 +5,35 @@ const allowedOrigins = [
   "http://localhost:4000",
   "http://localhost:5173",
   "http://127.0.0.1:5500",
-  // 👉 agrega aquí tu IP local si usas Android
-  // "http://192.168.1.10:4000"
 ];
 
+// Función dinámica (mejor para desarrollo)
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true; // Postman, mobile apps, etc.
+
+  // Permitir localhost y red local automáticamente
+  if (
+    origin.startsWith("http://localhost") ||
+    origin.startsWith("http://127.0.0.1") ||
+    origin.startsWith("http://192.168.") ||
+    origin.startsWith("http://10.")
+  ) {
+    return true;
+  }
+
+  return allowedOrigins.includes(origin);
+};
+
 export const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+  origin: (origin, callback) => {
+    if (isAllowedOrigin(origin)) {
       callback(null, true);
     } else {
-      console.log("cors bloqueado para:", origin);
+      console.log("❌ CORS bloqueado:", origin);
       callback(new Error("No permitido por CORS"));
     }
   },
-  credentials: true
+  credentials: true,
 };
 
 export default cors(corsOptions);
