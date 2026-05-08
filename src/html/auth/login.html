@@ -1,121 +1,236 @@
-<!-- ========================================= -->
-<!-- PRESTAPP LOGIN FULL PROFESIONAL -->
-<!-- /html/auth/login.html -->
-<!-- ========================================= -->
-
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1, viewport-fit=cover"
+>
+
+<meta
+name="description"
+content="Iniciar sesión en PrestApp"
+>
+
 <title>PrestApp | Iniciar Sesión</title>
 
-<link rel="stylesheet" href="/assets/css/styles.min.css">
-<link rel="stylesheet" href="/assets/css/icons/tabler-icons/tabler-icons.css">
+<link
+rel="shortcut icon"
+href="/assets/images/logos/favicon.png"
+>
+
+<link
+rel="stylesheet"
+href="/assets/css/styles.min.css"
+>
+
+<link
+rel="stylesheet"
+href="/assets/css/icons/tabler-icons/tabler-icons.css"
+>
 
 <style>
+
+:root{
+--primary:#0d6efd;
+--primary-dark:#0b5ed7;
+--bg:#f5f7fa;
+--text:#1f2937;
+--muted:#6b7280;
+--border:#d1d5db;
+}
+
+*{
+box-sizing:border-box;
+}
+
 body{
-    margin:0;
-    padding:0;
-    font-family:Arial, Helvetica, sans-serif;
-    background:linear-gradient(135deg,#0d6efd,#0dcaf0);
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+margin:0;
+padding:20px;
+font-family:Arial, Helvetica, sans-serif;
+background:
+linear-gradient(
+135deg,
+#0d6efd,
+#0dcaf0
+);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+overflow-x:hidden;
 }
 
 .login-box{
-    background:#fff;
-    width:100%;
-    max-width:430px;
-    padding:40px;
-    border-radius:18px;
-    box-shadow:0 15px 40px rgba(0,0,0,.15);
+width:100%;
+max-width:430px;
+background:#fff;
+padding:35px;
+border-radius:20px;
+box-shadow:
+0 15px 40px rgba(0,0,0,.15);
 }
 
 .logo{
-    text-align:center;
-    margin-bottom:20px;
+text-align:center;
+margin-bottom:20px;
 }
 
-.logo img{
-    width:170px;
+.logo-img{
+max-width:170px;
+width:100%;
+height:auto;
 }
 
 h1{
-    text-align:center;
-    font-size:30px;
-    margin-bottom:10px;
+text-align:center;
+font-size:30px;
+margin-bottom:10px;
+color:var(--text);
 }
 
-p{
-    text-align:center;
-    color:#666;
-    margin-bottom:25px;
+.login-text{
+text-align:center;
+color:var(--muted);
+margin-bottom:25px;
+}
+
+.form-group{
+margin-bottom:18px;
+}
+
+.form-label{
+display:block;
+margin-bottom:8px;
+font-weight:600;
+color:var(--text);
 }
 
 .form-control{
-    width:100%;
-    padding:13px 15px;
-    border:1px solid #ddd;
-    border-radius:10px;
-    margin-bottom:15px;
-    font-size:15px;
+width:100%;
+padding:13px 15px;
+border:1px solid var(--border);
+border-radius:12px;
+font-size:15px;
+transition:.2s;
 }
 
 .form-control:focus{
-    outline:none;
-    border-color:#0d6efd;
+outline:none;
+border-color:var(--primary);
+box-shadow:
+0 0 0 3px rgba(13,110,253,.15);
+}
+
+.password-box{
+position:relative;
+}
+
+.toggle-password{
+position:absolute;
+top:50%;
+right:12px;
+transform:translateY(-50%);
+border:none;
+background:none;
+cursor:pointer;
+font-size:20px;
+color:#666;
+}
+
+.form-check{
+display:flex;
+align-items:center;
+gap:10px;
+margin-bottom:20px;
 }
 
 .btn-login{
-    width:100%;
-    border:none;
-    background:#0d6efd;
-    color:#fff;
-    padding:13px;
-    border-radius:10px;
-    font-size:16px;
-    cursor:pointer;
+width:100%;
+border:none;
+background:var(--primary);
+color:#fff;
+padding:14px;
+border-radius:12px;
+font-size:16px;
+font-weight:600;
+cursor:pointer;
+transition:.2s;
 }
 
 .btn-login:hover{
-    background:#0b5ed7;
+background:var(--primary-dark);
+}
+
+.btn-login:disabled{
+opacity:.7;
+cursor:not-allowed;
 }
 
 .extra{
-    display:flex;
-    justify-content:space-between;
-    margin-top:15px;
-    font-size:14px;
+display:flex;
+justify-content:space-between;
+gap:15px;
+margin-top:18px;
+font-size:14px;
+flex-wrap:wrap;
 }
 
 .extra a{
-    text-decoration:none;
-    color:#0d6efd;
+text-decoration:none;
+color:var(--primary);
+font-weight:500;
 }
 
 .msg{
-    text-align:center;
-    margin-bottom:15px;
-    font-size:14px;
-    font-weight:bold;
+text-align:center;
+margin-bottom:15px;
+font-size:14px;
+font-weight:600;
 }
 
 .success{
-    color:green;
+color:#198754;
 }
 
 .error{
-    color:red;
+color:#dc3545;
 }
 
 .footer{
-    margin-top:20px;
-    text-align:center;
+margin-top:25px;
+text-align:center;
+font-size:14px;
+color:#666;
 }
+
+@media(max-width:576px){
+
+body{
+padding:15px;
+}
+
+.login-box{
+padding:25px;
+border-radius:16px;
+}
+
+h1{
+font-size:26px;
+}
+
+.extra{
+flex-direction:column;
+align-items:center;
+}
+
+}
+
 </style>
+
 </head>
 
 <body>
@@ -123,48 +238,134 @@ p{
 <div class="login-box">
 
 <div class="logo">
-<img src="/assets/images/logos/prestapp-remove.png">
+
+<img
+src="/assets/images/logos/prestapp-remove.png"
+alt="Logo PrestApp"
+class="logo-img"
+loading="lazy"
+>
+
 </div>
 
-<h1>Bienvenido</h1>
-<p>Ingresa para continuar</p>
+<h1>
+Bienvenido
+</h1>
 
-<div id="mensaje" class="msg"></div>
+<p class="login-text">
+Ingresa para continuar
+</p>
+
+<div
+id="mensaje"
+class="msg"
+aria-live="polite"
+></div>
 
 <form id="formLogin">
+
+<div class="form-group">
+
+<label
+for="correo"
+class="form-label"
+>
+Correo electrónico
+</label>
 
 <input
 type="email"
 id="correo"
+name="correo"
 class="form-control"
-placeholder="Correo electrónico"
-autocomplete="off"
-required>
+placeholder="correo@empresa.com"
+autocomplete="email"
+required
+title="Ingrese su correo electrónico"
+aria-label="Correo electrónico"
+>
+
+</div>
+
+<div class="form-group">
+
+<label
+for="contrasena"
+class="form-label"
+>
+Contraseña
+</label>
+
+<div class="password-box">
 
 <input
 type="password"
 id="contrasena"
+name="contrasena"
 class="form-control"
-placeholder="Contraseña"
-required>
+placeholder="Ingrese su contraseña"
+autocomplete="current-password"
+required
+title="Ingrese su contraseña"
+aria-label="Contraseña"
+>
 
-<label style="font-size:14px;">
-<input type="checkbox" id="recordarme">
+<button
+type="button"
+class="toggle-password"
+id="togglePassword"
+title="Mostrar contraseña"
+aria-label="Mostrar contraseña"
+>
+
+<i class="ti ti-eye"></i>
+
+</button>
+
+</div>
+
+</div>
+
+<div class="form-check">
+
+<input
+type="checkbox"
+id="recordarme"
+class="form-check-input"
+>
+
+<label
+for="recordarme"
+class="form-check-label"
+>
 Recordarme
 </label>
 
-<br><br>
+</div>
 
-<button type="submit" class="btn-login">
+<button
+type="submit"
+class="btn-login"
+id="btnLogin"
+>
+
 <i class="ti ti-login"></i>
 Iniciar sesión
+
 </button>
 
 </form>
 
 <div class="extra">
-<a href="register.html">Crear cuenta</a>
-<a href="#">¿Olvidaste contraseña?</a>
+
+<a href="register.html">
+Crear cuenta
+</a>
+
+<a href="#">
+¿Olvidaste contraseña?
+</a>
+
 </div>
 
 <div class="footer">
@@ -175,72 +376,180 @@ Iniciar sesión
 
 <script type="module">
 
-import { API_URL } from "/js/config.js";
+import { API_URL }
+from "/js/config.js";
 
-const form = document.getElementById("formLogin");
-const msg = document.getElementById("mensaje");
+const form =
+document.getElementById("formLogin");
 
-function mostrar(texto,tipo="error"){
-    msg.className = "msg " + tipo;
-    msg.innerText = texto;
+const msg =
+document.getElementById("mensaje");
+
+const btnLogin =
+document.getElementById("btnLogin");
+
+const togglePassword =
+document.getElementById("togglePassword");
+
+const inputPassword =
+document.getElementById("contrasena");
+
+/* =========================
+MOSTRAR MENSAJE
+========================= */
+function mostrar(
+texto,
+tipo="error"
+){
+
+msg.className =
+`msg ${tipo}`;
+
+msg.textContent =
+texto;
+
 }
 
-form.addEventListener("submit", async(e)=>{
+/* =========================
+MOSTRAR PASSWORD
+========================= */
+togglePassword
+.addEventListener("click",()=>{
 
-    e.preventDefault();
+const visible =
+inputPassword.type === "text";
 
-    const correo = document.getElementById("correo").value.trim();
-    const contrasena = document.getElementById("contrasena").value.trim();
+inputPassword.type =
+visible
+? "password"
+: "text";
 
-    if(!correo || !contrasena){
-        mostrar("Complete todos los campos");
-        return;
-    }
+togglePassword.innerHTML =
+visible
+? '<i class="ti ti-eye"></i>'
+: '<i class="ti ti-eye-off"></i>';
 
-    try{
+});
 
-        const res = await fetch(`${API_URL}/auth/login`,{
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify({
-                correo,
-                contrasena
-            })
-        });
+/* =========================
+LOGIN
+========================= */
+form.addEventListener(
+"submit",
+async(e)=>{
 
-        const data = await res.json();
+e.preventDefault();
 
-        if(data.success){
+btnLogin.disabled = true;
 
-            mostrar("Acceso correcto","success");
+const correo =
+document.getElementById("correo")
+.value
+.trim();
 
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("usuario", JSON.stringify(data.user));
+const contrasena =
+inputPassword.value.trim();
 
-            setTimeout(()=>{
+if(!correo || !contrasena){
 
-                if(data.user.rol === "super_admin"){
-                    location.href="/html/admin/administradores.html";
-                }
-                else if(data.user.rol === "administrador"){
-                    location.href="/html/admin/dashboard.html";
-                }
-                else{
-                    location.href="/html/trabajador/Rol2_trabajador.html";
-                }
+mostrar(
+"Complete todos los campos"
+);
 
-            },1000);
+btnLogin.disabled = false;
 
-        }else{
-            mostrar(data.message || "Credenciales inválidas");
-        }
+return;
 
-    }catch(error){
-        console.log(error);
-        mostrar("No se pudo conectar con el servidor");
-    }
+}
+
+try{
+
+const res =
+await fetch(
+`${API_URL}/auth/login`,
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+correo,
+contrasena
+})
+}
+);
+
+const data =
+await res.json();
+
+if(data.success){
+
+mostrar(
+"Acceso correcto",
+"success"
+);
+
+localStorage.setItem(
+"token",
+data.token
+);
+
+localStorage.setItem(
+"usuario",
+JSON.stringify(data.user)
+);
+
+setTimeout(()=>{
+
+if(
+data.user.rol ===
+"super_admin"
+){
+
+location.href =
+"/html/admin/administradores.html";
+
+}
+
+else if(
+data.user.rol ===
+"administrador"
+){
+
+location.href =
+"/html/admin/dashboard.html";
+
+}
+
+else{
+
+location.href =
+"/html/trabajador/Rol2_trabajador.html";
+
+}
+
+},1000);
+
+}else{
+
+mostrar(
+data.message ||
+"Credenciales inválidas"
+);
+
+}
+
+}catch(error){
+
+console.error(error);
+
+mostrar(
+"No se pudo conectar con el servidor"
+);
+
+}
+
+btnLogin.disabled = false;
 
 });
 

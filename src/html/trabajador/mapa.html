@@ -2,331 +2,454 @@
 <html lang="es">
 
 <head>
-  <meta charset="UTF-8">
 
-  <!-- Responsive + Android -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta charset="UTF-8">
 
-  <!-- SEO -->
-  <meta name="description" content="PrestApp - Ruta del trabajador en tiempo real">
-<meta name="theme-color" content="#0d6efd">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<!-- RESPONSIVE -->
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-  <title>PrestApp - Mapa Trabajador</title>
+<meta
+name="description"
+content="PrestApp - Ruta del trabajador en tiempo real">
 
-  <!-- Favicon -->
-  <link rel="shortcut icon" href="/assets/images/logos/favicon.png">
+<meta
+name="apple-mobile-web-app-status-bar-style"
+content="default">
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="/assets/css/styles.min.css">
-  <link rel="stylesheet" href="/assets/css/icons/tabler-icons/tabler-icons.css">
+<meta
+name="mobile-web-app-capable"
+content="yes">
 
-  <style>
-    html,
-    body {
-      height: 100%;
-      margin: 0;
-    }
+<meta
+name="apple-mobile-web-app-capable"
+content="yes">
+<title>PrestApp | Mapa</title>
 
-    body {
-      background: #f8f9fa;
-      display: flex;
-      flex-direction: column;
-    }
+<!-- FAVICON -->
+<link
+rel="shortcut icon"
+href="/assets/images/logos/favicon.png">
 
-    .header-app {
-      background: #fff;
-      border-bottom: 1px solid #e9ecef;
-      position: sticky;
-      top: 0;
-      z-index: 1030;
-    }
+<!-- CSS -->
+<link
+rel="stylesheet"
+href="/assets/css/styles.min.css">
 
-    .avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: #0d6efd;
-      color: #fff;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
+<link
+rel="stylesheet"
+href="/assets/css/icons/tabler-icons/tabler-icons.css">
 
-    .user-name {
-      font-weight: 700;
-      line-height: 1.1;
-    }
+<style>
 
-    .user-role {
-      font-size: .85rem;
-      color: #6c757d;
-    }
+html,
+body{
+height:100%;
+margin:0;
+padding:0;
+font-family:Arial, Helvetica, sans-serif;
+background:#f5f7fa;
+overflow:hidden;
+}
 
-    .content-area {
-      flex: 1;
-      padding: 1rem;
-      padding-bottom: 90px;
-    }
+/* APP */
+.app{
+display:flex;
+flex-direction:column;
+height:100vh;
+}
 
-    .card-map {
-      border: 0;
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 8px 25px rgba(0,0,0,.08);
-    }
+/* HEADER */
+.header-app{
+background:#ffffff;
+border-bottom:1px solid #e9ecef;
+padding:12px 16px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+z-index:1000;
+}
 
-    #map {
-      width: 100%;
-      min-height: 68vh;
-    }
+.user-box{
+display:flex;
+align-items:center;
+gap:12px;
+}
 
-    .bottom-nav {
-      min-height: 72px;
-      background: #fff;
-      border-top: 1px solid #dee2e6;
-      padding-bottom: env(safe-area-inset-bottom);
-    }
+.avatar{
+width:44px;
+height:44px;
+border-radius:50%;
+background:#0d6efd;
+color:#fff;
+font-weight:700;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:16px;
+}
 
-    .bottom-nav .btn {
-      border: 0;
-      color: #6c757d;
-      width: 100%;
-    }
+.user-name{
+font-weight:700;
+font-size:15px;
+line-height:1.1;
+}
 
-    .bottom-nav .btn.active {
-      color: #0d6efd;
-      font-weight: 700;
-    }
+.user-role{
+font-size:13px;
+color:#6c757d;
+}
 
-    .nav-label {
-      display: block;
-      font-size: .75rem;
-      margin-top: 2px;
-    }
+/* MAIN */
+.main-content{
+flex:1;
+position:relative;
+overflow:hidden;
+}
 
-    @media (max-width: 576px) {
-      .content-area {
-        padding: .75rem;
-        padding-bottom: 90px;
-      }
+/* MAPA */
+#map{
+width:100%;
+height:100%;
+}
 
-      #map {
-        min-height: 60vh;
-      }
-    }
-  </style>
+/* PANEL INFO */
+.info-panel{
+position:absolute;
+bottom:85px;
+left:15px;
+right:15px;
+background:#fff;
+border-radius:18px;
+padding:16px;
+box-shadow:0 10px 25px rgba(0,0,0,.10);
+z-index:1000;
+display:none;
+}
 
-  <!-- GOOGLE MAPS -->
-  <script
-    src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY"
-    async
-    defer>
-  </script>
+.info-panel.show{
+display:block;
+}
+
+/* BOTTOM NAV */
+.bottom-nav{
+height:72px;
+background:#fff;
+border-top:1px solid #dee2e6;
+display:flex;
+justify-content:space-around;
+align-items:center;
+padding-bottom:env(safe-area-inset-bottom);
+}
+
+.nav-btn{
+border:none;
+background:none;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+font-size:13px;
+color:#6c757d;
+width:100%;
+height:100%;
+cursor:pointer;
+}
+
+.nav-btn.active{
+color:#0d6efd;
+font-weight:700;
+}
+
+.nav-btn i{
+font-size:22px;
+margin-bottom:3px;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+
+.header-app{
+padding:10px 12px;
+}
+
+.avatar{
+width:40px;
+height:40px;
+font-size:14px;
+}
+
+.info-panel{
+bottom:80px;
+left:10px;
+right:10px;
+}
+
+}
+
+</style>
 
 </head>
 
 <body>
 
-  <!-- HEADER -->
-  <header class="header-app shadow-sm">
-    <div class="container-fluid px-3 py-2">
+<div class="app">
+
+<!-- HEADER -->
+<header class="header-app">
+
+<div class="user-box">
+
+<div
+class="avatar"
+aria-label="Usuario">
+JD
+</div>
 
-      <div class="d-flex justify-content-between align-items-center gap-3">
+<div>
+
+<div
+class="user-name"
+id="nombreUsuario">
+Juan Delgado
+</div>
 
-        <!-- Usuario -->
-        <div class="d-flex align-items-center gap-2">
+<div class="user-role">
+Trabajador
+</div>
 
-          <div class="avatar" aria-label="Avatar usuario">
-            JD
-          </div>
+</div>
+</div>
 
-          <div>
-            <div class="user-name" id="nombreUsuario">
-              Juan Delgado
-            </div>
+<button
+type="button"
+class="btn btn-outline-primary btn-sm"
+id="btnCerrarSesion"
+title="Cerrar sesión"
+aria-label="Cerrar sesión">
 
-            <div class="user-role">
-              Trabajador
-            </div>
-          </div>
+<i class="ti ti-logout"></i>
 
-        </div>
+</button>
 
-        <!-- Salir -->
-        <button
-          type="button"
-          class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
-          id="btnCerrarSesion"
-          aria-label="Cerrar sesión">
+</header>
 
-          <i class="ti ti-logout"></i>
-          <span class="d-none d-sm-inline">Salir</span>
+<!-- MAIN -->
+<main class="main-content">
 
-        </button>
+<!-- MAPA -->
+<div
+id="map"
+role="region"
+aria-label="Mapa de ubicación">
+</div>
 
-      </div>
+<!-- PANEL INFO -->
+<div
+class="info-panel"
+id="infoPanel">
 
-    </div>
-  </header>
+<h5 class="fw-bold mb-3">
+<i class="ti ti-route"></i>
+Información de ruta
+</h5>
 
-  <!-- MAIN -->
-  <main class="content-area">
+<div class="mb-2">
+<small class="text-muted d-block">
+Destino
+</small>
 
-    <!-- MAPA -->
-    <section id="panel-mapa" class="app-panel">
+<strong>
+Cliente Principal
+</strong>
+</div>
 
-      <div class="card card-map">
+<div class="mb-2">
+<small class="text-muted d-block">
+Tiempo estimado
+</small>
 
-        <div class="card-header bg-white border-bottom">
+<strong>
+15 minutos
+</strong>
+</div>
 
-          <h1 class="h5 fw-bold mb-0 d-flex align-items-center gap-2">
-            <i class="ti ti-map"></i>
-            Ubicación en Tiempo Real
-          </h1>
+<div>
+<small class="text-muted d-block">
+Estado
+</small>
 
-        </div>
+<strong class="text-success">
+Activo
+</strong>
+</div>
 
-        <div class="card-body p-0">
+</div>
 
-          <div
-            id="map"
-            role="region"
-            aria-label="Mapa del trabajador">
-          </div>
+</main>
 
-        </div>
+<!-- NAV -->
+<nav class="bottom-nav">
 
-      </div>
+<button
+type="button"
+class="nav-btn active"
+id="btnMapa"
+title="Mapa"
+aria-label="Ver mapa">
 
-    </section>
+<i class="ti ti-map"></i>
+<span>Mapa</span>
 
-    <!-- INFO -->
-    <section id="panel-info" class="app-panel d-none">
+</button>
 
-      <div class="card border-0 shadow-sm rounded-4">
+<button
+type="button"
+class="nav-btn"
+id="btnInfo"
+title="Información"
+aria-label="Ver información">
 
-        <div class="card-body">
+<i class="ti ti-route"></i>
+<span>Ruta</span>
 
-          <h2 class="h5 fw-bold mb-3 d-flex align-items-center gap-2">
-            <i class="ti ti-route"></i>
-            Información de Ruta
-          </h2>
+</button>
 
-          <div class="row g-3">
+</nav>
 
-            <div class="col-12 col-md-6">
-              <div class="border rounded-3 p-3">
-                <small class="text-muted d-block">Destino</small>
-                <strong>Cliente Principal</strong>
-              </div>
-            </div>
+</div>
 
-            <div class="col-12 col-md-6">
-              <div class="border rounded-3 p-3">
-                <small class="text-muted d-block">Tiempo estimado</small>
-                <strong>15 min</strong>
-              </div>
-            </div>
+<!-- BOOTSTRAP -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-            <div class="col-12">
-              <div class="border rounded-3 p-3">
-                <small class="text-muted d-block">Estado</small>
-                <strong class="text-success">Activo</strong>
-              </div>
-            </div>
+<!-- GOOGLE MAPS -->
+<script
+src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY&callback=initMap"
+async
+defer>
+</script>
 
-          </div>
+<script>
 
-        </div>
+/* =========================================
+CONFIG
+========================================= */
 
-      </div>
+let map;
+let marker;
 
-    </section>
+/* =========================================
+INICIAR MAPA
+========================================= */
 
-  </main>
+function initMap(){
 
-  <!-- NAV MOBILE -->
-  <nav class="navbar fixed-bottom bottom-nav shadow-lg">
+const ubicacion = {
+lat:18.4861,
+lng:-69.9312
+};
 
-    <div class="container-fluid">
+map = new google.maps.Map(
+document.getElementById("map"),
+{
+center:ubicacion,
+zoom:14
+}
+);
 
-      <div class="d-flex justify-content-around w-100">
+marker = new google.maps.Marker({
+position:ubicacion,
+map:map,
+title:"Mi ubicación"
+});
 
-        <button
-          type="button"
-          class="btn active nav-btn"
-          data-target="mapa">
+/* GEOLOCALIZACION */
 
-          <i class="ti ti-map fs-5"></i>
-          <span class="nav-label">Mapa</span>
+if(navigator.geolocation){
 
-        </button>
+navigator.geolocation.watchPosition(
 
-        <button
-          type="button"
-          class="btn nav-btn"
-          data-target="info">
+pos=>{
 
-          <i class="ti ti-route fs-5"></i>
-          <span class="nav-label">Ruta</span>
+const nueva = {
+lat:pos.coords.latitude,
+lng:pos.coords.longitude
+};
 
-        </button>
+marker.setPosition(nueva);
+map.setCenter(nueva);
 
-      </div>
+},
 
-    </div>
+error=>{
+console.log(error);
+},
 
-  </nav>
+{
+enableHighAccuracy:true,
+maximumAge:0,
+timeout:5000
+}
 
-  <!-- JS -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+);
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+}
 
-  <!-- MAPA -->
-  <script src="/assets/js/mapa.js"></script>
+}
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
+/* =========================================
+NAV MOBILE
+========================================= */
 
-      const botones = document.querySelectorAll(".nav-btn");
-      const paneles = document.querySelectorAll(".app-panel");
+const btnMapa =
+document.getElementById("btnMapa");
 
-      botones.forEach(btn => {
+const btnInfo =
+document.getElementById("btnInfo");
 
-        btn.addEventListener("click", () => {
+const panel =
+document.getElementById("infoPanel");
 
-          const destino = btn.dataset.target;
+/* MAPA */
+btnMapa.addEventListener("click",()=>{
 
-          botones.forEach(b => b.classList.remove("active"));
-          btn.classList.add("active");
+btnMapa.classList.add("active");
+btnInfo.classList.remove("active");
 
-          paneles.forEach(p => p.classList.add("d-none"));
+panel.classList.remove("show");
 
-          document
-            .getElementById("panel-" + destino)
-            .classList.remove("d-none");
+});
 
-        });
+/* INFO */
+btnInfo.addEventListener("click",()=>{
 
-      });
+btnInfo.classList.add("active");
+btnMapa.classList.remove("active");
 
-      document
-        .getElementById("btnCerrarSesion")
-        .addEventListener("click", () => {
+panel.classList.toggle("show");
 
-          if (confirm("¿Cerrar sesión?")) {
-            window.location.href = "/html/auth/login.html";
-          }
+});
 
-        });
+/* =========================================
+LOGOUT
+========================================= */
 
-    });
-  </script>
+document
+.getElementById("btnCerrarSesion")
+.addEventListener("click",()=>{
+
+if(confirm("¿Cerrar sesión?")){
+
+localStorage.removeItem("token");
+
+location.href="/html/auth/login.html";
+
+}
+
+});
+
+</script>
 
 </body>
-
 </html>
