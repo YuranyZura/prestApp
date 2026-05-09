@@ -5,110 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PrestApp | Crear Cuenta</title>
 
-<link rel="stylesheet" href="/assets/css/styles.min.css">
-<link rel="stylesheet" href="/assets/css/icons/tabler-icons/tabler-icons.css">
+<link rel="stylesheet" href="/assets/css/styles.css">
+<link rel="stylesheet" href="/assets/css/icons/tabler-icons/tabler-icons.css"
 
-<style>
-body{
-    margin:0;
-    padding:0;
-    font-family:Arial, Helvetica, sans-serif;
-    background:linear-gradient(135deg,#0d6efd,#0dcaf0);
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
-
-.register-box{
-    background:#fff;
-    width:100%;
-    max-width:480px;
-    padding:35px;
-    border-radius:18px;
-    box-shadow:0 15px 40px rgba(0,0,0,.15);
-}
-
-.logo{
-    text-align:center;
-    margin-bottom:20px;
-}
-
-.logo img{
-    width:170px;
-}
-
-h1{
-    text-align:center;
-    font-size:28px;
-    margin-bottom:10px;
-    color:#111;
-}
-
-p{
-    text-align:center;
-    color:#666;
-    margin-bottom:25px;
-}
-
-.form-control{
-    width:100%;
-    padding:12px 15px;
-    border:1px solid #ddd;
-    border-radius:10px;
-    margin-bottom:15px;
-    font-size:15px;
-}
-
-.form-control:focus{
-    outline:none;
-    border-color:#0d6efd;
-}
-
-.row{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:12px;
-}
-
-.btn-register{
-    width:100%;
-    border:none;
-    background:#0d6efd;
-    color:#fff;
-    padding:13px;
-    border-radius:10px;
-    font-size:16px;
-    cursor:pointer;
-    transition:.3s;
-}
-
-.btn-register:hover{
-    background:#0b5ed7;
-}
-
-.footer{
-    margin-top:18px;
-    text-align:center;
-    font-size:14px;
-}
-
-.footer a{
-    color:#0d6efd;
-    text-decoration:none;
-}
-
-@media(max-width:600px){
-    .row{
-        grid-template-columns:1fr;
-    }
-
-    .register-box{
-        margin:20px;
-        padding:25px;
-    }
-}
-</style>
 </head>
 
 <body>
@@ -181,8 +80,10 @@ p{
 
 </div>
 
-<script type="module">
-import { API_URL } from "/assets/js/config.js";
+<script 
+type="module"
+src="/assets/js/auth.js">
+
 
 const form = document.getElementById("formRegister");
 

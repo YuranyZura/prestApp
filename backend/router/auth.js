@@ -38,6 +38,8 @@ router.post("/register", async (req, res) => {
       nombre,
       apellido,
       correo,
+      telefono,
+      cedula,
       contrasena,
       rol
     } = req.body;
@@ -71,7 +73,7 @@ router.post("/register", async (req, res) => {
     }
 
     const [exists] = await pool.query(
-      "SELECT id_usuarios FROM usuarios WHERE correo = ?",
+      "SELECT id_usuario FROM usuarios WHERE correo = ?",
       [correo]
     );
 
@@ -104,31 +106,33 @@ router.post("/register", async (req, res) => {
     const expira = new Date(
       Date.now() + 10 * 60 * 1000
     );
-
+    const [result] =
     await pool.query(
       `INSERT INTO usuarios
       (
         nombre,
         apellido,
         correo,
+        telefono,
+        cedula,
         contrasena,
         rol,
         verificado,
         codigo_verificacion,
-        codigo_expira,
-        activo
+       
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, )`,
       [
         nombre,
         apellido,
         correo,
-        hash,
+        telefono,
+        cedula,
+        passwordHash,
         rol || "trabajador",
         0,
         codigo,
-        expira,
-        1
+       
       ]
     );
 
@@ -173,11 +177,11 @@ router.post("/verify-email", async (req, res) => {
 
     const [rows] = await pool.query(
       `SELECT
-        id_usuarios,
+        id_usuario,
         codigo_verificacion,
         codigo_expira,
         verificado
-      FROM usuarios
+      FROM usuario
       WHERE correo = ?`,
       [correo]
     );
@@ -219,10 +223,10 @@ router.post("/verify-email", async (req, res) => {
     }
 
     await pool.query(
-      `UPDATE usuarios
+      `UPDATE usuario
        SET verificado = 1
-       WHERE id_usuarios = ?`,
-      [user.id_usuarios]
+       WHERE id_usuario = ?`,
+      [user.id_usuario]
     );
 
     res.json({
@@ -253,7 +257,7 @@ router.post("/reenvio_codigo", async (req, res) => {
 
     const [rows] = await pool.query(
       `SELECT
-        id_usuarios,
+        id_usuario,
         verificado
       FROM usuarios
       WHERE correo = ?`,
@@ -283,14 +287,14 @@ router.post("/reenvio_codigo", async (req, res) => {
     );
 
     await pool.query(
-      `UPDATE usuarios
+      `UPDATE usuario
        SET codigo_verificacion = ?,
            codigo_expira = ?
-       WHERE id_usuarios = ?`,
+       WHERE id_usuario = ?`,
       [
         codigo,
         expira,
-        rows[0].id_usuarios
+        rows[0].id_usuario
       ]
     );
 
@@ -371,7 +375,7 @@ router.post("/login", async (req, res) => {
 
     const token = jwt.sign(
       {
-        id: user.id_usuarios,
+        id: user.id_usuario,
         rol: user.rol
       },
       process.env.JWT_SECRET,
@@ -383,7 +387,7 @@ router.post("/login", async (req, res) => {
       message: "Login exitoso",
       token,
       user: {
-        id: user.id_usuarios,
+        id: user.id_usuario,
         nombre: user.nombre,
         rol: user.rol
       }

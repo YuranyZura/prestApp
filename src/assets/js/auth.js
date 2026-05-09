@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // LOGIN PRESTAPP
 // ==========================================
 
-import { API_URL } from "/assets/js/config.js";
+
 
 const form =
 document.getElementById("formLogin");
@@ -261,6 +261,131 @@ mostrar(
 }
 
 btnLogin.disabled = false;
+
+});
+
+}
+import { API_URL } from "./config.js";
+
+/* =========================
+REGISTER
+========================= */
+
+const formRegister =
+document.getElementById("formRegister");
+
+if(formRegister){
+
+formRegister.addEventListener(
+"submit",
+async (e) => {
+
+e.preventDefault();
+
+const nombre =
+document.getElementById("nombre").value.trim();
+
+const apellido =
+document.getElementById("apellido").value.trim();
+
+const correo =
+document.getElementById("correo").value.trim();
+
+const telefono =
+document.getElementById("telefono").value.trim();
+
+const cedula =
+document.getElementById("cedula").value.trim();
+
+const password =
+document.getElementById("password").value.trim();
+
+const confirmar =
+document.getElementById("confirmar").value.trim();
+
+const rol =
+document.getElementById("rol").value;
+
+/* VALIDACIONES */
+
+if(
+!nombre ||
+!apellido ||
+!correo ||
+!telefono ||
+!cedula ||
+!password ||
+!confirmar ||
+!rol
+){
+alert("Todos los campos son obligatorios");
+return;
+}
+
+if(password.length < 6){
+alert(
+"La contraseña debe tener al menos 6 caracteres"
+);
+return;
+}
+
+if(password !== confirmar){
+alert("Las contraseñas no coinciden");
+return;
+}
+
+/* PETICIÓN */
+
+try{
+
+const res =
+await fetch(
+`${API_URL}/auth/register`,
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+nombre,
+apellido,
+correo,
+telefono,
+cedula,
+contrasena: password,
+rol
+})
+}
+);
+
+const data =
+await res.json();
+
+if(data.success){
+
+alert("Registro exitoso");
+
+window.location.href =
+"/html/auth/login.html";
+
+}else{
+
+alert(
+data.message ||
+"No se pudo registrar"
+);
+
+}
+
+}catch(error){
+
+console.error(error);
+
+alert(
+"Error del servidor o conexión"
+);
+
+}
 
 });
 

@@ -18,7 +18,6 @@ import session from "express-session";
 
 import path from "path";
 import { fileURLToPath } from "url";
-
 // ==========================================
 // CONFIG
 // ==========================================
@@ -226,7 +225,7 @@ app.get("/", (req, res) => {
 // API 404
 // ==========================================
 
-app.use("/api", (req, res) => {
+app.use( (req, res) => {
 
   res.status(404).json({
     success: false,
@@ -258,7 +257,7 @@ app.use((err, req, res, next) => {
 const PORT =
   process.env.PORT || 4000;
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
 
   console.log(`
 ====================================
