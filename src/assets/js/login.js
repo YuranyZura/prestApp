@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const formLogin = document.getElementById("formLogin");
 const mensaje = document.getElementById("mensaje");
+const btnLogin = document.getElementById("btnLogin");
 
 // ===============================
 // MENSAJES
@@ -71,7 +72,7 @@ function redirigir(rol) {
 // ===============================
 if (formLogin) {
 
-formLogin.addEventListener("submit", async (e) => {
+btnLogin.addEventListener("click", async (e) => {
 
     e.preventDefault();
 

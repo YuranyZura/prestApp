@@ -1,9 +1,29 @@
-@import url("/assets/css/base/variables.css");
-@import url("/assets/css/base/reset.css");
-@import url("/assets/css/base/global.css");
+/* BASE */
+@import url("./base/variables.css");
+@import url("./base/reset.css");
+@import url("./base/global.css");
 
-@import url("/assets/css/layout/template.css");
+/* LAYOUT */
+@import url("./layout/sidebar.css");
+@import url("./layout/header.css");
+@import url("./layout/forms.css");
+@import url("./layout/app-layout.css");
 
-@import url("/assets/css/pages/administrador.css");
-@import url("/assets/css/pages/trabajadores.css");
-@import url("/assets/css/pages/mapa.css");
+/* COMPONENTS */
+@import url("./components/buttons.css");
+@import url("./components/cards.css");
+@import url("./components/table.css");
+@import url("./components/table-custom.css");
+@import url("./components/badge.css");
+@import url("./components/modal.css");
+@import url("./components/alerts.css");
+@import url("./components/dashboard-cards.css");
+
+/* PAGES */
+@import url("./pages/login.css");
+@import url("./pages/register.css");
+@import url("./pages/dashboard.css");
+@import url("./pages/trabajadores.css");
+@import url("./pages/prestamos.css");
+@import url("./pages/pagos.css");
+@import url("./pages/mapa.css");

@@ -1,0 +1,21 @@
+/* =========================================
+TABLAS
+========================================= */
+
+.table td,
+.table th{
+  vertical-align:middle;
+}
+
+.table thead{
+  background:#2563eb;
+  color:#fff;
+}
+
+@media(max-width:768px){
+
+  .table{
+    min-width:850px;
+  }
+
+}

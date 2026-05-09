@@ -79,3 +79,189 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
+// ==========================================
+// LOGIN PRESTAPP
+// ==========================================
+
+import { API_URL } from "/assets/js/config.js";
+
+const form =
+document.getElementById("formLogin");
+
+const msg =
+document.getElementById("mensaje");
+
+const btnLogin =
+document.getElementById("btnLogin");
+
+const togglePassword =
+document.getElementById("togglePassword");
+
+const inputPassword =
+document.getElementById("contrasena");
+
+/* =========================
+MOSTRAR MENSAJE
+========================= */
+function mostrar(
+texto,
+tipo = "error"
+){
+
+msg.className =
+`msg ${tipo}`;
+
+msg.textContent =
+texto;
+
+}
+
+/* =========================
+MOSTRAR / OCULTAR PASSWORD
+========================= */
+if(togglePassword){
+
+togglePassword
+.addEventListener("click",()=>{
+
+const visible =
+inputPassword.type === "text";
+
+inputPassword.type =
+visible
+? "password"
+: "text";
+
+togglePassword.innerHTML =
+visible
+? '<i class="ti ti-eye"></i>'
+: '<i class="ti ti-eye-off"></i>';
+
+});
+
+}
+
+/* =========================
+LOGIN
+========================= */
+if(form){
+
+form.addEventListener(
+"submit",
+async(e)=>{
+
+e.preventDefault();
+
+btnLogin.disabled = true;
+
+const correo =
+document.getElementById("correo")
+.value
+.trim();
+
+const contrasena =
+inputPassword.value.trim();
+
+if(!correo || !contrasena){
+
+mostrar(
+"Complete todos los campos"
+);
+
+btnLogin.disabled = false;
+
+return;
+
+}
+
+try{
+
+const res =
+await fetch(
+`${API_URL}/auth/login`,
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+correo,
+contrasena
+})
+}
+);
+
+const data =
+await res.json();
+
+if(data.success){
+
+mostrar(
+"Acceso correcto",
+"success"
+);
+
+localStorage.setItem(
+"token",
+data.token
+);
+
+localStorage.setItem(
+"usuario",
+JSON.stringify(data.user)
+);
+
+/* REDIRECCIONES */
+setTimeout(()=>{
+
+if(
+data.user.rol ===
+"super_admin"
+){
+
+location.href =
+"/html/admin/administradores.html";
+
+}
+else if(
+data.user.rol ===
+"administrador"
+){
+
+location.href =
+"/html/admin/dashboard.html";
+
+}
+else{
+
+location.href =
+"/html/trabajador/Rol2_trabajador.html";
+
+}
+
+},1000);
+
+}else{
+
+mostrar(
+data.message ||
+"Credenciales inválidas"
+);
+
+}
+
+}catch(error){
+
+console.error(error);
+
+mostrar(
+"No se pudo conectar con el servidor"
+);
+
+}
+
+btnLogin.disabled = false;
+
+});
+
+}
