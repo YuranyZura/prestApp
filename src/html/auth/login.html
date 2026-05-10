@@ -1,36 +1,72 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1, viewport-fit=cover"
->
+<title>PrestApp | Login</title>
 
-<meta
-name="description"
-content="Iniciar sesión en PrestApp"
->
+<link rel="stylesheet" href="/assets/css/pages/login.css">
 
-<title>PrestApp | Iniciar Sesión</title>
+<style>
 
-<link
-rel="shortcut icon"
-href="/assets/images/logos/favicon.png"
->
+body{
+    margin:0;
+    font-family:Arial;
+    background:linear-gradient(135deg,#0d6efd,#00c6ff);
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
 
-<link
-rel="stylesheet"
-href="/assets/css/styles.css"
->
+.login-box{
+    background:#fff;
+    width:400px;
+    padding:40px;
+    border-radius:20px;
+}
 
-<link
-rel="stylesheet"
-href="/assets/css/icons/tabler-icons/tabler-icons.css"
->
+.form-control{
+    width:100%;
+    padding:14px;
+    margin-bottom:15px;
+    border:1px solid #ccc;
+    border-radius:10px;
+    box-sizing:border-box;
+}
+
+.btn-login{
+    width:100%;
+    padding:14px;
+    border:none;
+    background:#0d6efd;
+    color:#fff;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+.msg{
+    padding:10px;
+    border-radius:10px;
+    margin-bottom:15px;
+    display:none;
+}
+
+.msg.error{
+    background:#ffdede;
+    color:#c40000;
+    display:block;
+}
+
+.msg.success{
+    background:#d8ffe1;
+    color:#008a2e;
+    display:block;
+}
+
+</style>
 
 </head>
 
@@ -38,149 +74,47 @@ href="/assets/css/icons/tabler-icons/tabler-icons.css"
 
 <div class="login-box">
 
-<div class="logo">
+    <h1>Bienvenido</h1>
 
-<img
-src="/assets/images/logos/prestapp-remove.png"
-alt="Logo PrestApp"
-class="logo-img"
-loading="lazy"
->
+    <div id="mensaje" class="msg"></div>
 
-</div>
+    <form id="formLogin" autocomplete="off">
 
-<h1>
-Bienvenido
-</h1>
+    <input
+        type="email"
+        id="correo"
+        name="correo"
+        class="form-control"
+        placeholder="Correo electrónico"
+        autocomplete="new-password"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        required
+    >
 
-<p class="login-text">
-Ingresa para continuar
-</p>
+    <input
+        type="password"
+        id="contrasena"
+        name="contrasena"
+        class="form-control"
+        placeholder="Contraseña"
+        autocomplete="new-password"
+        required
+    >
 
-<div
-id="mensaje"
-class="msg"
-aria-live="polite"
-></div>
-
-<form id="formLogin"
-autocomplete="on"
-onsubmit="return false;">
-
-<div class="form-group">
-
-<label
-for="correo"
-class="form-label"
->
-Correo electrónico
-</label>
-
-<input
-type="email"
-id="correo"
-name="correo"
-class="form-control"
-placeholder="correo@empresa.com"
-autocomplete="email"
-required
-title="Ingrese su correo electrónico"
-aria-label="Correo electrónico"
->
-
-</div>
-
-<div class="form-group">
-
-<label
-for="contrasena"
-class="form-label"
->
-Contraseña
-</label>
-
-<div class="password-box">
-
-<input
-type="password"
-id="contrasena"
-name="contrasena"
-class="form-control"
-placeholder="Ingrese su contraseña"
-autocomplete="current-password"
-required
-title="Ingrese su contraseña"
-aria-label="Contraseña"
->
-
-<button
-type="button"
-class="toggle-password"
-id="togglePassword"
-title="Mostrar contraseña"
-aria-label="Mostrar contraseña"
->
-
-<i class="ti ti-eye"></i>
-
-</button>
-
-</div>
-
-</div>
-
-<div class="form-check">
-
-<input
-type="checkbox"
-id="recordarme"
-class="form-check-input"
->
-
-<label
-for="recordarme"
-class="form-check-label"
->
-Recordarme
-</label>
-
-</div>
-
-<button
-type="button"
-class="btn-login"
+    <button type="submit"
 id="btnLogin"
->
-
-<i class="ti ti-login"></i>
-Iniciar sesión
-
-</button>
+class="btn-login">
+        Iniciar sesión
+    </button
+    >
 
 </form>
 
-<div class="extra">
-
-<a href="register.html">
-Crear cuenta
-</a>
-
-<a href="#">
-¿Olvidaste contraseña?
-</a>
-
 </div>
 
-<div class="footer">
-© 2026 PrestApp
-</div>
-
-</div>
-
-<script
-type="module"
-src="/assets/js/auth.js">
-</script>
+<script type="module" src="/assets/js/login.js"></script>
 
 </body>
 </html>

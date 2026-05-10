@@ -222,15 +222,16 @@ app.get("/", (req, res) => {
 });
 
 // ==========================================
-// API 404
+// API 404 SOLO PARA API
 // ==========================================
 
-app.use( (req, res) => {
+app.use("/api", (req, res) => {
 
   res.status(404).json({
     success: false,
     message: "Ruta API no encontrada"
   });
+
 });
 
 // ==========================================

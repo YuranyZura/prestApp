@@ -1,88 +1,19 @@
-// ==========================================
-// PRESTAPP LOGIN.JS FULL REPARADO
-// /public/js/login.js
-// ==========================================
-
 import { API_URL } from "./config.js";
 
-document.addEventListener("DOMContentLoaded", () => {
-
-const formLogin = document.getElementById("formLogin");
+const form = document.getElementById("formLogin");
 const mensaje = document.getElementById("mensaje");
-const btnLogin = document.getElementById("btnLogin");
 
-// ===============================
-// MENSAJES
-// ===============================
 function mostrar(texto, tipo = "error") {
-
-    if (!mensaje) {
-        alert(texto);
-        return;
-    }
-
+    mensaje.className = `msg ${tipo}`;
     mensaje.innerText = texto;
-    mensaje.className = "msg " + tipo;
 }
 
-// ===============================
-// GUARDAR SESIÓN
-// ===============================
-function guardarSesion(data) {
-
-    if (data.token) {
-        localStorage.setItem("token", data.token);
-    }
-
-    if (data.user) {
-        localStorage.setItem(
-            "usuario",
-            JSON.stringify(data.user)
-        );
-    }
-}
-
-// ===============================
-// REDIRECCIÓN POR ROL
-// ===============================
-function redirigir(rol) {
-
-    if (rol === "super_admin") {
-        window.location.href =
-        "/html/admin/administradores.html";
-    }
-
-    else if (rol === "administrador") {
-        window.location.href =
-        "/html/admin/dashboard.html";
-    }
-
-    else if (rol === "trabajador") {
-        window.location.href =
-        "/html/trabajador/Rol2_trabajador.html";
-    }
-
-    else {
-        window.location.href = "/";
-    }
-}
-
-// ===============================
-// LOGIN
-// ===============================
-if (formLogin) {
-
-btnLogin.addEventListener("click", async (e) => {
+form.addEventListener("submit", async (e) => {
 
     e.preventDefault();
 
-    const correo = document
-        .getElementById("correo")
-        .value.trim();
-
-    const contrasena = document
-        .getElementById("contrasena")
-        .value.trim();
+    const correo = document.getElementById("correo").value.trim();
+    const contrasena = document.getElementById("contrasena").value.trim();
 
     if (!correo || !contrasena) {
         mostrar("Complete todos los campos");
@@ -91,83 +22,68 @@ btnLogin.addEventListener("click", async (e) => {
 
     try {
 
-        const res = await fetch(
-            `${API_URL}/auth/login`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type":
-                    "application/json"
-                },
-                body: JSON.stringify({
-                    correo,
-                    contrasena
-                })
-            }
-        );
+        const response = await fetch(`${API_URL}/auth/login`, {
 
-        const data = await res.json();
+            method: "POST",
 
-        console.log("LOGIN:", data);
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                correo,
+                contrasena
+            })
+
+        });
+
+        const data = await response.json();
+
+        console.log(data);
 
         if (data.success) {
 
-            mostrar(
-                "Inicio de sesión exitoso",
-                "success"
+            mostrar("Login correcto", "success");
+
+            localStorage.setItem("token", data.token);
+
+            localStorage.setItem(
+                "usuario",
+                JSON.stringify(data.user)
             );
 
-            guardarSesion(data);
-
             setTimeout(() => {
-                redirigir(data.user.rol);
+
+                if (data.user.rol === "super_admin") {
+
+                    window.location.href =
+                        "/html/admin/administradores.html";
+
+                } else if (data.user.rol === "administrador") {
+
+                    window.location.href =
+                        "/html/admin/dashboard.html";
+
+                } else {
+
+                    window.location.href =
+                        "/html/trabajador/Rol2_trabajador.html";
+                }
+
             }, 1000);
 
         } else {
 
-            mostrar(
-                data.message ||
-                "Correo o contraseña incorrectos"
-            );
+            mostrar(data.message || "Credenciales incorrectas");
+
         }
 
     } catch (error) {
 
         console.error(error);
 
-        mostrar(
-            "No se pudo conectar al servidor"
-        );
+        mostrar("Error conectando con servidor");
+
     }
-
-});
-
-}
-
-// ===============================
-// AUTOLOGIN
-// ===============================
-const token = localStorage.getItem("token");
-const usuario = localStorage.getItem("usuario");
-
-if (token && usuario &&
-window.location.pathname.includes("login")) {
-
-    const user = JSON.parse(usuario);
-
-    redirigir(user.rol);
-}
-
-// ===============================
-// LOGOUT
-// ===============================
-window.logout = function () {
-
-    localStorage.removeItem("token");
-    localStorage.removeItem("usuario");
-
-    window.location.href =
-    "/html/auth/login.html";
-};
 
 });

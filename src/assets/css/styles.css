@@ -27,3 +27,23 @@
 @import url("./pages/prestamos.css");
 @import url("./pages/pagos.css");
 @import url("./pages/mapa.css");
+
+.msg{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:15px;
+    text-align:center;
+    font-size:14px;
+    display:block;
+}
+
+.msg.error{
+    background:#ffdede;
+    color:#b30000;
+}
+
+.msg.success{
+    background:#d4edda;
+    color:#155724;
+}

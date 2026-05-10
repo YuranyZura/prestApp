@@ -30,6 +30,7 @@ const dominiosProhibidos = [
 // =============================
 // REGISTER
 // =============================
+
 router.post("/register", async (req, res) => {
 
   try {
@@ -44,71 +45,46 @@ router.post("/register", async (req, res) => {
       rol
     } = req.body;
 
+    // VALIDAR
     if (
       !nombre ||
       !apellido ||
       !correo ||
+      !telefono ||
+      !cedula ||
       !contrasena
     ) {
       return res.status(400).json({
         success: false,
-        message: "Faltan datos"
+        message: "Complete todos los campos"
       });
     }
 
-    if (!correoRegex.test(correo)) {
-      return res.status(400).json({
-        success: false,
-        message: "Correo inválido"
-      });
-    }
-
-    const dominio = correo.split("@")[1];
-
-    if (dominiosProhibidos.includes(dominio)) {
-      return res.status(400).json({
-        success: false,
-        message: "Correo no permitido"
-      });
-    }
-
-    const [exists] = await pool.query(
+    // VERIFICAR CORREO
+    const [existe] = await pool.query(
       "SELECT id_usuario FROM usuarios WHERE correo = ?",
       [correo]
     );
 
-    if (exists.length > 0) {
+    if (existe.length > 0) {
       return res.status(400).json({
         success: false,
-        message: "Correo ya registrado"
+        message: "El correo ya existe"
       });
     }
 
-    const passwordRegex =
-      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    // HASH PASSWORD
+    const passwordHash = await bcrypt.hash(contrasena, 10);
 
-    if (!passwordRegex.test(contrasena)) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Contraseña débil (mínimo 8 caracteres con letras y números)"
-      });
-    }
-
-    const hash = USE_PLAIN_PASSWORDS
-      ? contrasena
-      : await bcrypt.hash(contrasena, 10);
-
+    // CÓDIGO
     const codigo = Math.floor(
       100000 + Math.random() * 900000
     ).toString();
 
-    const expira = new Date(
-      Date.now() + 10 * 60 * 1000
-    );
-    const [result] =
+    // INSERT
     await pool.query(
-      `INSERT INTO usuarios
+      `
+      INSERT INTO usuarios
       (
         nombre,
         apellido,
@@ -118,10 +94,10 @@ router.post("/register", async (req, res) => {
         contrasena,
         rol,
         verificado,
-        codigo_verificacion,
-       
+        codigo_verificacion
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, )`,
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `,
       [
         nombre,
         apellido,
@@ -131,25 +107,18 @@ router.post("/register", async (req, res) => {
         passwordHash,
         rol || "trabajador",
         0,
-        codigo,
-       
+        codigo
       ]
-    );
-
-    await enviarCodigoVerificacion(
-      correo,
-      codigo
     );
 
     res.json({
       success: true,
-      message:
-        "Usuario registrado. Verifica tu correo."
+      message: "Usuario registrado"
     });
 
-  } catch (err) {
+  } catch (error) {
 
-    console.error(err);
+    console.log(error);
 
     res.status(500).json({
       success: false,
@@ -158,7 +127,6 @@ router.post("/register", async (req, res) => {
   }
 
 });
-
 // =============================
 // VERIFY EMAIL
 // =============================
@@ -350,12 +318,19 @@ router.post("/login", async (req, res) => {
 
     const user = rows[0];
 
-    if (!user.verificado) {
-      return res.status(403).json({
+    
+    // SOLO verificar si existe el campo
+if (
+    usuario.verificado !== undefined &&
+    Number(usuario.verificado) === 0
+) {
+
+    return res.status(403).json({
         success: false,
         message: "Cuenta no verificada"
-      });
-    }
+    });
+
+}
 
     if (!user.activo) {
       return res.status(403).json({
