@@ -1,0 +1,378 @@
+/* ======================================
+   RESET GLOBAL
+====================================== */
+
+*,
+*::before,
+*::after {
+
+  box-sizing: border-box;
+
+  margin: 0;
+
+  padding: 0;
+}
+
+/* ======================================
+   ROOT VARIABLES
+====================================== */
+
+:root {
+
+  --color-primary: #2563eb;
+
+  --color-secondary: #1e40af;
+
+  --color-success: #16a34a;
+
+  --color-danger: #dc2626;
+
+  --color-warning: #f59e0b;
+
+  --color-dark: #111827;
+
+  --color-gray: #6b7280;
+
+  --color-light: #f3f4f6;
+
+  --color-white: #ffffff;
+
+  --shadow-sm:
+    0 2px 6px rgba(0,0,0,.08);
+
+  --shadow-md:
+    0 4px 12px rgba(0,0,0,.12);
+
+  --radius-sm: 8px;
+
+  --radius-md: 12px;
+
+  --radius-lg: 18px;
+
+  --transition:
+    all .3s ease;
+
+  --container-width:
+    1200px;
+}
+
+/* ======================================
+   HTML / BODY
+====================================== */
+
+html {
+
+  scroll-behavior: smooth;
+
+  height: 100%;
+}
+
+body {
+
+  min-height: 100vh;
+
+  width: 100%;
+
+  overflow-x: hidden;
+
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  background:
+    var(--color-light);
+
+  color:
+    var(--color-dark);
+
+  text-rendering:
+    optimizeLegibility;
+
+  -webkit-font-smoothing:
+    antialiased;
+
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+/* ======================================
+   SAFE AREA iPhone
+====================================== */
+
+.safe-area {
+
+  padding-top:
+    env(safe-area-inset-top);
+
+  padding-bottom:
+    env(safe-area-inset-bottom);
+}
+
+/* ======================================
+   IMÁGENES
+====================================== */
+
+img {
+
+  max-width: 100%;
+
+  height: auto;
+
+  display: block;
+}
+
+/* ======================================
+   LINKS
+====================================== */
+
+a {
+
+  text-decoration: none;
+
+  color: inherit;
+}
+
+/* ======================================
+   LISTAS
+====================================== */
+
+ul,
+ol {
+
+  list-style: none;
+}
+
+/* ======================================
+   BOTONES
+====================================== */
+
+button {
+
+  border: none;
+
+  outline: none;
+
+  cursor: pointer;
+
+  transition:
+    var(--transition);
+
+  font: inherit;
+}
+
+/* ======================================
+   INPUTS
+====================================== */
+
+input,
+textarea,
+select {
+
+  width: 100%;
+
+  font: inherit;
+
+  outline: none;
+
+  border: 1px solid #d1d5db;
+
+  border-radius:
+    var(--radius-sm);
+
+  padding: 12px;
+}
+
+/* ======================================
+   INPUT FOCUS
+====================================== */
+
+input:focus,
+textarea:focus,
+select:focus {
+
+  border-color:
+    var(--color-primary);
+
+  box-shadow:
+    0 0 0 3px rgba(37,99,235,.15);
+}
+
+/* ======================================
+   CONTAINER
+====================================== */
+
+.container {
+
+  width: 100%;
+
+  max-width:
+    var(--container-width);
+
+  margin: 0 auto;
+
+  padding: 16px;
+}
+
+/* ======================================
+   FULL HEIGHT iOS FIX
+====================================== */
+
+:root {
+
+  --vh: 100vh;
+}
+
+.full-height {
+
+  min-height:
+    calc(var(--vh, 1vh) * 100);
+}
+
+/* ======================================
+   FLEX HELPERS
+====================================== */
+
+.flex {
+
+  display: flex;
+}
+
+.flex-center {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+.flex-between {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+}
+
+/* ======================================
+   GRID
+====================================== */
+
+.grid {
+
+  display: grid;
+
+  gap: 16px;
+}
+
+/* ======================================
+   CARDS
+====================================== */
+
+.card {
+
+  background:
+    var(--color-white);
+
+  border-radius:
+    var(--radius-md);
+
+  box-shadow:
+    var(--shadow-sm);
+
+  padding: 20px;
+}
+
+/* ======================================
+   TEXT ALIGN
+====================================== */
+
+.text-center {
+
+  text-align: center;
+}
+
+/* ======================================
+   MARGIN
+====================================== */
+
+.mt-1 { margin-top: 8px; }
+
+.mt-2 { margin-top: 16px; }
+
+.mt-3 { margin-top: 24px; }
+
+.mb-1 { margin-bottom: 8px; }
+
+.mb-2 { margin-bottom: 16px; }
+
+.mb-3 { margin-bottom: 24px; }
+
+/* ======================================
+   SCROLLBAR
+====================================== */
+
+::-webkit-scrollbar {
+
+  width: 8px;
+
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+
+  background:
+    #cbd5e1;
+
+  border-radius: 20px;
+}
+
+/* ======================================
+   ANIMACIONES
+====================================== */
+
+.fade-in {
+
+  animation:
+    fadeIn .4s ease;
+}
+
+@keyframes fadeIn {
+
+  from {
+
+    opacity: 0;
+
+    transform:
+      translateY(10px);
+  }
+
+  to {
+
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+/* ======================================
+   RESPONSIVE
+====================================== */
+
+@media (max-width: 768px) {
+
+  .container {
+
+    padding: 12px;
+  }
+
+  .card {
+
+    padding: 16px;
+  }
+}

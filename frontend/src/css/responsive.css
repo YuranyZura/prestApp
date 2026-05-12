@@ -1,0 +1,465 @@
+/* =========================================
+   PRESTAPP
+   responsive.css
+========================================= */
+
+/* =========================================
+   LARGE DEVICES
+========================================= */
+
+@media (max-width: 1200px) {
+
+  .container {
+    padding: 0 20px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .stats-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 992px) {
+
+  .sidebar {
+
+    width: 220px;
+  }
+
+  .main-content {
+
+    margin-left: 220px;
+  }
+
+  .topbar {
+
+    padding: 18px;
+  }
+
+  .topbar-title {
+
+    font-size: 22px;
+  }
+
+  .dashboard-grid {
+
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .table {
+
+    min-width: 700px;
+  }
+
+  .card {
+
+    padding: 20px;
+  }
+
+}
+
+/* =========================================
+   MOBILE MENU
+========================================= */
+
+.mobile-toggle {
+
+  display: none;
+
+  width: 45px;
+
+  height: 45px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: #2563eb;
+
+  color: white;
+
+  font-size: 22px;
+
+  cursor: pointer;
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+
+  body {
+
+    overflow-x: hidden;
+  }
+
+  .mobile-toggle {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+  }
+
+  /* =========================
+     SIDEBAR
+  ========================= */
+
+  .sidebar {
+
+    position: fixed;
+
+    left: -100%;
+
+    top: 0;
+
+    width: 260px;
+
+    height: 100vh;
+
+    z-index: 9999;
+
+    transition: .3s ease;
+  }
+
+  .sidebar.active {
+
+    left: 0;
+  }
+
+  /* =========================
+     OVERLAY
+  ========================= */
+
+  .sidebar-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    background:
+      rgba(0,0,0,.5);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transition: .3s;
+
+    z-index: 9998;
+  }
+
+  .sidebar-overlay.active {
+
+    opacity: 1;
+
+    visibility: visible;
+  }
+
+  /* =========================
+     MAIN
+  ========================= */
+
+  .main-content {
+
+    margin-left: 0;
+
+    width: 100%;
+
+    padding: 16px;
+  }
+
+  /* =========================
+     TOPBAR
+  ========================= */
+
+  .topbar {
+
+    padding: 16px;
+
+    border-radius: 16px;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+  .topbar-title {
+
+    font-size: 20px;
+  }
+
+  /* =========================
+     GRID
+  ========================= */
+
+  .dashboard-grid,
+  .stats-grid {
+
+    grid-template-columns: 1fr;
+
+    gap: 16px;
+  }
+
+  /* =========================
+     CARD
+  ========================= */
+
+  .card {
+
+    padding: 18px;
+
+    border-radius: 16px;
+  }
+
+  .card-value {
+
+    font-size: 28px;
+  }
+
+  /* =========================
+     TABLES
+  ========================= */
+
+  .table-container {
+
+    overflow-x: auto;
+
+  }
+
+  .table {
+
+    min-width: 650px;
+  }
+
+  /* =========================
+     BUTTONS
+  ========================= */
+
+  .btn {
+
+    width: 100%;
+  }
+
+  .actions {
+
+    flex-direction: column;
+
+    width: 100%;
+  }
+
+  /* =========================
+     FORMS
+  ========================= */
+
+  .form-row {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 16px;
+  }
+
+  .form-control {
+
+    height: 50px;
+  }
+
+  /* =========================
+     MODALS
+  ========================= */
+
+  .modal-content {
+
+    margin: 10px;
+  }
+
+  /* =========================
+     LOGIN
+  ========================= */
+
+  .login-box {
+
+    width: 100%;
+
+    padding: 28px 22px;
+
+    border-radius: 18px;
+  }
+
+  .login-title {
+
+    font-size: 26px;
+  }
+
+  .logo img {
+
+    width: 140px;
+  }
+
+}
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 576px) {
+
+  .main-content {
+
+    padding: 12px;
+  }
+
+  .topbar {
+
+    padding: 14px;
+  }
+
+  .topbar-title {
+
+    font-size: 18px;
+  }
+
+  .card {
+
+    padding: 16px;
+  }
+
+  .card-title {
+
+    font-size: 13px;
+  }
+
+  .card-value {
+
+    font-size: 24px;
+  }
+
+  .table th,
+  .table td {
+
+    padding: 12px;
+
+    font-size: 13px;
+  }
+
+  .btn {
+
+    height: 46px;
+
+    font-size: 14px;
+  }
+
+  .form-control {
+
+    font-size: 14px;
+  }
+
+  .login-box {
+
+    padding: 22px 18px;
+  }
+
+  .login-title {
+
+    font-size: 24px;
+  }
+
+  .extra {
+
+    flex-direction: column;
+
+    align-items: center;
+  }
+
+}
+
+/* =========================================
+   EXTRA SMALL DEVICES
+========================================= */
+
+@media (max-width: 400px) {
+
+  .topbar-title {
+
+    font-size: 16px;
+  }
+
+  .card-value {
+
+    font-size: 22px;
+  }
+
+  .btn {
+
+    padding: 10px 14px;
+  }
+
+  .table {
+
+    min-width: 550px;
+  }
+
+}
+
+/* =========================================
+   LANDSCAPE MOBILE
+========================================= */
+
+@media (max-height: 500px)
+and (orientation: landscape) {
+
+  .sidebar {
+
+    overflow-y: auto;
+  }
+
+  .login-box {
+
+    margin: 20px auto;
+  }
+
+}
+
+/* =========================================
+   TOUCH DEVICES
+========================================= */
+
+@media (hover: none) {
+
+  .btn:hover,
+  .card:hover,
+  .sidebar-menu a:hover {
+
+    transform: none;
+  }
+
+}
+
+/* =========================================
+   DARK MODE RESPONSIVE
+========================================= */
+
+@media (prefers-color-scheme: dark) {
+
+  .sidebar-overlay {
+
+    background:
+      rgba(0,0,0,.7);
+  }
+
+}

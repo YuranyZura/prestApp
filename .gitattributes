@@ -1,70 +1,103 @@
-# ===============================
-# CONFIGURACIÓN GLOBAL
-# ===============================
+# =========================================
+# NORMALIZAR FINALES DE LÍNEA
+# =========================================
 
-# Normalizar finales de línea (LF para compatibilidad multiplataforma)
 * text=auto eol=lf
 
-# ===============================
+# =========================================
 # ARCHIVOS DE CÓDIGO
-# ===============================
+# =========================================
 
 *.js text eol=lf
 *.ts text eol=lf
+*.jsx text eol=lf
+*.tsx text eol=lf
+
 *.html text eol=lf
 *.css text eol=lf
 *.scss text eol=lf
+
 *.json text eol=lf
 *.xml text eol=lf
-*.env text eol=lf
-
-# ===============================
-# ARCHIVOS DE CONFIGURACIÓN
-# ===============================
 
 *.yml text eol=lf
 *.yaml text eol=lf
-*.md text eol=lf
-*.gitignore text eol=lf
-*.gitattributes text eol=lf
 
-# ===============================
-# ARCHIVOS BINARIOS (NO TOCAR)
-# ===============================
+*.md text eol=lf
+
+# =========================================
+# ENV
+# =========================================
+
+*.env text eol=lf
+
+# =========================================
+# GIT
+# =========================================
+
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# =========================================
+# SQL
+# =========================================
+
+*.sql text eol=lf
+
+# =========================================
+# IMÁGENES
+# =========================================
 
 *.png binary
 *.jpg binary
 *.jpeg binary
 *.gif binary
 *.webp binary
+*.svg binary
 *.ico binary
 
-*.mp4 binary
+# =========================================
+# AUDIO / VIDEO
+# =========================================
+
 *.mp3 binary
 *.wav binary
+*.mp4 binary
+*.webm binary
+
+# =========================================
+# COMPRIMIDOS
+# =========================================
 
 *.zip binary
 *.rar binary
 *.7z binary
 
+# =========================================
+# DOCUMENTOS
+# =========================================
+
 *.pdf binary
 
-# ===============================
-# ANDROID / WEBVIEW
-# ===============================
+# =========================================
+# ANDROID
+# =========================================
 
 *.apk binary
 *.aab binary
 *.keystore binary
 
-# ===============================
-# BASE DE DATOS / BACKUPS
-# ===============================
+# =========================================
+# FUENTES
+# =========================================
 
-*.sql text eol=lf
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
 
-# ===============================
-# LOGS (NO VERSIONAR BIEN)
-# ===============================
+# =========================================
+# LOGS
+# =========================================
 
 *.log text eol=lf
