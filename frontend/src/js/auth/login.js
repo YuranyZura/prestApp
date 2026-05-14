@@ -1,177 +1,64 @@
-import { API_URL } from "../../assets/js/config.js";
+import { API_URL } from "../config/config.js";
 
-// ==========================
-// ELEMENTOS
-// ==========================
+const form =
+  document.getElementById("loginForm");
 
-const form = document.getElementById("formLogin");
-const mensaje = document.getElementById("mensaje");
-const btnLogin = document.getElementById("btnLogin");
-
-// ==========================
-// MENSAJES
-// ==========================
-
-function mostrarMensaje(texto, tipo = "error") {
-
-  if (!mensaje) {
-    alert(texto);
-    return;
-  }
-
-  mensaje.className = `msg ${tipo}`;
-  mensaje.textContent = texto;
-}
-
-// ==========================
-// LOGIN
-// ==========================
-
-if (form) {
-
-  form.addEventListener("submit", async (e) => {
+form.addEventListener(
+  "submit",
+  async (e) => {
 
     e.preventDefault();
 
     const correo =
-      document.getElementById("correo")
-      .value
-      .trim();
+      document.getElementById("correo").value;
 
-    const contrasena =
-      document.getElementById("contrasena")
-      .value
-      .trim();
-
-    if (!correo || !contrasena) {
-
-      mostrarMensaje(
-        "Complete todos los campos"
-      );
-
-      return;
-    }
+    const password =
+      document.getElementById("password").value;
 
     try {
 
-      if (btnLogin) {
-        btnLogin.disabled = true;
-      }
+      const response =
+        await fetch(
+          `${API_URL}/auth/login`,
+          {
+            method: "POST",
 
-      console.log("Intentando login...");
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
 
-      const response = await fetch(
-        `${API_URL}/auth/login`,
-        {
-          method: "POST",
+            body: JSON.stringify({
+              correo,
+              password
+            })
+          }
+        );
 
-          headers: {
-            "Content-Type": "application/json"
-          },
+      const data =
+        await response.json();
 
-          body: JSON.stringify({
-            correo,
-            contrasena
-          })
-        }
-      );
-
-      const data = await response.json();
-
-      console.log("RESPUESTA:", data);
-
-      // ==========================
-      // LOGIN OK
-      // ==========================
+      console.log(data);
 
       if (data.success) {
 
-        mostrarMensaje(
-          "Inicio de sesión exitoso",
-          "success"
-        );
+        alert("Login correcto");
 
-        // TOKEN
-        if (data.token) {
+      } else {
 
-          localStorage.setItem(
-            "token",
-            data.token
-          );
-        }
-
-        // USER
-        if (data.user) {
-
-          localStorage.setItem(
-            "usuario",
-            JSON.stringify(data.user)
-          );
-        }
-
-        // REDIRECCIÓN
-        setTimeout(() => {
-
-          const rol =
-            data.user?.rol;
-
-          console.log("ROL:", rol);
-
-          if (rol === "super_admin") {
-
-            window.location.href =
-              "/html/admin/administradores.html";
-
-          } else if (
-            rol === "administrador"
-          ) {
-
-            window.location.href =
-              "/html/admin/dashboard.html";
-
-          } else {
-
-            window.location.href =
-              "/html/trabajador/Rol2_trabajador.html";
-          }
-
-        }, 1000);
+        alert(data.message);
 
       }
 
-      // ==========================
-      // LOGIN FAIL
-      // ==========================
+    } catch (error) {
 
-      else {
+      console.error(error);
 
-        mostrarMensaje(
-          data.message ||
-          "Credenciales inválidas"
-        );
-      }
-
-    }
-
-    catch (error) {
-
-      console.error(
-        "ERROR LOGIN:",
-        error
+      alert(
+        "Error conectando con backend"
       );
 
-      mostrarMensaje(
-        "No se pudo conectar con el servidor"
-      );
     }
 
-    finally {
-
-      if (btnLogin) {
-        btnLogin.disabled = false;
-      }
-    }
-
-  });
-
-}
+  }
+);

@@ -16,7 +16,7 @@ const hostname =
 
 // ANDROID / RED LOCAL
 let API_URL =
-  "http://192.168.1.10:4000/api";
+  "http://192.168.1.35:4000/api";
 
 // LOCALHOST PC
 if (
