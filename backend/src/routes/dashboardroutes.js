@@ -1,12 +1,15 @@
+// ==========================================
+// DASHBOARD ROUTES
+// backend/src/routes/dashboardroutes.js
+// ==========================================
+
 import { Router } from "express";
 
 import {
-  obtenerClientes,
-  obtenerClientePorId,
-  crearCliente,
-  actualizarCliente,
-  eliminarCliente
-} from "../controllers/clientesController.js";
+  obtenerDashboard,
+  obtenerResumen,
+  obtenerMetricas
+} from "../controllers/dashboardController.js";
 
 import {
   verificarToken
@@ -14,9 +17,24 @@ import {
 
 const router = Router();
 
+/* ==========================================
+MIDDLEWARE
+========================================== */
+
 router.use(verificarToken);
-router.get("/", obtenerClientes);
 
-router.get("/:id", obtenerClientePorId);
+/* ==========================================
+RUTAS
+========================================== */
 
-router.post("/", crearCliente);
+router.get("/", obtenerDashboard);
+
+router.get("/resumen", obtenerResumen);
+
+router.get("/metricas", obtenerMetricas);
+
+/* ==========================================
+EXPORT
+========================================== */
+
+export default router;

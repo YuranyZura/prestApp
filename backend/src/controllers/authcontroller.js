@@ -32,7 +32,7 @@ export const login = async (req, res) => {
     const rows = await query(
       `
       SELECT
-        id_usuarios,
+        id_usuario,
         nombre,
         apellido,
         correo,
@@ -96,7 +96,7 @@ export const login = async (req, res) => {
 
     const token = jwt.sign(
       {
-        id: usuario.id_usuarios,
+        id: usuario.id_usuario,
         rol: usuario.rol
       },
 
@@ -119,7 +119,7 @@ export const login = async (req, res) => {
       token,
 
       user: {
-        id: usuario.id_usuarios,
+        id: usuario.id_usuario,
         nombre: usuario.nombre,
         apellido: usuario.apellido,
         correo: usuario.correo,
@@ -154,7 +154,7 @@ export const perfil = async (req, res) => {
     const rows = await query(
       `
       SELECT
-        id_usuarios,
+        id_usuario,
         nombre,
         apellido,
         correo,

@@ -1,4 +1,4 @@
-import { Router } from "express";
+import express from "express";
 
 import {
   login,
@@ -10,23 +10,27 @@ import {
   verificarToken
 } from "../middleware/authMiddleware.js";
 
-const router = Router();
+const router = express.Router();
+
+// ==========================================
+// AUTH
+// ==========================================
 
 // LOGIN
 router.post("/login", login);
-
-// PERFIL
-router.get(
-  "/perfil",
-  verificarToken,
-  perfil
-);
 
 // VALIDAR TOKEN
 router.get(
   "/validar",
   verificarToken,
   validarToken
+);
+
+// PERFIL USUARIO
+router.get(
+  "/perfil",
+  verificarToken,
+  perfil
 );
 
 export default router;

@@ -15,14 +15,14 @@ import { fileURLToPath } from "url";
 // ROUTES
 // ==========================================
 
-import authRoutes from "./routes/authRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
-import clientesRoutes from "./routes/clientesRoutes.js";
-import prestamosRoutes from "./routes/prestamosRoutes.js";
+import authRoutes from "./routes/authroutes.js";
+import adminRoutes from "./routes/adminroutes.js";
+import clientesRoutes from "./routes/clientesroutes.js";
+import prestamosRoutes from "./routes/prestamosroutes.js";
 import pagosRoutes from "./routes/pagosRoutes.js";
-import trabajadoresRoutes from "./routes/trabajadoresRoutes.js";
-import dashboardRoutes from "./routes/dashboardRoutes.js";
-import cobradoresRoutes from "./routes/cobradoresRoutes.js";
+import trabajadoresRoutes from "./routes/trabajadoresroutes.js";
+import dashboardRoutes from "./routes/dashboardroutes.js";
+import cobradoresRoutes from "./routes/cobradoresroutes.js";
 
 // ==========================================
 // MIDDLEWARES

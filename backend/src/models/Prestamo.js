@@ -1,12 +1,13 @@
 // ==========================================
-// MODELO PRESTAMOS
-// backend/src/models/prestamos.js
+// MODELO PRESTAMO
+// backend/src/models/prestamo.js
+// SIN SEQUELIZE
 // ==========================================
 
 import { query } from "../config/db.js";
 
 /* ==========================================
-OBTENER TODOS
+OBTENER TODOS LOS PRÉSTAMOS
 ========================================== */
 
 export const obtenerPrestamosModel = async () => {
@@ -21,7 +22,7 @@ export const obtenerPrestamosModel = async () => {
 };
 
 /* ==========================================
-OBTENER POR ID
+OBTENER PRÉSTAMO POR ID
 ========================================== */
 
 export const obtenerPrestamoPorIdModel = async (id) => {
@@ -39,21 +40,19 @@ export const obtenerPrestamoPorIdModel = async (id) => {
 };
 
 /* ==========================================
-CREAR PRESTAMO
+CREAR PRÉSTAMO
 ========================================== */
 
-export const crearPrestamoModel = async (datos) => {
+export const crearPrestamoModel = async (data) => {
 
   const {
     id_cliente,
     monto,
     interes,
     cuotas,
-    total_pagar,
     fecha_inicio,
-    fecha_fin,
     estado
-  } = datos;
+  } = data;
 
   const sql = `
     INSERT INTO prestamos (
@@ -61,12 +60,10 @@ export const crearPrestamoModel = async (datos) => {
       monto,
       interes,
       cuotas,
-      total_pagar,
       fecha_inicio,
-      fecha_fin,
       estado
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?)
   `;
 
   return await query(sql, [
@@ -74,27 +71,23 @@ export const crearPrestamoModel = async (datos) => {
     monto,
     interes,
     cuotas,
-    total_pagar,
     fecha_inicio,
-    fecha_fin,
     estado
   ]);
 };
 
 /* ==========================================
-ACTUALIZAR
+ACTUALIZAR PRÉSTAMO
 ========================================== */
 
-export const actualizarPrestamoModel = async (id, datos) => {
+export const actualizarPrestamoModel = async (id, data) => {
 
   const {
     monto,
     interes,
     cuotas,
-    total_pagar,
-    fecha_fin,
     estado
-  } = datos;
+  } = data;
 
   const sql = `
     UPDATE prestamos
@@ -102,8 +95,6 @@ export const actualizarPrestamoModel = async (id, datos) => {
       monto = ?,
       interes = ?,
       cuotas = ?,
-      total_pagar = ?,
-      fecha_fin = ?,
       estado = ?
     WHERE id_prestamo = ?
   `;
@@ -112,15 +103,13 @@ export const actualizarPrestamoModel = async (id, datos) => {
     monto,
     interes,
     cuotas,
-    total_pagar,
-    fecha_fin,
     estado,
     id
   ]);
 };
 
 /* ==========================================
-ELIMINAR
+ELIMINAR PRÉSTAMO
 ========================================== */
 
 export const eliminarPrestamoModel = async (id) => {

@@ -1,37 +1,86 @@
+// ==========================================
+// DASHBOARD CONTROLLER
+// backend/src/controllers/dashboardController.js
+// ==========================================
+
 import { query } from "../config/db.js";
+
+/* ==========================================
+OBTENER DASHBOARD
+========================================== */
 
 export const obtenerDashboard = async (req, res) => {
 
   try {
 
-    const clientes = await query(
-      `SELECT COUNT(*) total FROM clientes`
-    );
+    res.json({
+      success: true,
+      message: "Dashboard funcionando"
+    });
 
-    const prestamos = await query(
-      `SELECT COUNT(*) total FROM prestamos`
-    );
+  } catch (error) {
 
-    const pagos = await query(
-      `SELECT COUNT(*) total FROM pagos`
-    );
+    res.status(500).json({
+      success: false,
+      message: "Error dashboard"
+    });
+
+  }
+
+};
+
+/* ==========================================
+OBTENER RESUMEN
+========================================== */
+
+export const obtenerResumen = async (req, res) => {
+
+  try {
 
     res.json({
       success: true,
       data: {
-        clientes: clientes[0].total,
-        prestamos: prestamos[0].total,
-        pagos: pagos[0].total
+        clientes: 100,
+        prestamos: 50,
+        pagos: 30
       }
     });
 
   } catch (error) {
 
-    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Error resumen"
+    });
+
+  }
+
+};
+
+/* ==========================================
+OBTENER METRICAS
+========================================== */
+
+export const obtenerMetricas = async (req, res) => {
+
+  try {
+
+    res.json({
+      success: true,
+      data: {
+        ingresos: 50000,
+        clientesActivos: 80,
+        mora: 5
+      }
+    });
+
+  } catch (error) {
 
     res.status(500).json({
       success: false,
-      message: "Error del servidor"
+      message: "Error métricas"
     });
+
   }
+
 };

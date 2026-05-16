@@ -1,109 +1,96 @@
+// ==========================================
+// MODELO CLIENTES
+// backend/src/models/cliente.js
+// ==========================================
+
 import { query } from "../config/db.js";
 
-// ==========================================
-// OBTENER TODOS LOS CLIENTES
-// ==========================================
+/* ==========================================
+OBTENER CLIENTES
+========================================== */
 
-export const obtenerTodosLosClientes = async () => {
+export const obtenerClientesModel = async () => {
 
-  const rows = await query(`
-    SELECT
-      id_cliente,
-      nombre,
-      apellido,
-      telefono,
-      direccion,
-      cedula,
-      estado,
-      fecha_creacion
+  const sql = `
+    SELECT *
     FROM clientes
-    ORDER BY id_cliente DESC
-  `);
+    ORDER BY fecha_creacion DESC
+  `;
 
-  return rows;
+  return await query(sql);
 };
 
-// ==========================================
-// OBTENER CLIENTE POR ID
-// ==========================================
+/* ==========================================
+OBTENER CLIENTE POR ID
+========================================== */
 
-export const obtenerClientePorId = async (id) => {
+export const obtenerClientePorIdModel = async (id) => {
 
-  const rows = await query(
-    `
-    SELECT
-      id_cliente,
-      nombre,
-      apellido,
-      telefono,
-      direccion,
-      cedula,
-      estado,
-      fecha_creacion
+  const sql = `
+    SELECT *
     FROM clientes
     WHERE id_cliente = ?
     LIMIT 1
-    `,
-    [id]
-  );
+  `;
+
+  const rows = await query(sql, [id]);
 
   return rows[0];
 };
 
-// ==========================================
-// CREAR CLIENTE
-// ==========================================
+/* ==========================================
+CREAR CLIENTE
+========================================== */
 
-export const crearClienteModel = async ({
-  nombre,
-  apellido,
-  telefono,
-  direccion,
-  cedula
-}) => {
+export const crearClienteModel = async (datos) => {
 
-  const result = await query(
-    `
-    INSERT INTO clientes
-    (
-      nombre,
-      apellido,
-      telefono,
-      direccion,
-      cedula
-    )
-    VALUES (?, ?, ?, ?, ?)
-    `,
-    [
-      nombre,
-      apellido,
-      telefono,
-      direccion,
-      cedula
-    ]
-  );
-
-  return result;
-};
-
-// ==========================================
-// ACTUALIZAR CLIENTE
-// ==========================================
-
-export const actualizarClienteModel = async (
-  id,
-  {
+  const {
     nombre,
     apellido,
     telefono,
     direccion,
     cedula,
-    estado
-  }
-) => {
+    correo
+  } = datos;
 
-  const result = await query(
-    `
+  const sql = `
+    INSERT INTO clientes (
+      nombre,
+      apellido,
+      telefono,
+      direccion,
+      cedula,
+      correo
+    )
+    VALUES (?, ?, ?, ?, ?, ?)
+  `;
+
+  return await query(sql, [
+    nombre,
+    apellido,
+    telefono,
+    direccion,
+    cedula,
+    correo
+  ]);
+};
+
+/* ==========================================
+ACTUALIZAR CLIENTE
+========================================== */
+
+export const actualizarClienteModel = async (id, datos) => {
+
+  const {
+    nombre,
+    apellido,
+    telefono,
+    direccion,
+    cedula,
+    correo
+  } = datos;
+
+  const sql = `
     UPDATE clientes
     SET
       nombre = ?,
@@ -111,59 +98,31 @@ export const actualizarClienteModel = async (
       telefono = ?,
       direccion = ?,
       cedula = ?,
-      estado = ?
+      correo = ?
     WHERE id_cliente = ?
-    `,
-    [
-      nombre,
-      apellido,
-      telefono,
-      direccion,
-      cedula,
-      estado,
-      id
-    ]
-  );
+  `;
 
-  return result;
+  return await query(sql, [
+    nombre,
+    apellido,
+    telefono,
+    direccion,
+    cedula,
+    correo,
+    id
+  ]);
 };
 
-// ==========================================
-// ELIMINAR CLIENTE
-// ==========================================
+/* ==========================================
+ELIMINAR CLIENTE
+========================================== */
 
-export const eliminarClienteModel = async (
-  id
-) => {
+export const eliminarClienteModel = async (id) => {
 
-  const result = await query(
-    `
+  const sql = `
     DELETE FROM clientes
     WHERE id_cliente = ?
-    `,
-    [id]
-  );
+  `;
 
-  return result;
-};
-
-// ==========================================
-// VALIDAR CÉDULA EXISTENTE
-// ==========================================
-
-export const existeCedula = async (
-  cedula
-) => {
-
-  const rows = await query(
-    `
-    SELECT id_cliente
-    FROM clientes
-    WHERE cedula = ?
-    LIMIT 1
-    `,
-    [cedula]
-  );
-
-  return rows.length > 0;
+  return await query(sql, [id]);
 };

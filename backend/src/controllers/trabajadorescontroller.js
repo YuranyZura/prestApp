@@ -1,25 +1,19 @@
-import { query } from "../config/db.js";
-
 export const obtenerTrabajadores = async (req, res) => {
+  res.json({ mensaje: "Obtener trabajadores" });
+};
 
-  try {
+export const obtenerTrabajadorPorId = async (req, res) => {
+  res.json({ mensaje: "Obtener trabajador por ID" });
+};
 
-    const rows = await query(
-      `SELECT * FROM trabajadores ORDER BY id_trabajador DESC`
-    );
+export const crearTrabajador = async (req, res) => {
+  res.json({ mensaje: "Crear trabajador" });
+};
 
-    res.json({
-      success: true,
-      data: rows
-    });
+export const actualizarTrabajador = async (req, res) => {
+  res.json({ mensaje: "Actualizar trabajador" });
+};
 
-  } catch (error) {
-
-    console.error(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Error del servidor"
-    });
-  }
+export const eliminarTrabajador = async (req, res) => {
+  res.json({ mensaje: "Eliminar trabajador" });
 };
