@@ -5,6 +5,28 @@ import {
 from "./api.js";
 
 // =====================================
+// RUTAS
+// =====================================
+
+const RUTAS = {
+
+  LOGIN:
+    "/html/auth/login.html",
+
+  ADMIN:
+    "/html/admin/dashboard.html",
+
+  SUPER_ADMIN:
+    "/html/admin/administradores.html",
+
+  TRABAJADOR:
+    "/html/trabajador/dashboard.html",
+
+  UNAUTHORIZED:
+    "/html/errors/unauthorized.html"
+};
+
+// =====================================
 // LOGIN
 // =====================================
 
@@ -25,41 +47,53 @@ export async function login(
       );
 
     // =====================================
-    // LOGIN OK
+    // VALIDAR RESPUESTA
     // =====================================
 
     if (
-      data &&
-      data.success
+      !data ||
+      !data.success
     ) {
 
-      // TOKEN
-
-      if (data.token) {
-
-        localStorage.setItem(
-          "token",
-          data.token
-        );
-      }
-
-      // USUARIO
-
-      if (data.user) {
-
-        localStorage.setItem(
-          "usuario",
-          JSON.stringify(data.user)
-        );
-      }
-
-      return data;
+      throw new Error(
+        data?.message ||
+        "Credenciales inválidas"
+      );
     }
 
-    throw new Error(
-      data.message ||
-      "Credenciales inválidas"
+    // =====================================
+    // VALIDAR TOKEN
+    // =====================================
+
+    if (!data.token) {
+
+      throw new Error(
+        "Token no recibido"
+      );
+    }
+
+    // =====================================
+    // GUARDAR TOKEN
+    // =====================================
+
+    localStorage.setItem(
+      "token",
+      data.token
     );
+
+    // =====================================
+    // GUARDAR USUARIO
+    // =====================================
+
+    if (data.user) {
+
+      localStorage.setItem(
+        "usuario",
+        JSON.stringify(data.user)
+      );
+    }
+
+    return data;
 
   } catch (error) {
 
@@ -87,6 +121,17 @@ export async function register(
         "/auth/register",
         usuario
       );
+
+    if (
+      !data ||
+      !data.success
+    ) {
+
+      throw new Error(
+        data?.message ||
+        "Error en registro"
+      );
+    }
 
     return data;
 
@@ -116,29 +161,39 @@ export async function logout() {
   } catch (error) {
 
     console.warn(
-      "Logout backend error"
+      "Logout backend error:",
+      error
     );
   }
 
-  localStorage.removeItem(
-    "token"
-  );
-
-  localStorage.removeItem(
-    "usuario"
-  );
+  limpiarSesion();
 
   window.location.href =
-    "/src/html/auth/login.html";
+    RUTAS.LOGIN;
 }
 
 // =====================================
-// VERIFICAR TOKEN
+// VERIFICAR SESIÓN
 // =====================================
 
 export async function verificarSesion() {
 
   try {
+
+    // =====================================
+    // VALIDAR TOKEN LOCAL
+    // =====================================
+
+    if (!estaAutenticado()) {
+
+      await logout();
+
+      return false;
+    }
+
+    // =====================================
+    // VALIDAR BACKEND
+    // =====================================
 
     const data =
       await apiFetch(
@@ -156,10 +211,11 @@ export async function verificarSesion() {
   } catch (error) {
 
     console.error(
-      "Sesión inválida"
+      "Sesión inválida:",
+      error
     );
 
-    cerrarSesion();
+    await logout();
 
     return false;
   }
@@ -182,14 +238,26 @@ export function obtenerToken() {
 
 export function obtenerUsuario() {
 
-  const usuario =
-    localStorage.getItem(
-      "usuario"
+  try {
+
+    const usuario =
+      localStorage.getItem(
+        "usuario"
+      );
+
+    return usuario
+      ? JSON.parse(usuario)
+      : null;
+
+  } catch (error) {
+
+    console.error(
+      "Error parseando usuario:",
+      error
     );
 
-  return usuario
-    ? JSON.parse(usuario)
-    : null;
+    return null;
+  }
 }
 
 // =====================================
@@ -205,12 +273,62 @@ export function obtenerRol() {
 }
 
 // =====================================
+// VALIDAR TOKEN JWT
+// =====================================
+
+function tokenExpirado(
+  token
+) {
+
+  try {
+
+    const payload =
+      JSON.parse(
+        atob(
+          token.split(".")[1]
+        )
+      );
+
+    if (!payload.exp) {
+
+      return true;
+    }
+
+    const expiracion =
+      payload.exp * 1000;
+
+    return (
+      Date.now() >= expiracion
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Token inválido:",
+      error
+    );
+
+    return true;
+  }
+}
+
+// =====================================
 // VALIDAR LOGIN
 // =====================================
 
 export function estaAutenticado() {
 
-  return !!obtenerToken();
+  const token =
+    obtenerToken();
+
+  if (!token) {
+
+    return false;
+  }
+
+  return !tokenExpirado(
+    token
+  );
 }
 
 // =====================================
@@ -222,53 +340,61 @@ export function redirigirPorRol() {
   const rol =
     obtenerRol();
 
+  // =====================================
   // SUPER ADMIN
+  // =====================================
 
   if (
     rol === "super_admin"
   ) {
 
     window.location.href =
-      "/src/html/admin/administradores.html";
+      RUTAS.SUPER_ADMIN;
 
     return;
   }
 
+  // =====================================
   // ADMIN
+  // =====================================
 
   if (
     rol === "administrador"
   ) {
 
     window.location.href =
-      "/src/html/admin/dashboard.html";
+      RUTAS.ADMIN;
 
     return;
   }
 
+  // =====================================
   // TRABAJADOR
+  // =====================================
 
   if (
     rol === "trabajador"
   ) {
 
     window.location.href =
-      "/src/html/trabajador/dashboard.html";
+      RUTAS.TRABAJADOR;
 
     return;
   }
 
-  // DEFAULT
+  // =====================================
+  // ROL NO AUTORIZADO
+  // =====================================
 
   window.location.href =
-    "/src/html/auth/login.html";
+    RUTAS.UNAUTHORIZED;
 }
 
 // =====================================
-// CERRAR SESIÓN
+// LIMPIAR SESIÓN
 // =====================================
 
-function cerrarSesion() {
+function limpiarSesion() {
 
   localStorage.removeItem(
     "token"
@@ -277,7 +403,4 @@ function cerrarSesion() {
   localStorage.removeItem(
     "usuario"
   );
-
-  window.location.href =
-    "/src/html/auth/login.html";
 }

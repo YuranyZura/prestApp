@@ -8,6 +8,8 @@ import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import path from "path";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 
 import { fileURLToPath } from "url";
 
@@ -19,7 +21,7 @@ import authRoutes from "./routes/authroutes.js";
 import adminRoutes from "./routes/adminroutes.js";
 import clientesRoutes from "./routes/clientesroutes.js";
 import prestamosRoutes from "./routes/prestamosroutes.js";
-import pagosRoutes from "./routes/pagosRoutes.js";
+import pagosRoutes from "./routes/pagosroutes.js";
 import trabajadoresRoutes from "./routes/trabajadoresroutes.js";
 import dashboardRoutes from "./routes/dashboardroutes.js";
 import cobradoresRoutes from "./routes/cobradoresroutes.js";
@@ -28,7 +30,7 @@ import cobradoresRoutes from "./routes/cobradoresroutes.js";
 // MIDDLEWARES
 // ==========================================
 
-import errorHandler from "./middleware/errorHandler.js";
+import errorHandler from "./middleware/errorhandler.js";
 import notFound from "./middleware/notFound.js";
 
 // ==========================================
@@ -49,8 +51,12 @@ const __dirname =
 // CORS
 // ==========================================
 
+const allowedOrigins = [
+  "https://tudominio.com",
+  "https://www.tudominio.com"
+];
 app.use(cors({
-  origin: "*",
+  origin: allowedOrigins,
   credentials: true
 }));
 
@@ -64,6 +70,11 @@ app.use(express.urlencoded({
   extended: true
 }));
 
+app.use(helmet());
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+}));
 app.use(morgan("dev"));
 
 // ==========================================
