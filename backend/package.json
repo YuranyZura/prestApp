@@ -2,14 +2,11 @@
   "name": "prestapp-backend",
   "version": "1.0.0",
   "type": "module",
-  
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
     "test": "jest"
-    
   },
-  
   "dependencies": {
     "bcrypt": "^6.0.0",
     "bcryptjs": "^2.4.3",
@@ -37,5 +34,4 @@
     "nodemon": "^3.1.14",
     "supertest": "^7.2.2"
   }
-  
 }

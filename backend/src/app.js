@@ -74,6 +74,13 @@ app.use(express.urlencoded({
 }));
 
 app.use(helmet());
+
+app.use(hpp());
+
+app.use(mongoSanitize());
+
+app.use(xss());
+
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100 // limit each IP to 100 requests per windowMs
