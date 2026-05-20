@@ -10,6 +10,9 @@ import dotenv from "dotenv";
 import path from "path";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import hpp from "hpp";
+import sanitizacion from "express-mongo-sanitize";
+import xss from "xss-clean";
 
 import { fileURLToPath } from "url";
 
@@ -17,14 +20,14 @@ import { fileURLToPath } from "url";
 // ROUTES
 // ==========================================
 
-import authRoutes from "./routes/authroutes.js";
-import adminRoutes from "./routes/adminroutes.js";
-import clientesRoutes from "./routes/clientesroutes.js";
-import prestamosRoutes from "./routes/prestamosroutes.js";
-import pagosRoutes from "./routes/pagosroutes.js";
-import trabajadoresRoutes from "./routes/trabajadoresroutes.js";
-import dashboardRoutes from "./routes/dashboardroutes.js";
-import cobradoresRoutes from "./routes/cobradoresroutes.js";
+import authRoutes from "./routes/auth.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
+import clientesRoutes from "./routes/clientes.routes.js";
+import prestamosRoutes from "./routes/prestamos.routes.js";
+import pagosRoutes from "./routes/pagos.routes.js";
+import trabajadoresRoutes from "./routes/trabajadores.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
+import cobradoresRoutes from "./routes/cobradores.routes.js";
 
 // ==========================================
 // MIDDLEWARES

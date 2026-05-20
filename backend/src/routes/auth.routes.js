@@ -4,7 +4,7 @@ import {
   login,
   perfil,
   validarToken
-} from "../controllers/authController.js";
+} from "../controllers/auth.controller.js";
 
 import {
   verificarToken

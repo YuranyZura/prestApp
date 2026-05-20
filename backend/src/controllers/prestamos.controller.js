@@ -2,7 +2,7 @@ import {
   obtenerPrestamosModel,
   obtenerPrestamoPorIdModel,
   crearPrestamoModel
-} from "../models/prestamos.js";
+} from "../models/prestamo.model.js";
 
 // Obtener todos los préstamos
 export const obtenerPrestamos = async (req, res) => {
@@ -89,7 +89,7 @@ export const eliminarPrestamo = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const prestamo = await Prestamo.findByPk(id);
+    const prestamo = await obtenerPrestamoPorIdModel(id);
 
     if (!prestamo) {
       return res.status(404).json({

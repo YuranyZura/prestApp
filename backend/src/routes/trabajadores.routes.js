@@ -5,7 +5,7 @@ import {
   crearTrabajador,
   actualizarTrabajador,
   eliminarTrabajador
-} from "../controllers/trabajadoresController.js";
+} from "../controllers/trabajadores.controller.js";
 
 import {
   verificarToken

@@ -14,23 +14,21 @@ requiredEnv.forEach((env) => {
 });
 
 // 🔗 Pool de conexiones optimizado
+import mysql from "mysql2/promise";
+
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
-  port: process.env.DB_PORT || 3306,
   user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD || "",
+  password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
 
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0,
-
-  connectTimeout: 10000,
-
-  // 🔥 IMPORTANTE (evita caídas por conexiones muertas)
-  enableKeepAlive: true,
-  keepAliveInitialDelay: 0,
+  queueLimit: 0
 });
+
+export default pool;
+
 
 // 🔥 HELPER DE QUERIES (MEJORADO)
 export const query = async (sql, params = []) => {

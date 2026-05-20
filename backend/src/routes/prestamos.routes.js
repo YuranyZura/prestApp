@@ -5,7 +5,7 @@ import {
   crearPrestamo,
   actualizarPrestamo,
   eliminarPrestamo
-} from "../controllers/prestamosController.js";
+} from "../controllers/prestamos.controller.js";
 
 import {
   verificarToken

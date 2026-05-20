@@ -6,7 +6,7 @@ import {
   crearCliente,
   actualizarCliente,
   eliminarCliente
-} from "../controllers/clientesController.js";
+} from "../controllers/clientes.controller.js";
 
 import {
   verificarToken

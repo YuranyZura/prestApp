@@ -4,7 +4,7 @@ import {
   obtenerCobradores,
   crearCobrador,
   eliminarCobrador
-} from "../controllers/cobradoresController.js";
+} from "../controllers/cobradores.controller.js";
 
 import {
   verificarToken

@@ -4,7 +4,7 @@ import {
   obtenerPagos,
   crearPago,
   eliminarPago
-} from "../controllers/pagosController.js";
+} from "../controllers/pagos.controller.js";
 
 import {
   verificarToken

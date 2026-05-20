@@ -9,7 +9,7 @@ import {
   obtenerDashboard,
   obtenerResumen,
   obtenerMetricas
-} from "../controllers/dashboardController.js";
+} from "../controllers/dashboard.controller.js";
 
 import {
   verificarToken

@@ -6,7 +6,7 @@ import {
   crearAdmin,
   actualizarAdmin,
   eliminarAdmin
-} from "../controllers/adminController.js";
+} from "../controllers/admin.controller.js";
 
 import { verificarToken } from "../middleware/authMiddleware.js";
 import { soloAdmin } from "../middleware/roles.js";
