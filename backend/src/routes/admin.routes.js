@@ -8,7 +8,7 @@ import {
   eliminarAdmin
 } from "../controllers/admin.controller.js";
 
-import { verificarToken } from "../middleware/authMiddleware.js";
+import { verificarToken } from "../middleware/auth.middleware.js";
 import { soloAdmin } from "../middleware/roles.js";
 
 const router = Router();

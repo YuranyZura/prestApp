@@ -1,5 +1,5 @@
 // config/cors.js
-import cors from "cors";
+import cors from "cors.js";
 
 const allowedOrigins = [
   "http://localhost:4000",

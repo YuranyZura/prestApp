@@ -9,7 +9,7 @@ import {
 
 import {
   verificarToken
-} from "../middleware/authMiddleware.js";
+} from "../middleware/auth.middleware.js";
 
 const router = Router();
 
