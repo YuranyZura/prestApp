@@ -11,8 +11,9 @@ import path from "path";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import hpp from "hpp";
-import sanitizacion from "express-mongo-sanitize";
-import xss from "xss-clean";
+import mongoSanitize from "express-mongo-sanitize";
+
+//import xss from "xss-clean";
 
 import { fileURLToPath } from "url";
 
@@ -55,6 +56,12 @@ const __dirname =
 // ==========================================
 
 const allowedOrigins = [
+
+  // LOCAL
+  "http://localhost:5173",
+
+  //PRODUCCION
+
   "https://tudominio.com",
   "https://www.tudominio.com"
 ];
@@ -79,7 +86,7 @@ app.use(hpp());
 
 app.use(mongoSanitize());
 
-app.use(xss());
+//app.use(xss());
 
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
