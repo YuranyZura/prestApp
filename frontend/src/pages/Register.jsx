@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState} from "react";
 
 import API from "../config/api";
 
@@ -14,7 +14,7 @@ function Register() {
   const [email, setEmail] =
     useState("");
 
-  const [password, setPassword] =
+  const [contrasena, setContrasena] =
     useState("");
 
   // ==========================================
@@ -41,7 +41,7 @@ function Register() {
             body: JSON.stringify({
               nombre,
               email,
-              password
+              contrasena: contrasena
             })
           }
         );
@@ -158,12 +158,12 @@ function Register() {
 
           <input
             type="password"
-            placeholder="Password"
+            placeholder="Contraseña"
 
-            value={password}
+            value={contrasena}
 
             onChange={(e) =>
-              setPassword(
+              setContrasena(
                 e.target.value
               )
             }

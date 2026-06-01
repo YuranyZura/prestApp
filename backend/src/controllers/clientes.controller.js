@@ -8,14 +8,21 @@ export const obtenerClientes = async (req, res) => {
   try {
 
     const rows = await query(`
-      SELECT *
+      SELECT
+        id_clientes,
+        nombre,
+        apellido,
+        telefono,
+        direccion,
+        cedula,
+        CONCAT(nombre, ' ', apellido) AS nombreCompleto
       FROM clientes
-      ORDER BY id_cliente DESC
+      ORDER BY id_clientes DESC
     `);
 
     res.json({
       success: true,
-      data: rows
+      clientes: rows
     });
 
   } catch (err) {

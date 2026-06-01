@@ -559,6 +559,295 @@ body {
 const API = "/api";
 
 // ======================================
+// OBTENER TOKEN
+// ======================================
+
+function getToken() {
+  return localStorage.getItem("token") ||
+         sessionStorage.getItem("token");
+}
+
+// ======================================
+// SIDEBAR MOBILE
+// ======================================
+
+const sidebar =
+document.getElementById("sidebar");
+
+document
+.getElementById("toggleSidebar")
+.addEventListener("click", () => {
+
+  sidebar.classList.toggle("show");
+
+});
+
+// ======================================
+// VALIDAR SESIÓN
+// ======================================
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+  const token = getToken();
+
+  if (!token) {
+    location.href = "/src/html/auth/login.html";
+    return;
+  }
+
+  try {
+
+    const res = await fetch(`${API}/auth/validar`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    if (!res.ok) {
+      localStorage.clear();
+      location.href = "/src/html/auth/login.html";
+      return;
+    }
+
+    const data = await res.json();
+
+    if (data.usuario && data.usuario.id_rol === 3) {
+
+      document
+      .getElementById("menuTrabajadores")
+      .style.display = "none";
+
+    }
+
+  } catch (error) {
+
+    location.href = "/src/html/auth/login.html";
+    return;
+
+  }
+
+  cargarClientes();
+
+});
+
+// ======================================
+// CARGAR CLIENTES
+// ======================================
+
+async function cargarClientes() {
+
+  try {
+
+    const token = getToken();
+
+    const res = await fetch(`${API}/clientes`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    const data = await res.json();
+
+    if (!data.success) return;
+
+    const select =
+    document.getElementById("cliente");
+
+    select.innerHTML =
+    '<option value="">Seleccione cliente</option>';
+
+    data.clientes.forEach(cliente => {
+
+      select.innerHTML += `
+        <option value="${cliente.id_clientes}">
+          ${cliente.nombreCompleto}
+        </option>
+      `;
+
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+}
+
+// ======================================
+// CALCULAR PRÉSTAMO
+// ======================================
+
+function calcularPrestamo() {
+
+  const monto =
+  parseFloat(
+    document.getElementById("monto").value
+  ) || 0;
+
+  const interes =
+  parseFloat(
+    document.getElementById("interes").value
+  ) || 0;
+
+  const cuotas =
+  parseInt(
+    document.getElementById("cuotas").value
+  ) || 0;
+
+  const fechaInicio =
+  document.getElementById("fecha_inicio").value;
+
+  const total =
+  monto + (monto * interes / 100);
+
+  const cuota =
+  cuotas > 0 ? total / cuotas : 0;
+
+  document.getElementById("totalPagar")
+  .textContent =
+  "$" + total.toLocaleString();
+
+  document.getElementById("cuotaDiaria")
+  .textContent =
+  "$" + cuota.toFixed(2);
+
+  if (fechaInicio && cuotas > 0) {
+
+    const fecha =
+    new Date(fechaInicio);
+
+    fecha.setDate(
+      fecha.getDate() + cuotas
+    );
+
+    document.getElementById("fechaFinal")
+    .textContent =
+    fecha.toLocaleDateString();
+
+  } else {
+
+    document.getElementById("fechaFinal")
+    .textContent = "--";
+
+  }
+
+}
+
+// ======================================
+// EVENTOS CALCULADORA
+// ======================================
+
+[
+  "monto",
+  "interes",
+  "cuotas",
+  "fecha_inicio"
+]
+.forEach(id => {
+
+  document
+  .getElementById(id)
+  .addEventListener("input", calcularPrestamo);
+
+});
+
+// ======================================
+// GUARDAR PRÉSTAMO
+// ======================================
+
+document
+.getElementById("formPrestamo")
+.addEventListener("submit", async (e) => {
+
+  e.preventDefault();
+
+  const token = getToken();
+
+  const body = {
+
+    id_clientes:
+    document.getElementById("cliente").value,
+
+    monto:
+    parseFloat(document.getElementById("monto").value),
+
+    interes:
+    parseFloat(document.getElementById("interes").value),
+
+    numero_cuotas:
+    parseInt(document.getElementById("cuotas").value),
+
+    fecha_inicio:
+    document.getElementById("fecha_inicio").value
+
+  };
+
+  // Validar campos requeridos
+  if (!body.id_clientes || !body.monto || !body.interes || !body.numero_cuotas || !body.fecha_inicio) {
+    alert("Por favor completa todos los campos");
+    return;
+  }
+
+  try {
+
+    const res = await fetch(`${API}/prestamos`, {
+
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+
+      body: JSON.stringify(body)
+
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+
+      alert("✅ Préstamo creado correctamente");
+
+      document
+      .getElementById("formPrestamo")
+      .reset();
+
+      calcularPrestamo();
+
+    } else {
+
+      alert(data.message || "Error al crear préstamo");
+
+    }
+
+  } catch (error) {
+
+    alert("Error del servidor. Verifica tu conexión.");
+
+  }
+
+});
+
+// ======================================
+// LOGOUT
+// ======================================
+
+document
+.getElementById("btnLogout")
+.addEventListener("click", () => {
+
+  localStorage.clear();
+  sessionStorage.clear();
+
+  location.href = "/src/html/auth/login.html";
+
+});
+</script>
+
+
+// ======================================
 // SIDEBAR MOBILE
 // ======================================
 

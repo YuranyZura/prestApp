@@ -1,97 +1,140 @@
+import * as pagosModel from "../models/pagos.model.js";
 
-
-import { Router } from "express";
-
-import {
-  obtenerDashboard,
-  obtenerResumen,
-  obtenerMetricas
-} from "./dashboard.controller.js";
-
-import {
-  verificarToken
-} from "../middleware/auth.middleware.js";
-
-const router = Router();
-
-/* ==========================================
-MIDDLEWARE
-========================================== */
-
-router.use(verificarToken);
-
-/* ==========================================
-RUTAS
-========================================== */
-
-router.get("/", obtenerDashboard);
-
-router.get("/resumen", obtenerResumen);
-
-router.get("/metricas", obtenerMetricas);
-
-/* ==========================================
-EXPORT
-========================================== */
-
-export default router;
+// ==========================================
+// OBTENER PAGOS
+// ==========================================
 
 export const obtenerPagos = async (req, res) => {
   try {
+
+    const pagos =
+      await pagosModel.obtenerPagos();
+
     res.json({
-      mensaje: "Lista de pagos",
+      ok: true,
+      pagos
     });
+
   } catch (error) {
+
+    console.error(error);
+
     res.status(500).json({
-      error: error.message,
+      ok: false,
+      mensaje: "Error obteniendo pagos"
     });
   }
 };
+
+// ==========================================
+// OBTENER PAGO POR ID
+// ==========================================
 
 export const obtenerPagoPorId = async (req, res) => {
   try {
+
+    const { id } = req.params;
+
+    const pago =
+      await pagosModel.obtenerPagoPorId(id);
+
     res.json({
-      mensaje: "Pago encontrado",
+      ok: true,
+      pago
     });
+
   } catch (error) {
+
+    console.error(error);
+
     res.status(500).json({
-      error: error.message,
+      ok: false,
+      mensaje: "Error obteniendo pago"
     });
   }
 };
+
+// ==========================================
+// CREAR PAGO
+// ==========================================
 
 export const crearPago = async (req, res) => {
   try {
+
+    const datos = req.body;
+
+    const pago =
+      await pagosModel.crearPago(datos);
+
     res.status(201).json({
-      mensaje: "Pago creado correctamente",
+      ok: true,
+      pago
     });
+
   } catch (error) {
+
+    console.error(error);
+
     res.status(500).json({
-      error: error.message,
+      ok: false,
+      mensaje: "Error creando pago"
     });
   }
 };
+
+// ==========================================
+// ACTUALIZAR PAGO
+// ==========================================
 
 export const actualizarPago = async (req, res) => {
   try {
+
+    const { id } = req.params;
+
+    const datos = req.body;
+
+    const pago =
+      await pagosModel.actualizarPago(id, datos);
+
     res.json({
-      mensaje: "Pago actualizado correctamente",
+      ok: true,
+      pago
     });
+
   } catch (error) {
+
+    console.error(error);
+
     res.status(500).json({
-      error: error.message,
+      ok: false,
+      mensaje: "Error actualizando pago"
     });
   }
 };
 
+// ==========================================
+// ELIMINAR PAGO
+// ==========================================
+
 export const eliminarPago = async (req, res) => {
   try {
+
+    const { id } = req.params;
+
+    await pagosModel.eliminarPago(id);
+
     res.json({
-      mensaje: "Pago eliminado correctamente",
+      ok: true,
+      mensaje: "Pago eliminado correctamente"
     });
+
   } catch (error) {
+
+    console.error(error);
+
     res.status(500).json({
-      error: error.message,
+      ok: false,
+      mensaje: "Error eliminando pago"
     });
   }
 };

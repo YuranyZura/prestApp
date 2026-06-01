@@ -56,24 +56,28 @@ const __dirname =
 // ==========================================
 
 const allowedOrigins = [
-
   // LOCAL
   "http://localhost:5173",
-
-  //PRODUCCION
-
-  "https://tudominio.com",
+  "http://localhost:3000",
+  // PRODUCCION
+  process.env.FRONTEND_URL,
   "https://www.tudominio.com"
-];
+].filter(Boolean);
+
 app.use(cors({
-  origin: allowedOrigins,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("No permitido por CORS"));
+    }
+  },
   credentials: true
 }));
 
 // ==========================================
 // MIDDLEWARES
 // ==========================================
-
 app.use(express.json());
 
 app.use(express.urlencoded({

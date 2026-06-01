@@ -1,19 +1,167 @@
-export const obtenerTrabajadores = async (req, res) => {
-  res.json({ mensaje: "Obtener trabajadores" });
+import * as trabajadoresModel
+from "../models/trabajadores.model.js";
+
+// ==========================================
+// OBTENER TODOS
+// ==========================================
+
+export const obtenerTrabajadores =
+async (req, res) => {
+
+  try {
+
+    const trabajadores =
+      await trabajadoresModel
+      .obtenerTrabajadores();
+
+    res.json({
+
+      success: true,
+
+      trabajadores
+    });
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+
+      success: false
+    });
+  }
 };
 
-export const obtenerTrabajadorPorId = async (req, res) => {
-  res.json({ mensaje: "Obtener trabajador por ID" });
+// ==========================================
+// OBTENER POR ID
+// ==========================================
+
+export const obtenerTrabajadorPorId =
+async (req, res) => {
+
+  try {
+
+    const { id } = req.params;
+
+    const trabajador =
+      await trabajadoresModel
+      .obtenerTrabajadorPorId(id);
+
+    res.json({
+
+      success: true,
+
+      trabajador
+    });
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+
+      success: false
+    });
+  }
 };
 
-export const crearTrabajador = async (req, res) => {
-  res.json({ mensaje: "Crear trabajador" });
+// ==========================================
+// CREAR
+// ==========================================
+
+export const crearTrabajador =
+async (req, res) => {
+
+  try {
+
+    const trabajador =
+      await trabajadoresModel
+      .crearTrabajador(req.body);
+
+    res.status(201).json({
+
+      success: true,
+
+      trabajador
+    });
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+
+      success: false
+    });
+  }
 };
 
-export const actualizarTrabajador = async (req, res) => {
-  res.json({ mensaje: "Actualizar trabajador" });
+// ==========================================
+// ACTUALIZAR
+// ==========================================
+
+export const actualizarTrabajador =
+async (req, res) => {
+
+  try {
+
+    const { id } = req.params;
+
+    res.json({
+
+      success: true,
+
+      message:
+        `Trabajador ${id} actualizado`
+    });
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+
+      success: false
+    });
+  }
 };
 
-export const eliminarTrabajador = async (req, res) => {
-  res.json({ mensaje: "Eliminar trabajador" });
+// ==========================================
+// ELIMINAR
+// ==========================================
+
+export const eliminarTrabajador =
+async (req, res) => {
+
+  try {
+
+    const { id } = req.params;
+
+    res.json({
+
+      success: true,
+
+      message:
+        `Trabajador ${id} eliminado`
+    });
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+
+      success: false
+    });
+  }
 };

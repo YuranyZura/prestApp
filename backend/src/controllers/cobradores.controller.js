@@ -103,7 +103,7 @@ export const crearCobrador = async (req, res) => {
       apellido,
       correo,
       telefono,
-      password
+      contrasena
     } = req.body;
 
     const existe = await query(`
@@ -121,7 +121,7 @@ export const crearCobrador = async (req, res) => {
 
     }
 
-    const hash = await bcrypt.hash(password, 10);
+    const hash = await bcrypt.hash(contrasena, 10);
 
     const result = await query(`
       INSERT INTO usuarios (
@@ -129,7 +129,7 @@ export const crearCobrador = async (req, res) => {
         apellido,
         correo,
         telefono,
-        password,
+        contrasena,
         rol,
         verificado
       )

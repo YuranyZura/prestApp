@@ -1,16 +1,17 @@
-import express from "express";
+import {Router} from "express";
 
 import {
   login,
   perfil,
-  validarToken
+  validarToken,
+  register
 } from "../controllers/auth.controller.js";
 
 import {
   verificarToken
 } from "../middleware/auth.middleware.js";
 
-const router = express.Router();
+const router = Router();
 
 // ==========================================
 // AUTH
@@ -18,6 +19,9 @@ const router = express.Router();
 
 // LOGIN
 router.post("/login", login);
+
+// REGISTER
+router.post("/register", register);
 
 // VALIDAR TOKEN
 router.get(

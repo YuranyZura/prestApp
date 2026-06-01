@@ -47,12 +47,17 @@ export const crearPrestamoModel = async (data) => {
 
   const {
     id_cliente,
+    id_clientes,
     monto,
     interes,
     cuotas,
+    numero_cuotas,
     fecha_inicio,
     estado
   } = data;
+
+  const clienteId = id_cliente || id_clientes;
+  const numeroCuotas = cuotas || numero_cuotas;
 
   const sql = `
     INSERT INTO prestamos (
@@ -67,12 +72,12 @@ export const crearPrestamoModel = async (data) => {
   `;
 
   return await query(sql, [
-    id_cliente,
+    clienteId,
     monto,
     interes,
-    cuotas,
+    numeroCuotas,
     fecha_inicio,
-    estado
+    estado || "activo"
   ]);
 };
 

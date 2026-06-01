@@ -101,7 +101,7 @@ export const crearAdmin = async (req, res) => {
       nombre,
       apellido,
       correo,
-      password
+      contrasena
     } = req.body;
 
     const existe = await query(`
@@ -119,14 +119,14 @@ export const crearAdmin = async (req, res) => {
 
     }
 
-    const hash = await bcrypt.hash(password, 10);
+    const hash = await bcrypt.hash(contrasena, 10);
 
     const result = await query(`
       INSERT INTO usuarios (
         nombre,
         apellido,
         correo,
-        password,
+        contrasena,
         rol,
         verificado
       )
