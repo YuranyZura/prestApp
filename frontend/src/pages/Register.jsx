@@ -1,185 +1,455 @@
-import React,{useState} from "react";
-
+import React, { useState } from "react";
 import API from "../config/api";
 
 function Register() {
-
   // ==========================================
   // STATES
   // ==========================================
 
-  const [nombre, setNombre] =
+  const [nombre, setNombre] = useState("");
+  const [apellido, setApellido] = useState("");
+  const [cedula, setCedula] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [email, setEmail] = useState("");
+  const [contrasena, setContrasena] = useState("");
+  const [confirmarContrasena, setConfirmarContrasena] =
     useState("");
 
-  const [email, setEmail] =
-    useState("");
+  const [mostrarPassword, setMostrarPassword] =
+    useState(false);
 
-  const [contrasena, setContrasena] =
-    useState("");
+  const [mostrarConfirmar, setMostrarConfirmar] =
+    useState(false);
 
   // ==========================================
   // REGISTER
   // ==========================================
 
   async function handleRegister(e) {
-
     e.preventDefault();
 
-    try {
+  // ==========================================
+  // LIMPIAR DATOS
+  // ==========================================
 
-      const response =
-        await fetch(
-          `${API}/api/auth/register`,
-          {
-            method: "POST",
+  const nombreLimpio =
+    nombre.trim();
 
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
+  const apellidoLimpio =
+    apellido.trim();
 
-            body: JSON.stringify({
-              nombre,
-              email,
-              contrasena: contrasena
-            })
-          }
-        );
+  const cedulaLimpia =
+    cedula.trim();
 
-      const data =
-        await response.json();
+  const telefonoLimpio =
+    telefono.trim();
 
-      console.log(data);
+  const correoLimpio =
+    email.trim();
 
-      // ======================================
-      // VALIDAR RESPUESTA
-      // ======================================
+  // ==========================================
+  // CAMPOS OBLIGATORIOS
+  // ==========================================
 
-      if (!response.ok) {
+  if (
+    !nombreLimpio ||
+    !apellidoLimpio ||
+    !cedulaLimpia ||
+    !telefonoLimpio ||
+    !correoLimpio ||
+    !contrasena ||
+    !confirmarContrasena
+  ) {
 
-        alert(
-          data.message ||
-          "Error registrando usuario"
-        );
+    alert(
+      "Todos los campos son obligatorios"
+    );
 
-        return;
-      }
+    return;
+  }
 
-      // ======================================
-      // GUARDAR TOKEN
-      // ======================================
+  // ==========================================
+  // VALIDAR EMAIL
+  // ==========================================
 
-      if (data.token) {
+  const emailRegex =
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (
+    !emailRegex.test(
+      correoLimpio
+    )
+  ) {
+
+    alert(
+      "Ingrese un correo electrónico válido"
+    );
+
+    return;
+  }
+
+  // ==========================================
+  // VALIDAR CÉDULA
+  // ==========================================
+
+  const cedulaRegex =
+    /^[0-9]{5,20}$/;
+
+  if (
+    !cedulaRegex.test(
+      cedulaLimpia
+    )
+  ) {
+
+    alert(
+      "Ingrese una cédula válida"
+    );
+
+    return;
+  }
+
+  // ==========================================
+  // VALIDAR TELÉFONO
+  // ==========================================
+
+  const telefonoRegex =
+    /^[0-9]{7,15}$/;
+
+  if (
+    !telefonoRegex.test(
+      telefonoLimpio
+    )
+  ) {
+
+    alert(
+      "Ingrese un número telefónico válido"
+    );
+
+    return;
+  }
+
+  // ==========================================
+  // VALIDAR CONTRASEÑA
+  // ==========================================
+
+  const passwordRegex =
+    /^(?=.*[A-Z])(?=.*[0-9]).{8,}$/;
+
+  if (
+    !passwordRegex.test(
+      contrasena
+    )
+  ) {
+
+    alert(
+      "La contraseña debe tener mínimo 8 caracteres, una mayúscula y un número"
+    );
+
+    return;
+  }
+
+  // ==========================================
+  // CONFIRMAR CONTRASEÑA
+  // ==========================================
+
+  if (
+    contrasena !==
+    confirmarContrasena
+  ) {
+
+    alert(
+      "Las contraseñas no coinciden"
+    );
+
+    return;
+  }
+
+  try {
+
+    const response =
+      await fetch(
+        `${API}/auth/register`,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body: JSON.stringify({
+            nombre:
+              nombreLimpio,
+
+            apellido:
+              apellidoLimpio,
+
+            cedula:
+              cedulaLimpia,
+
+            telefono:
+              telefonoLimpio,
+
+            correo:
+              correoLimpio,
+
+            contrasena,
+          }),
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+
+      alert(
+        data.message ||
+        "Error registrando usuario"
+      );
+
+      return;
+    }
+
+    // ==========================================
+    // GUARDAR TOKEN
+    // ==========================================
+
+    if (data.token) {
+
+      localStorage.setItem(
+        "token",
+        data.token
+      );
+
+      if (data.usuario) {
 
         localStorage.setItem(
-          "token",
-          data.token
+          "usuario",
+          JSON.stringify(
+            data.usuario
+          )
         );
       }
 
-      // ======================================
-      // REDIRECT DASHBOARD
-      // ======================================
+      alert(
+        "Usuario registrado correctamente"
+      );
 
       window.location.href =
         "/dashboard";
 
-    } catch (error) {
-
-      console.error(error);
+    } else {
 
       alert(
-        "Error del servidor"
+        "Usuario registrado. Inicie sesión."
       );
+
+      window.location.href =
+        "/login";
     }
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      "Error de conexión con el servidor"
+    );
   }
+}
 
   // ==========================================
   // UI
   // ==========================================
 
   return (
-
     <div
       style={{
-        padding: "40px",
-        fontFamily: "Arial"
+        maxWidth: "500px",
+        margin: "40px auto",
+        padding: "20px",
+        border: "1px solid #ddd",
+        borderRadius: "10px",
       }}
     >
+      <h1>Registro PrestApp</h1>
 
-      <h1>
-
-        Registro PrestApp
-
-      </h1>
-
-      <form
-        onSubmit={handleRegister}
-      >
-
+      <form onSubmit={handleRegister}>
         {/* NOMBRE */}
-        <div>
-
+        <div style={{ marginBottom: "10px" }}>
           <input
             type="text"
-            placeholder="Nombre"
-
+            required
             value={nombre}
-
             onChange={(e) =>
-              setNombre(
-                e.target.value
-              )
+              setNombre(e.target.value)
             }
+            style={{
+              width: "100%",
+              padding: "10px",
+            }}
           />
+        </div>
 
+        {/* APELLIDO */}
+        <div style={{ marginBottom: "10px" }}>
+          <input
+            type="text"
+            placeholder="Apellido"
+            required
+            value={apellido}
+            onChange={(e) =>
+              setApellido(e.target.value)
+            }
+            style={{
+              width: "100%",
+              padding: "10px",
+            }}
+          />
+        </div>
+
+        {/* CEDULA */}
+        <div style={{ marginBottom: "10px" }}>
+          <input
+            type="text"
+            placeholder="Cédula"
+            required
+            value={cedula}
+            onChange={(e) =>
+              setCedula(e.target.value)
+            }
+            style={{
+              width: "100%",
+              padding: "10px",
+            }}
+          />
+        </div>
+
+        {/* TELEFONO */}
+        <div style={{ marginBottom: "10px" }}>
+          <input
+            type="text"
+            placeholder="Teléfono"
+            required
+            value={telefono}
+            onChange={(e) =>
+              setTelefono(e.target.value)
+            }
+            style={{
+              width: "100%",
+              padding: "10px",
+            }}
+          />
         </div>
 
         {/* EMAIL */}
-        <div>
-
+        <div style={{ marginBottom: "10px" }}>
           <input
             type="email"
-            placeholder="Email"
-
+            placeholder="Correo electrónico"
+            required
             value={email}
-
             onChange={(e) =>
-              setEmail(
-                e.target.value
-              )
+              setEmail(e.target.value)
             }
+            style={{
+              width: "100%",
+              padding: "10px",
+            }}
           />
-
         </div>
 
-        {/* PASSWORD */}
-        <div>
-
+        {/* CONTRASEÑA */}
+        <div style={{ marginBottom: "10px" }}>
           <input
-            type="password"
+            type={
+              mostrarPassword
+                ? "text"
+                : "password"
+            }
             placeholder="Contraseña"
-
+            required
             value={contrasena}
-
             onChange={(e) =>
               setContrasena(
                 e.target.value
               )
             }
+            style={{
+              width: "80%",
+              padding: "10px",
+            }}
           />
 
+          <button
+            type="button"
+            onClick={() =>
+              setMostrarPassword(
+                !mostrarPassword
+              )
+            }
+            style={{
+              marginLeft: "10px",
+            }}
+          >
+            {mostrarPassword
+              ? "Ocultar"
+              : "Ver"}
+          </button>
         </div>
 
-        {/* BOTÓN */}
-        <button type="submit">
+        {/* CONFIRMAR CONTRASEÑA */}
+        <div style={{ marginBottom: "10px" }}>
+          <input
+            type={
+              mostrarConfirmar
+                ? "text"
+                : "password"
+            }
+            placeholder="Confirmar contraseña"
+            required
+            value={confirmarContrasena}
+            onChange={(e) =>
+              setConfirmarContrasena(
+                e.target.value
+              )
+            }
+            style={{
+              width: "80%",
+              padding: "10px",
+            }}
+          />
 
+          <button
+            type="button"
+            onClick={() =>
+              setMostrarConfirmar(
+                !mostrarConfirmar
+              )
+            }
+            style={{
+              marginLeft: "10px",
+            }}
+          >
+            {mostrarConfirmar
+              ? "Ocultar"
+              : "Ver"}
+          </button>
+        </div>
+
+        {/* BOTON */}
+        <button
+          type="submit"
+          style={{
+            width: "100%",
+            padding: "12px",
+            cursor: "pointer",
+          }}
+        >
           Registrarse
-
         </button>
-
       </form>
-
     </div>
   );
 }

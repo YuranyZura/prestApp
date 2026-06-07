@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import { Link } from "react-router-dom";
 
 import API from "../config/api";
@@ -12,15 +11,66 @@ function Login() {
   const [password, setPassword] =
     useState("");
 
+  const [mostrarPassword,
+    setMostrarPassword] =
+    useState(false);
+
   async function handleLogin(e) {
 
     e.preventDefault();
+
+    // ==========================
+    // VALIDACIONES
+    // ==========================
+
+    const correo =
+      email.trim();
+
+    const contrasena =
+      password.trim();
+
+    if (
+      !correo ||
+      !contrasena
+    ) {
+
+      alert(
+        "Correo y contraseña son obligatorios"
+      );
+
+      return;
+    }
+
+    const emailRegex =
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (
+      !emailRegex.test(correo)
+    ) {
+
+      alert(
+        "Ingrese un correo válido"
+      );
+
+      return;
+    }
+
+    if (
+      contrasena.length < 8
+    ) {
+
+      alert(
+        "La contraseña debe tener mínimo 8 caracteres"
+      );
+
+      return;
+    }
 
     try {
 
       const response =
         await fetch(
-          `${API}/api/auth/login`,
+          `${API}/auth/login`,
           {
             method: "POST",
 
@@ -30,8 +80,8 @@ function Login() {
             },
 
             body: JSON.stringify({
-              correo: email,
-              contrasena: password
+              correo,
+              contrasena
             })
           }
         );
@@ -49,20 +99,42 @@ function Login() {
         return;
       }
 
+      if (!data.token) {
+
+        alert(
+          "No se recibió token del servidor"
+        );
+
+        return;
+      }
+
       localStorage.setItem(
         "token",
         data.token
       );
+
+      if (data.usuario) {
+
+        localStorage.setItem(
+          "usuario",
+          JSON.stringify(
+            data.usuario
+          )
+        );
+      }
 
       window.location.href =
         "/dashboard";
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        "Error Login:",
+        error
+      );
 
       alert(
-        "Error del servidor"
+        "No fue posible conectar con el servidor"
       );
     }
   }
@@ -118,18 +190,17 @@ function Login() {
           onSubmit={handleLogin}
         >
 
+          {/* CORREO */}
+
           <input
             type="email"
             placeholder="Correo electrónico"
-
             value={email}
-
             onChange={(e) =>
               setEmail(
                 e.target.value
               )
             }
-
             style={{
               width: "100%",
               padding: "15px",
@@ -141,32 +212,67 @@ function Login() {
             }}
           />
 
-          <input
-            type="password"
-            placeholder="Contraseña"
+          {/* CONTRASEÑA */}
 
-            value={password}
-
-            onChange={(e) =>
-              setPassword(
-                e.target.value
-              )
-            }
-
+          <div
             style={{
-              width: "100%",
-              padding: "15px",
-              marginBottom: "20px",
-              borderRadius: "10px",
-              border:
-                "1px solid #ccc",
-              fontSize: "16px"
+              display: "flex",
+              gap: "10px",
+              marginBottom: "20px"
             }}
-          />
+          >
+
+            <input
+              type={
+                mostrarPassword
+                  ? "text"
+                  : "password"
+              }
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) =>
+                setPassword(
+                  e.target.value
+                )
+              }
+              style={{
+                flex: 1,
+                padding: "15px",
+                borderRadius: "10px",
+                border:
+                  "1px solid #ccc",
+                fontSize: "16px"
+              }}
+            />
+
+            <button
+              type="button"
+              onClick={() =>
+                setMostrarPassword(
+                  !mostrarPassword
+                )
+              }
+              style={{
+                padding:
+                  "0 15px",
+                border: "none",
+                borderRadius:
+                  "10px",
+                cursor:
+                  "pointer"
+              }}
+            >
+              {
+                mostrarPassword
+                  ? "Ocultar"
+                  : "Ver"
+              }
+            </button>
+
+          </div>
 
           <button
             type="submit"
-
             style={{
               width: "100%",
               padding: "15px",
@@ -179,21 +285,18 @@ function Login() {
               marginBottom: "15px"
             }}
           >
-
             Iniciar sesión
-
           </button>
 
         </form>
 
         <Link
           to="/register"
-
           style={{
-            textDecoration: "none"
+            textDecoration:
+              "none"
           }}
         >
-
           <button
             style={{
               width: "100%",
@@ -206,11 +309,8 @@ function Login() {
               cursor: "pointer"
             }}
           >
-
             Crear cuenta
-
           </button>
-
         </Link>
 
       </div>

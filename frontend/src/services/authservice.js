@@ -2,7 +2,7 @@ import {
   apiPost,
   apiFetch
 }
-from "./api.js";
+from "../pages/js/services/api.js";
 
 // =====================================
 // RUTAS
@@ -85,11 +85,11 @@ export async function login(
     // GUARDAR USUARIO
     // =====================================
 
-    if (data.user) {
+    if (data.usuario) {
 
       localStorage.setItem(
         "usuario",
-        JSON.stringify(data.user)
+        JSON.stringify(data.usuario)
       );
     }
 
@@ -197,7 +197,7 @@ export async function verificarSesion() {
 
     const data =
       await apiFetch(
-        "/auth/check",
+        "/auth/validar",
         {
           method: "GET"
         }

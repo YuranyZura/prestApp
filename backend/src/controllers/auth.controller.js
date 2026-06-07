@@ -55,6 +55,9 @@ export const login = async (req, res) => {
       usuario: {
         id: usuario.id_usuario,
         nombre: usuario.nombre,
+        apellido: usuario.apellido,
+        cedula: usuario.cedula,
+        telefono: usuario.telefono,
         correo: usuario.correo,
         rol: usuario.rol,
         id_rol: usuario.id_rol
@@ -82,7 +85,7 @@ export const validarToken = async (req, res) => {
 export const perfil = async (req, res) => {
   try {
     const rows = await query(
-      `SELECT id_usuario, nombre, correo, rol FROM usuarios WHERE id_usuario = ? LIMIT 1`,
+      `SELECT id_usuario, nombre, apellido, correo, rol, cedula, telefono FROM usuarios WHERE id_usuario = ? LIMIT 1`,
       [req.usuario.id]
     );
 
@@ -111,22 +114,36 @@ export const register = async (req, res) => {
 
     const {
       nombre,
+      apellido,
+      cedula,
+      telefono,
       correo,
       contrasena
     } = req.body;
 
     console.log("NOMBRE:", nombre);
+    console.log("APELLIDO:", apellido);
+    console.log("CEDULA:", cedula);
+    console.log("TELEFONO:", telefono);
     console.log("CORREO:", correo);
     console.log("CONTRASENA:", contrasena);
 
     // VALIDACIONES
-    if (!nombre || !correo || !contrasena) {
+    if (!nombre || !correo || !contrasena || !apellido || !cedula || !telefono) {
 
       return res.status(400).json({
         success: false,
         message: "Todos los campos son obligatorios"
       });
     }
+    if (!correo || !contrasena) {
+  return res.status(400).json({
+    success: false,
+    message:
+      "Correo y contraseña son obligatorios"
+  });
+}
+
 
     // EXISTE
     const existe = await query(
@@ -158,15 +175,21 @@ export const register = async (req, res) => {
       `
       INSERT INTO usuarios (
         nombre,
+        apellido,
+        cedula,
+        telefono,
         correo,
         contrasena,
         rol,
         verificado
       )
-      VALUES (?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ? , ?, ?)
       `,
       [
         nombre,
+        apellido,
+        cedula,
+        telefono,
         correo,
         hash,
         "trabajador",
@@ -176,8 +199,20 @@ export const register = async (req, res) => {
 
     res.status(201).json({
       success: true,
+      token,
       id: result.insertId
     });
+
+    const token = jwt.sign(
+ {
+   id: result.insertId,
+   rol: "trabajador"
+ },
+ process.env.JWT_SECRET,
+ {
+   expiresIn:"7d"
+ }
+);
 
   } catch (error) {
 

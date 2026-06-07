@@ -22,13 +22,15 @@ export const buscarUsuarioPorId = async (id) => {
   const rows = await query(
     `
     SELECT
-      id_usuarios,
+      id_usuario,
       nombre,
       apellido,
       correo,
-      rol
+      rol,
+      cedula,
+      telefono
     FROM usuarios
-    WHERE id_usuarios = ?
+    WHERE id_usuario = ?
     `,
     [id]
   );

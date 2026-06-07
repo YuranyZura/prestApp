@@ -59,6 +59,7 @@ const allowedOrigins = [
   // LOCAL
   "http://localhost:5173",
   "http://localhost:3000",
+  "http://8.243.64.218:3000",
   // PRODUCCION
   process.env.FRONTEND_URL,
   "https://www.tudominio.com"

@@ -11,6 +11,11 @@ import {
   verificarToken
 } from "../middleware/auth.middleware.js";
 
+import {
+  validarLogin,
+  validarRegistro
+} from "../validators/auth.validator.js";
+
 const router = Router();
 
 // ==========================================
@@ -18,10 +23,10 @@ const router = Router();
 // ==========================================
 
 // LOGIN
-router.post("/login", login);
+router.post("/login", validarLogin, login);
 
 // REGISTER
-router.post("/register", register);
+router.post("/register", validarRegistro, register);
 
 // VALIDAR TOKEN
 router.get(

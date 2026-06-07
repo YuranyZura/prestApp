@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-
 import axios from "axios";
-
 import Sidebar from "../components/Sidebar";
+import API from "../config/api";
 
 function Dashboard() {
 
@@ -62,7 +61,7 @@ function Dashboard() {
 
       const res = await axios.get(
 
-        "http://localhost:4000/api/dashboard",
+        `${API}/dashboard`,
 
         {
           headers: {
@@ -114,6 +113,7 @@ function Dashboard() {
   const handleLogout = () => {
 
     localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
 
     window.location.href =
       "/login";
