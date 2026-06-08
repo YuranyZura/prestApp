@@ -4,7 +4,7 @@ import {
   apiPut,
   apiDelete
 }
-from "./api.js";
+from "../config/api";
 
 // =====================================
 // OBTENER CLIENTES

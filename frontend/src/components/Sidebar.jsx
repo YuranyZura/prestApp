@@ -1,9 +1,8 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function Sidebar() {
-
   return (
-
     <div
       style={{
         width: "250px",
@@ -15,37 +14,16 @@ function Sidebar() {
         flexDirection: "column"
       }}
     >
-
-      {/* LOGO */}
-      <div
-        style={{
-          marginBottom: "40px"
-        }}
-      >
-
-        <h1
-          style={{
-            fontSize: "28px"
-          }}
-        >
-
+      <div style={{ marginBottom: "40px" }}>
+        <h1 style={{ fontSize: "28px" }}>
           PrestApp
-
         </h1>
 
-        <p
-          style={{
-            color: "#94a3b8"
-          }}
-        >
-
+        <p style={{ color: "#94a3b8" }}>
           Sistema financiero
-
         </p>
-
       </div>
 
-      {/* MENU */}
       <div
         style={{
           display: "flex",
@@ -53,64 +31,51 @@ function Sidebar() {
           gap: "15px"
         }}
       >
-
-        <button style={menuButton}>
+        <Link to="/dashboard" style={menuButton}>
           🏠 Dashboard
-        </button>
+        </Link>
 
-        <button style={menuButton}>
+        <Link to="/clientes" style={menuButton}>
           👥 Clientes
-        </button>
+        </Link>
 
-        <button style={menuButton}>
+        <Link to="/prestamos" style={menuButton}>
           💰 Préstamos
-        </button>
+        </Link>
 
-        <button style={menuButton}>
+        <Link to="/pagos" style={menuButton}>
           📅 Pagos
-        </button>
+        </Link>
 
-        <button style={menuButton}>
+        <Link to="/reportes" style={menuButton}>
           📊 Reportes
-        </button>
+        </Link>
 
-        <button style={menuButton}>
+        <Link to="/configuracion" style={menuButton}>
           ⚙️ Configuración
-        </button>
-
+        </Link>
       </div>
 
-      {/* FOOTER */}
       <div
         style={{
           marginTop: "auto",
           paddingTop: "30px"
         }}
       >
-
         <p
           style={{
             color: "#94a3b8",
             fontSize: "14px"
           }}
         >
-
           PrestApp v1.0
-
         </p>
-
       </div>
-
     </div>
   );
 }
 
-// ==========================================
-// ESTILO BOTONES
-// ==========================================
-
 const menuButton = {
-
   background: "transparent",
   border: "none",
   color: "#fff",
@@ -119,8 +84,8 @@ const menuButton = {
   borderRadius: "10px",
   cursor: "pointer",
   fontSize: "16px",
-  transition: "0.3s",
-
+  textDecoration: "none",
+  transition: "0.3s"
 };
 
 export default Sidebar;

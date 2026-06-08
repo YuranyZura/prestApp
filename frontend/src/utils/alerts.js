@@ -66,20 +66,18 @@ export function showAlert(
   alert.className =
     `prestapp-alert ${type}`;
 
-  alert.innerHTML = `
+  const span =
+  document.createElement("span");
 
-    <div class="alert-content">
-
-      <span class="alert-message">
-        ${message}
-      </span>
+span.textContent =
+  message;
 
       <button class="alert-close">
         ×
       </button>
 
-    </div>
-  `;
+    
+  
 
   // =====================================
   // ESTILOS
@@ -276,29 +274,28 @@ export function showInfo(
 // ANIMACIÓN GLOBAL
 // =====================================
 
-const style =
-  document.createElement("style");
+if (!document.getElementById("prestapp-alert-style")) {
 
-style.innerHTML = `
+  const style =
+    document.createElement("style");
 
-@keyframes slideIn {
+  style.id =
+    "prestapp-alert-style";
 
-  from {
+  style.innerHTML = `
+    @keyframes slideIn {
 
-    opacity: 0;
+      from {
+        opacity: 0;
+        transform: translateX(100%);
+      }
 
-    transform:
-      translateX(100%);
-  }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+  `;
 
-  to {
-
-    opacity: 1;
-
-    transform:
-      translateX(0);
-  }
+  document.head.appendChild(style);
 }
-`;
-
-document.head.appendChild(style);

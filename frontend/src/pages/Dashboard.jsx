@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import API from "../config/api";
-
+import Navbar from "../components/Navbar";
 function Dashboard() {
 
   // ==========================================
@@ -106,18 +106,7 @@ function Dashboard() {
     }
   };
 
-  // ==========================================
-  // LOGOUT
-  // ==========================================
-
-  const handleLogout = () => {
-
-    localStorage.removeItem("token");
-    localStorage.removeItem("usuario");
-
-    window.location.href =
-      "/login";
-  };
+  
 
   // ==========================================
   // LOADING
@@ -169,44 +158,8 @@ function Dashboard() {
       >
 
         {/* NAVBAR */}
-        <div
-          style={{
-            background: "#fff",
-            padding: "20px",
-            borderRadius: "15px",
-            display: "flex",
-            justifyContent:
-              "space-between",
-            alignItems: "center",
-            marginBottom: "30px",
-            boxShadow:
-              "0 2px 10px rgba(0,0,0,0.05)"
-          }}
-        >
+        <Navbar />
 
-          <h1>
-            Dashboard
-          </h1>
-
-          <button
-            onClick={handleLogout}
-
-            style={{
-              background: "#ef4444",
-              color: "#fff",
-              border: "none",
-              padding:
-                "10px 20px",
-              borderRadius: "10px",
-              cursor: "pointer"
-            }}
-          >
-
-            Cerrar sesión
-
-          </button>
-
-        </div>
 
         {/* CARDS */}
         <div

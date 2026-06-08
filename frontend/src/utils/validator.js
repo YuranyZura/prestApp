@@ -26,9 +26,9 @@ export function validarPassword(
 
   if (!password) return false;
 
-  // mínimo 6 caracteres
+  // mínimo 8 caracteres
   return (
-    password.length >= 6
+    password.length >= 8
   );
 }
 
@@ -43,7 +43,7 @@ export function validarTelefono(
   if (!telefono) return false;
 
   const regex =
-    /^[0-9+\-\s()]{7,20}$/;
+    /^[0-9]{10}$/;
 
   return regex.test(
     telefono.trim()
@@ -61,7 +61,7 @@ export function validarCedula(
   if (!cedula) return false;
 
   const regex =
-    /^[0-9]{5,20}$/;
+     /^[1-9][0-9]{4,19}$/;
 
   return regex.test(
     cedula.trim()
@@ -215,7 +215,7 @@ export function validarFormulario(
     ) {
 
       errores.push(
-        `${nombre} mínimo 6 caracteres`
+        `${nombre} mínimo 8 caracteres`
       );
     }
 

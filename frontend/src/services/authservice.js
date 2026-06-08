@@ -2,7 +2,7 @@ import {
   apiPost,
   apiFetch
 }
-from "../pages/js/services/api.js";
+from "../config/api";
 
 // =====================================
 // RUTAS

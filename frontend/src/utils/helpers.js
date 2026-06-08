@@ -38,6 +38,8 @@ export function formatearFecha(
 export function formatearMoneda(
   valor = 0
 ) {
+const numero =
+    Number(valor) || 0;
 
   return new Intl.NumberFormat(
     "es-CO",
@@ -49,7 +51,7 @@ export function formatearMoneda(
 
       minimumFractionDigits: 0
     }
-  ).format(valor);
+  ).format(numero);
 }
 
 // =====================================
@@ -87,9 +89,12 @@ export function capitalizar(
 
 export function generarId() {
 
-  return Math.random()
+  return(
+     Date.now().toString(36) +
+   Math.random()
     .toString(36)
-    .substring(2, 10);
+    .substring(2, 10)
+    );
 }
 
 // =====================================
@@ -279,10 +284,13 @@ export function obtenerIniciales(
   nombre = ""
 ) {
 
-  return nombre
+   return nombre
+    .trim()
     .split(" ")
-    .map(p =>
-      p.charAt(0)
+    .filter(Boolean)
+    .map(
+      palabra =>
+        palabra.charAt(0)
     )
     .join("")
     .substring(0, 2)

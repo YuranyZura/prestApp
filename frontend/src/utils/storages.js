@@ -275,8 +275,15 @@ export function obtenerRol() {
 // =====================================
 
 export function estaLogueado() {
+ const token =
+    obtenerToken();
 
-  return !!obtenerToken();
+  return (
+    token !== null &&
+    token !== undefined &&
+    token !== ""
+  );
+  
 }
 
 // =====================================
@@ -292,7 +299,7 @@ export function cerrarSesion() {
   clearSession();
 
   window.location.href =
-    "/src/html/auth/login.html";
+    "/login";
 }
 
 // =====================================
