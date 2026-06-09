@@ -1,0 +1,103 @@
+# =========================================
+# NORMALIZAR FINALES DE LÍNEA
+# =========================================
+
+* text=auto eol=lf
+
+# =========================================
+# ARCHIVOS DE CÓDIGO
+# =========================================
+
+*.js text eol=lf
+*.ts text eol=lf
+*.jsx text eol=lf
+*.tsx text eol=lf
+
+*.html text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+
+*.json text eol=lf
+*.xml text eol=lf
+
+*.yml text eol=lf
+*.yaml text eol=lf
+
+*.md text eol=lf
+
+# =========================================
+# ENV
+# =========================================
+
+*.env text eol=lf
+
+# =========================================
+# GIT
+# =========================================
+
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# =========================================
+# SQL
+# =========================================
+
+*.sql text eol=lf
+
+# =========================================
+# IMÁGENES
+# =========================================
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.svg binary
+*.ico binary
+
+# =========================================
+# AUDIO / VIDEO
+# =========================================
+
+*.mp3 binary
+*.wav binary
+*.mp4 binary
+*.webm binary
+
+# =========================================
+# COMPRIMIDOS
+# =========================================
+
+*.zip binary
+*.rar binary
+*.7z binary
+
+# =========================================
+# DOCUMENTOS
+# =========================================
+
+*.pdf binary
+
+# =========================================
+# ANDROID
+# =========================================
+
+*.apk binary
+*.aab binary
+*.keystore binary
+
+# =========================================
+# FUENTES
+# =========================================
+
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+
+# =========================================
+# LOGS
+# =========================================
+
+*.log text eol=lf
