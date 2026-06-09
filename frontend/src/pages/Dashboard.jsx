@@ -182,12 +182,24 @@ function Dashboard() {
                   {data.ultimosPagos.map((pg) => (
                     <tr key={pg.id_pago} style={{ borderBottom: "1px solid #e2e8f0" }}>
                       <td style={tdStyle}>{pg.nombre} {pg.apellido}</td>
-                      <td style={tdStyle} style={{ color: "#16a34a", fontWeight: "600", padding: "10px" }}>
-                        {formatCurrency(pg.monto_pagado)}
-                      </td>
-                      <td style={tdStyle} style={{ textTransform: "capitalize", padding: "10px" }}>
-                        {pg.metodo_pago}
-                      </td>
+                      <td
+  style={{
+    ...tdStyle,
+    color: "#16a34a",
+    fontWeight: "600"
+  }}
+>
+  {formatCurrency(pg.monto_pagado)}
+</td>
+
+<td
+  style={{
+    ...tdStyle,
+    textTransform: "capitalize"
+  }}
+>
+  {pg.metodo_pago}
+</td>
                     </tr>
                   ))}
                 </tbody>
